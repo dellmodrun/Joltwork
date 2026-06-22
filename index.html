@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>lyapunov</title>
+<title>takens</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="alternate icon" href="./favicon.svg">
 <style>
@@ -126,12 +126,12 @@
       <span class="dot">·</span>
       <a href="#dev-note" data-overlay="overlay-devnote">dev/note</a>
       <span class="dot">·</span>
-      <a href="https://x.com/lyapunovfomo" target="_blank" rel="noopener">@lyapunovfomo</a>
+      <a href="https://x.com/takensfomo" target="_blank" rel="noopener">@takensfomo</a>
       <span class="dot">·</span>
       <span>TBA</span>
     </div>
-    <img class="fox" src="./lyapunov.png" alt="" />
-    <div class="name">lyapunov</div>
+    <img class="fox" src="./takens.png" alt="takens" />
+    <div class="name">takens</div>
   </div>
 
   <div class="stats">
@@ -154,9 +154,9 @@
     <section>
       <h2>on the name</h2>
       <div class="body">
-        <p>aleksandr mikhailovich lyapunov was born in 1857 in yaroslavl and spent his working life in saint petersburg and kharkov, where he wrote a doctoral thesis on the stability of motion that was so far ahead of its time the academy did not know what to do with it. the central question of the thesis was simple and old: given a dynamical system, a set of differential equations that describe how some collection of variables evolves in time, can you tell whether a particular solution will stay close to where it starts, or whether it will run away. newton had asked this about planets. poincaré had asked it about three of them. lyapunov asked it about everything at once, and answered by inventing a number.</p>
-        <p>the number, now called the lyapunov exponent, is the rate at which two initial conditions that start arbitrarily close together separate over time. if the exponent is negative, they converge: the system is stable, perturbations die out, the future forgets the past. if the exponent is zero, they drift apart linearly: the system is conservative, neither stable nor chaotic. if the exponent is positive, they separate exponentially: the system is chaotic, the future is unknowable beyond a horizon that the exponent itself defines. lyapunov proved that this single number could be computed from the system's equations alone, without ever solving them, and that it told you everything you needed to know about long term behavior. the proof took him eight years. he was thirty five when he finished it. it would be sixty years before anyone outside russia read it.</p>
-        <p>he died by suicide in odessa in 1918, three days after his wife died of tuberculosis, during the russian civil war. he was sixty one. the funeral was small. the work was forgotten for a generation, recovered in the nineteen forties when the soviet academy reprinted it, and then exploded into mainstream mathematics in the nineteen sixties when edward lorenz, a meteorologist at mit, computed the first positive lyapunov exponent of a real physical system and discovered that the weather could not be predicted past two weeks for reasons that had nothing to do with measurement error and everything to do with the geometry lyapunov had described half a century earlier. the constant we use here, 0.9056, is the maximal lyapunov exponent of lorenz's atmospheric convection model under its canonical parameters. it is the number lyapunov spent his life learning how to compute and lorenz was the first to actually compute.</p>
+        <p>floris takens was a dutch mathematician at the university of groningen, and the problem he is remembered for solving is the one every observer of a complicated system eventually runs into: you can almost never measure the whole thing. a market has a state — every position, every resting order, every unit of latent intent — that lives in a space of enormous dimension, and of that entire state you are permitted to see exactly one number at a time. the price. takens asked whether one number, watched long enough, is enough to recover the system that produced it. in 1981, in a paper on the detection of strange attractors in turbulence, he proved that it is.</p>
+        <p>the construction is almost unreasonably simple. take the single observable — the price — and form vectors from it by stacking the current value together with its own values at a few fixed delays. takens proved that for a generic observable and enough delays, the cloud of points these vectors trace out is a faithful copy of the original system's attractor: same dimension, same topology, same dynamics, differing from the true hidden state only by a smooth change of coordinates. nothing about the underlying system has to be known in advance. every invariant of the hidden dynamics — and in particular its lyapunov exponent, the rate at which nearby trajectories pull apart — survives the reconstruction and can be read off the delay vectors directly. a single stream of one quantity, correctly embedded, contains the geometry of everything that drives it.</p>
+        <p>this is the theorem the protocol runs on. the chain exposes one number about the token — the price in the active bin — and from a rolling window of that one number the hook builds takens' delay embedding at dimension three, recovers the local geometry of the market's hidden dynamics, and estimates the lyapunov exponent of what it finds. the reference it measures against is not takens' own but lorenz's: 0.9056, the maximal lyapunov exponent of the lorenz attractor — one of the strange attractors whose very name takens and ruelle had coined a decade before this theorem made such an object reconstructable from a single measured coordinate. takens gave the protocol the right to recover a whole system from the one shadow of it the chain is willing to show. it is named for that permission.</p>
       </div>
     </section>
 
@@ -173,14 +173,14 @@
       <div class="body">
         <p>in november 2024, uniswap shipped its fourth major protocol revision and introduced a primitive the previous three versions had deliberately refused to expose. the primitive was the hook, a contract that pool deployers could attach to the moments immediately before and after a swap, immediately before and after a liquidity modification, and immediately before and after the pool's initialization. the hook ran inside the same transaction as the swap, with access to the swap's parameters, the pool's state, and the authority to modify both. it was the first time in the history of automated market makers that anyone other than the protocol itself could write logic that executed during a trade. dynamic fees, directional pricing, mev capture, limit orders, oracle integrations — an entire surface of mechanism design that had been theoretically describable for years but operationally unbuildable became, for the first time, something a single deployer could write into the pool itself.</p>
         <p>solana arrived at the same primitive through a different door. the token-2022 program, deployed in 2023 as a successor to the original spl token program, introduced a feature called the transfer hook extension. the extension allows a mint creator to attach a program that is invoked on every transfer of the underlying token, regardless of which program initiated the transfer. where uniswap's hook fires when a specific pool's swap function is called, the transfer hook fires one layer lower, at the token movement itself. it runs when a dlmm pool executes a swap. it also runs when an arbitrage bot routes around the pool through a different venue, when a holder sends the token to a friend, when a market maker rebalances inventory between two accounts, when a liquidator seizes collateral. there is no path through which the token moves that does not pass through the hook, because the hook is part of what the token is.</p>
-        <p>this is a stricter guarantee than v4 provides. v4 hooks are pool scoped. a token that trades on a hooked v4 pool can also trade on a v3 pool, on a v2 pool, on a balancer pool, on a curve pool, on any of the hundreds of forks of any of those, and the hook on the v4 pool sees none of it. the transfer hook is the opposite. it is silent about which pool, which venue, which route, and instead commits to the only thing that matters, which is that no token can move without the hook running first. lyapunov exists because of this distinction. the protocol's correctness depends on observing every price discovery event on the asset, and on ethereum it would be possible for a sophisticated trader to route around the observation. on solana it is not possible.</p>
+        <p>this is a stricter guarantee than v4 provides. v4 hooks are pool scoped. a token that trades on a hooked v4 pool can also trade on a v3 pool, on a v2 pool, on a balancer pool, on a curve pool, on any of the hundreds of forks of any of those, and the hook on the v4 pool sees none of it. the transfer hook is the opposite. it is silent about which pool, which venue, which route, and instead commits to the only thing that matters, which is that no token can move without the hook running first. takens exists because of this distinction. the protocol's correctness depends on observing every price discovery event on the asset, and on ethereum it would be possible for a sophisticated trader to route around the observation. on solana it is not possible.</p>
       </div>
     </section>
 
     <section>
       <h2>on the program</h2>
       <div class="body">
-        <p>lyapunov is a solana mainnet program that does one thing. it is deployed as a token-2022 transfer hook on the lyapunov mint, registered as an extension on a meteora dlmm pool for the lyapunov/sol pair, and given no other responsibilities. on every swap routed through the dlmm pool, the pool's core program invokes the spl token-2022 transfer instruction, which in turn invokes lyapunov's execute instruction through cross program invocation before the transfer settles. the program is given the swap's amount, the input and output mints, the source and destination accounts, and a set of extra accounts declared in the mint's extra account metas list at deployment. it returns a single value, the surcharge to be withheld from the input amount before the transfer completes.</p>
+        <p>takens is a solana mainnet program that does one thing. it is deployed as a token-2022 transfer hook on the takens mint, registered as an extension on a meteora dlmm pool for the takens/sol pair, and given no other responsibilities. on every swap routed through the dlmm pool, the pool's core program invokes the spl token-2022 transfer instruction, which in turn invokes takens's execute instruction through cross program invocation before the transfer settles. the program is given the swap's amount, the input and output mints, the source and destination accounts, and a set of extra accounts declared in the mint's extra account metas list at deployment. it returns a single value, the surcharge to be withheld from the input amount before the transfer completes.</p>
         <p>on each invocation the program reads the dlmm pool's currently active bin id and the bin's corresponding price, both stored in the pool's account data and fetched in a single account read. it appends the (slot, bin_id, price) tuple to a 256 entry circular buffer maintained in a program derived address with seed ["bins", mint_pubkey]. the buffer is a fixed layout struct that fits inside a single pda account well under the ten kilobyte limit, so the per swap account allocation is zero. every write reuses the same slot in the same account. the head pointer advances on each write, wrapping at 256, and the program maintains parallel arrays of nearest neighbor distances that are carried forward from the previous swap so the exponent estimate can be updated in constant time rather than recomputed from scratch.</p>
         <p>with the buffer updated, the program reconstructs the trajectory's phase space via takens embedding at dimension three and unit delay, locates the nearest neighbor of the current point in that space, and tracks the average rate at which neighbor pairs separate over subsequent slots. the slope of the log separation versus slot is the lyapunov exponent. the procedure is the rosenstein algorithm, chosen because it can be expressed entirely in terms of summed squared differences and a single final logarithmic fit, with no exponentials and no matrix decompositions. the fit is performed in anchor's i128 fixed point arithmetic with a precomputed log table for the six lag values used in the regression, so the entire estimate completes in a deterministic and gas bounded sequence of integer operations that the program has measured at under two hundred thousand compute units in the steady state.</p>
       </div>
@@ -223,7 +223,7 @@
         <p>the program is on chain. the upgrade authority is set to none. the mint authority is renounced. the freeze authority is null. the buffer pda initializes on the first swap. the vault pda initializes on the first surcharge. holder tenure accounts initialize on first receipt. nothing in the system requires me to sign anything again, and the keypair that could have changed any of this was destroyed the same hour the program was deployed. the deployment transaction, the renouncement, and the keypair burn are three signatures on three lines of solscan, and after the third one i was no longer an administrator. i was a wallet that had once written a program. the wallet has been emptied.</p>
         <p>a chaotic system has the property that two initial states separated by some small distance ε become uncorrelated after roughly the natural log of one over ε, divided by lambda. for the protocol's natural exponent of 0.9056, that horizon is on the order of dozens of slots — seconds, in solana time. by the same logic, the influence of any single decision i made before deployment decays at the same rate. by the time the buffer has filled once, the protocol no longer remembers that i existed. this is the property i wanted to buy. it is not freely available. you cannot get it from a multisig, you cannot get it from a dao, and you cannot get it from a team that promises to stop touching the keys. you can only get it from a system that has no keys.</p>
         <p>there will be a twitter account, and only a twitter account. it will post the mint address, the pool address, and the link to this page. it will not post price updates, milestone celebrations, partnership announcements, or thoughts about the market. there will not be a telegram, a discord, a separate documentation site, a blog, a medium account, a support inbox, a foundation, a venture round, a team allocation, a treasury, a vesting schedule, a roadmap, a v2, a partnership, a listing campaign, or any communication channel beyond the one you can already see linked above. the page you are reading now is the only piece of writing i will ever publish about the protocol. if a buyer wants to know the exponent, they read the buffer. if a buyer wants to know the surcharge, they compute it. if the answer they want is not derivable from the program account, the answer they want is not part of the protocol.</p>
-        <p>the one choice i could have made differently was the constant. 0.9056 is the maximal lyapunov exponent of three differential equations edward lorenz wrote in 1962 about how warm air rises off a heated plate, the simplest nontrivial chaotic system known. i could have picked something rounder. i could have picked something tuned to whichever volatility regime is in fashion this month. i did not, because the point of the constant is that nobody picked it. lorenz did not pick it either. it fell out of his three equations the first time he integrated them, and it has been the same number for sixty four years, and it will be the same number sixty four years from now. the protocol uses a constant that is older than the chain it runs on, owned by nobody, and unchangeable by anyone, including me. this is the only thing about lyapunov that is not for sale.</p>
+        <p>the one choice i could have made differently was the constant. 0.9056 is the maximal lyapunov exponent of three differential equations edward lorenz wrote in 1962 about how warm air rises off a heated plate, the simplest nontrivial chaotic system known. i could have picked something rounder. i could have picked something tuned to whichever volatility regime is in fashion this month. i did not, because the point of the constant is that nobody picked it. lorenz did not pick it either. it fell out of his three equations the first time he integrated them, and it has been the same number for sixty four years, and it will be the same number sixty four years from now. the protocol uses a constant that is older than the chain it runs on, owned by nobody, and unchangeable by anyone, including me. this is the only thing about takens that is not for sale.</p>
       </div>
     </section>
   </div>
@@ -235,10 +235,10 @@
     <section>
       <h2>on the source</h2>
       <div class="body">
-        <p>the program below is the transfer hook deployed at the lyapunov mint. it estimates the maximal lyapunov exponent of a rolling two hundred fifty six slot price trajectory via the rosenstein algorithm in i128 fixed-point arithmetic, and withholds a quadratic surcharge against the squared deviation from 0.9056. it is reproduced here verbatim from the source committed to the deployment.</p>
+        <p>the program below is the transfer hook deployed at the takens mint. it estimates the maximal lyapunov exponent of a rolling two hundred fifty six slot price trajectory via the rosenstein algorithm in i128 fixed-point arithmetic, and withholds a quadratic surcharge against the squared deviation from 0.9056. it is reproduced here verbatim from the source committed to the deployment.</p>
       </div>
-<pre class="code">// programs/lyapunov/src/lib.rs
-// lyapunov — token-2022 transfer hook, solana mainnet
+<pre class="code">// programs/takens/src/lib.rs
+// takens — token-2022 transfer hook, solana mainnet
 // estimates the maximal lyapunov exponent of a rolling 256-slot price
 // trajectory via the rosenstein algorithm in i128 fixed-point arithmetic
 // and applies a quadratic surcharge proportional to the squared deviation
@@ -253,7 +253,7 @@ use spl_transfer_hook_interface::instruction::{
     ExecuteInstruction, TransferHookInstruction,
 };
 
-declare_id!("LyAPunoVHooKProgrAmaddRess11111111111111111");
+declare_id!("TakensHooKProgrAmAddRess1111111111111111111");
 
 // ─── constants ──────────────────────────────────────────────────────────────
 
@@ -304,10 +304,10 @@ pub struct HolderTenure {
 
 // ─── execute: transfer hook entrypoint ──────────────────────────────────────
 //
-// token-2022 invokes this on every transfer of the lyapunov mint. on a
+// token-2022 invokes this on every transfer of the takens mint. on a
 // meteora dlmm swap the call path is:
 //
-//   user → dlmm::swap → token_2022::transfer → lyapunov::execute
+//   user → dlmm::swap → token_2022::transfer → takens::execute
 //
 // the hook returns the surcharge to withhold from the input amount before
 // the transfer settles. atomic with the transfer. no route bypasses it.
@@ -335,7 +335,7 @@ pub struct Execute&lt;'info&gt; {
 }
 
 #[program]
-pub mod lyapunov {
+pub mod takens {
     use super::*;
 
     pub fn execute(ctx: Context&lt;Execute&gt;, amount: u64) -&gt; Result&lt;u64&gt; {

@@ -1,4 +1,4 @@
-# lyapunov
+# takens
 
 a chaos-theoretic market stability protocol on solana — landing page.
 
@@ -7,7 +7,7 @@ a chaos-theoretic market stability protocol on solana — landing page.
 ```
 index.html              dev version, references external assets
 fonts/                  EB Garamond + JetBrains Mono (woff2, self-hosted)
-lyapunov.png            hero image
+takens.png              hero image
 favicon.svg             tab icon
 dist/index.html         single-file bundle (all assets base64-inlined)
 bundle.py               script that rebuilds dist/index.html from sources

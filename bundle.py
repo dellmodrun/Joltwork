@@ -4,7 +4,7 @@ import base64
 import os
 import pathlib
 
-ROOT = pathlib.Path(r"C:\Users\Administrator\Desktop\xinde")
+ROOT = pathlib.Path(__file__).resolve().parent
 SRC = ROOT / "index.html"
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
@@ -19,7 +19,7 @@ assets = {
     "./fonts/eb-garamond-regular.woff2":   ("font/woff2",     ROOT / "fonts/eb-garamond-regular.woff2"),
     "./fonts/eb-garamond-italic.woff2":    ("font/woff2",     ROOT / "fonts/eb-garamond-italic.woff2"),
     "./fonts/jetbrains-mono-regular.woff2":("font/woff2",     ROOT / "fonts/jetbrains-mono-regular.woff2"),
-    "./lyapunov.png":                      ("image/png",      ROOT / "lyapunov.png"),
+    "./takens.png":                        ("image/png",      ROOT / "takens.png"),
     "./favicon.svg":                       ("image/svg+xml",  ROOT / "favicon.svg"),
 }
 
