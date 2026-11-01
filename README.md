@@ -1,40 +1,9 @@
 # Joltwork
 
-a chaos-theoretic market stability protocol on solana — landing page.
+A proposed Solana-native settlement transparency layer.
 
-## structure
+Joltwork applies the disclosure problem documented in An Empirical Study of Undisclosed Charges in Hook-Based Decentralized Exchanges to Solana's execution model. The frontend presents a research prototype: preflight simulation, CPI-path reconstruction, Token-2022 extension awareness, pre/post balance reconciliation, and an itemized receipt.
 
-```
-index.html              dev version, references external assets
-fonts/                  EB Garamond + JetBrains Mono (woff2, self-hosted)
-joltwork.png            transparent hero logo
-favicon.svg             tab icon
-dist/index.html         single-file bundle (all assets base64-inlined)
-bundle.py               script that rebuilds dist/index.html from sources
-```
+This is a concept, not a deployed mainnet program. Page statistics are identified as the paper's Ethereum/BSC research baseline, not Solana measurements.
 
-## local dev
-
-```
-python -m http.server 8000
-```
-
-then open http://localhost:8000
-
-## rebuilding the standalone bundle
-
-after editing `index.html` or any asset:
-
-```
-python bundle.py
-```
-
-this regenerates `dist/index.html` with every external resource inlined as a
-base64 data uri — a single file you can drop into any static host or open
-directly with `file://`.
-
-## deploy
-
-push to any static host. for github pages, point pages at the repo root and
-the dev version works directly; for a hosted single-file deploy, serve
-`dist/index.html` as the root document.
+Research: https://arxiv.org/abs/2610.36682
