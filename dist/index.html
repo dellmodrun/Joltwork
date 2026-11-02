@@ -457,7 +457,7 @@
     byId("receipt").classList.remove("open");
     var transaction = await rpc("getTransaction", [
       signature,
-      { encoding: "jsonParsed", commitment: "confirmed", maxSupportedTransactionVersion: 0 }
+      { encoding: "jsonParsed", commitment: "confirmed", maxSupportedTransactionVersion: 1 }
     ]);
     if (!transaction) throw new Error("transaction not found or not yet confirmed");
     var receipt = buildReceipt(signature, transaction);
