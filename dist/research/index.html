@@ -65,6 +65,17 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 .code-browser>aside{max-height:650px;overflow:auto}.code-browser pre{min-height:650px;max-height:650px;overflow:auto;white-space:pre;tab-size:2}.source-summary{max-width:900px;color:#d0ccc3;font-size:16px;line-height:1.75}.paper-origin{padding:34px;border:1px solid var(--line);border-left:3px solid var(--good);background:var(--panel)}.paper-origin h2{margin:14px 0 18px;font:34px/1.1 "EB Garamond",serif;font-weight:400}.paper-origin p{max-width:920px;color:#d0ccc3;font-size:16px;line-height:1.75}.paper-meta{display:grid;grid-template-columns:repeat(4,1fr);margin-top:20px;border:1px solid var(--line)}.paper-meta div{padding:16px;border-right:1px solid var(--line)}.paper-meta div:last-child{border-right:0}.paper-meta span,.paper-meta b{display:block;font:8px/1.5 "JetBrains Mono",monospace}.paper-meta span{color:var(--muted)}.paper-meta b{margin-top:7px;font-weight:400}.paper-reader{margin-top:20px;border:1px solid var(--line);background:#fff}.paper-reader-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel);font:8px "JetBrains Mono",monospace}.paper-reader-head div{display:flex;gap:16px}.paper-reader-head a{color:var(--good)}.paper-reader iframe{display:block;width:100%;height:78vh;min-height:720px;border:0;background:#fff}.research-figure{margin:20px 0 0;padding:24px;border:1px solid var(--line);background:var(--panel)}.research-figure img{display:block;width:100%;max-height:640px;object-fit:contain;background:#f4f2ed}.research-figure figcaption{margin-top:14px;color:var(--muted);font:8px/1.6 "JetBrains Mono",monospace}
 @media(max-width:680px){.status-band,.paper-meta{grid-template-columns:1fr}.status-band div,.paper-meta div{border-right:0;border-bottom:1px solid var(--line)}.status-band div:last-child,.paper-meta div:last-child{border-bottom:0}.paper-reader iframe{height:70vh;min-height:560px}.paper-reader-head{display:block}.paper-reader-head div{margin-top:10px}.code-browser pre{min-height:500px;max-height:500px}}
 .wallet-badge{border:0}.wallet-badge img{display:block;width:34px;height:34px;border-radius:9px}
+
+/* Repository browser */
+.repo-health{display:grid;grid-template-columns:repeat(5,1fr);margin-top:18px;border:1px solid var(--line);background:var(--panel-2)}
+.repo-health span{padding:14px;border-right:1px solid var(--line);color:var(--muted);font:7px/1.45 "JetBrains Mono",monospace}.repo-health span:last-child{border-right:0}.repo-health b{display:block;margin-bottom:5px;color:var(--text);font-size:13px;font-weight:400}
+.code-browser{display:grid;grid-template-columns:340px minmax(0,1fr);height:680px;margin-top:12px}.code-browser>aside.code-sidebar{max-height:none;overflow:hidden;min-width:0;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.code-search{display:block;padding:13px;border-bottom:1px solid var(--line);font:7px "JetBrains Mono",monospace;color:var(--muted)}.code-search span{display:block;margin-bottom:8px}.code-search input{width:100%;height:34px;padding:0 10px;border:1px solid var(--line);outline:0;background:#1e1e1c;color:var(--text);font:8px "JetBrains Mono",monospace}.code-search input:focus{border-color:#85827a}
+.code-tree{flex:1;overflow:auto;padding:8px 0}.code-group{padding:8px 0}.code-group>b{display:block;padding:4px 14px 7px;color:#77746d;font:7px "JetBrains Mono",monospace;letter-spacing:.09em}.code-browser .code-group button{display:block;width:100%;padding:8px 14px 8px 23px;border:0;border-left:2px solid transparent;background:transparent;color:var(--muted);text-align:left;font:8px/1.45 "JetBrains Mono",monospace;cursor:pointer;overflow:hidden;text-overflow:ellipsis}.code-browser .code-group button:hover{background:#2c2c29;color:var(--text)}.code-browser .code-group button.active{border-left-color:#d8d4ca;background:#333330;color:var(--text)}
+.code-tree-foot{display:flex;justify-content:space-between;padding:11px 13px;border-top:1px solid var(--line);font:7px "JetBrains Mono",monospace;color:var(--muted)}.code-tree-foot a{color:var(--text)}.code-panel{min-width:0;display:flex;flex-direction:column;overflow:hidden}.code-toolbar{min-height:55px;padding:9px 13px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px}.code-toolbar>div:first-child{min-width:0}.code-browser .code-path{display:block;height:auto;padding:0;border:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font:8px "JetBrains Mono",monospace}.code-toolbar small{display:block;margin-top:5px;color:var(--muted);font:7px "JetBrains Mono",monospace}.code-tools{display:flex;align-items:center;gap:6px;flex-shrink:0}.code-tools button,.code-tools a{padding:7px 8px;border:1px solid var(--line);background:transparent;color:var(--muted);font:7px "JetBrains Mono",monospace;text-decoration:none;cursor:pointer}.code-tools button:hover,.code-tools a:hover{color:var(--text);border-color:#77746d}
+.code-browser .code-view{flex:1;min-height:0;overflow:auto;background:#1e1e1c;color:#d8d4ca;font:9px/1.65 "JetBrains Mono",monospace;tab-size:2}.code-loading{padding:18px;color:var(--muted)}.code-lines{min-width:max-content;margin:0;padding:14px 0 30px 58px}.code-lines li{min-height:15px;padding:0 20px 0 12px;border-left:1px solid var(--line-soft);white-space:pre}.code-lines li::marker{color:#66635d}.code-lines code{font:inherit;color:inherit}
+@media(max-width:900px){.repo-health{grid-template-columns:repeat(3,1fr)}.repo-health span:nth-child(3){border-right:0}}
+@media(max-width:680px){.repo-health{grid-template-columns:1fr 1fr}.repo-health span{border-bottom:1px solid var(--line)}.repo-health span:nth-child(2n){border-right:0}.code-browser{grid-template-columns:1fr;height:auto}.code-browser>aside.code-sidebar{height:360px;border-right:0;border-bottom:1px solid var(--line)}.code-panel{height:540px}.code-toolbar{align-items:flex-start}.code-tools{gap:4px}.code-tools button,.code-tools a{padding:6px}.code-lines{padding-left:48px}}
 </style>
 </head>
 <body>
@@ -679,27 +690,70 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
   });
 
   var sourceBase = "https://raw.githubusercontent.com/dellmodrun/Joltwork/main/";
+  var githubBase = "https://github.com/dellmodrun/Joltwork/blob/main/";
   var codeFiles = {};
   var codePaths = {
     program: "programs/jolt-guard/src/lib.rs",
     cargo: "programs/jolt-guard/Cargo.toml",
-    sdk: "sdk/src/index.ts",
-    tests: "sdk/test/codec.test.js",
-    package: "sdk/package.json",
+    sdkIndex: "sdk/src/index.ts",
+    sdkConstants: "sdk/src/constants.ts",
+    sdkTypes: "sdk/src/types.ts",
+    sdkCodec: "sdk/src/codec.ts",
+    sdkInstruction: "sdk/src/instruction.ts",
+    sdkReceipt: "sdk/src/receipt.ts",
+    jupiter: "sdk/src/adapters/jupiter.ts",
+    codecTest: "sdk/test/codec.test.js",
+    instructionTest: "sdk/test/instruction.test.js",
+    jupiterTest: "sdk/test/jupiter.test.js",
+    receiptTest: "sdk/test/receipt.test.js",
     launchClient: "launch-client.ts",
-    webPackage: "package.json",
+    appClient: "app.js",
     buildClient: "build-client.mjs",
-    spec: "JOLT_GUARD.md",
+    webPackage: "package.json",
+    sdkPackage: "sdk/package.json",
     deployment: "deployments/devnet.json",
+    verifyDeployment: "scripts/verify-deployment.mjs",
+    checkSite: "scripts/check-site.mjs",
+    protocolCi: ".github/workflows/protocol-ci.yml",
+    sbfCi: ".github/workflows/sbf-build.yml",
+    koraCi: ".github/workflows/kora-deploy-tool.yml",
     readme: "README.md",
-    ci: ".github/workflows/protocol-ci.yml"
+    architecture: "docs/ARCHITECTURE.md",
+    integration: "docs/INTEGRATION.md",
+    security: "docs/SECURITY.md",
+    operations: "docs/OPERATIONS.md",
+    spec: "JOLT_GUARD.md",
+    contributing: "CONTRIBUTING.md"
   };
+
+  function renderSource(text) {
+    var view = byId("code-view");
+    if (!view) return;
+    view.textContent = "";
+    var list = document.createElement("ol");
+    list.className = "code-lines";
+    text.replace(/\r\n/g, "\n").split("\n").forEach(function (line) {
+      var item = document.createElement("li");
+      var code = document.createElement("code");
+      code.textContent = line || " ";
+      item.appendChild(code);
+      list.appendChild(item);
+    });
+    view.appendChild(list);
+  }
+
+  function setCodeLinks(path) {
+    if (byId("code-raw")) byId("code-raw").href = sourceBase + path;
+    if (byId("code-github")) byId("code-github").href = githubBase + path;
+  }
 
   async function showCode(key, button) {
     if (!byId("code-view") || !byId("code-path")) return;
     var path = codePaths[key];
     byId("code-path").textContent = path;
     byId("code-view").textContent = "loading complete source…";
+    if (byId("code-meta")) byId("code-meta").textContent = "loading source…";
+    setCodeLinks(path);
     document.querySelectorAll("[data-code]").forEach(function (item) {
       item.classList.toggle("active", item === button);
     });
@@ -709,9 +763,14 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
         if (!response.ok) throw new Error("source request failed");
         codeFiles[key] = await response.text();
       }
-      byId("code-view").textContent = codeFiles[key];
+      var text = codeFiles[key];
+      renderSource(text);
+      var lines = text.replace(/\r\n/g, "\n").split("\n").length;
+      var bytes = new Blob([text]).size;
+      if (byId("code-meta")) byId("code-meta").textContent = lines + " lines · " + bytes.toLocaleString() + " bytes · main";
     } catch (error) {
       byId("code-view").textContent = "The live source could not be loaded in this browser.\n\nOpen the same file in GitHub:\nhttps://github.com/dellmodrun/Joltwork/blob/main/" + path;
+      if (byId("code-meta")) byId("code-meta").textContent = "source unavailable · open GitHub";
     }
   }
 
@@ -721,6 +780,34 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     });
   });
   if (byId("code-view")) showCode("program", document.querySelector('[data-code="program"]'));
+
+  if (byId("code-filter")) byId("code-filter").addEventListener("input", function () {
+    var query = byId("code-filter").value.trim().toLowerCase();
+    var visible = 0;
+    document.querySelectorAll(".code-group").forEach(function (group) {
+      var groupVisible = 0;
+      group.querySelectorAll("[data-code]").forEach(function (button) {
+        var match = !query || button.textContent.toLowerCase().includes(query);
+        button.hidden = !match;
+        if (match) { groupVisible += 1; visible += 1; }
+      });
+      group.hidden = groupVisible === 0;
+    });
+    if (byId("code-file-count")) byId("code-file-count").textContent = visible + (visible === 1 ? " FILE" : " FILES");
+  });
+
+  if (byId("code-copy")) byId("code-copy").addEventListener("click", async function () {
+    var active = document.querySelector("[data-code].active");
+    var text = active ? codeFiles[active.dataset.code] : "";
+    if (!text) return showToast("Wait for the source file to load", "warn");
+    try {
+      await navigator.clipboard.writeText(text);
+      byId("code-copy").textContent = "COPIED";
+      setTimeout(function () { byId("code-copy").textContent = "COPY"; }, 1200);
+    } catch (error) {
+      showToast("Clipboard access was blocked", "warn");
+    }
+  });
 
   var menuButton = byId("menu-toggle");
   if (menuButton) menuButton.addEventListener("click", function () {

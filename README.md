@@ -10,8 +10,12 @@ the realized token-account deltas violate the intent.
 ## Protocol
 
 - programs/jolt-guard: native Rust Solana program.
-- sdk: Solana Kit instruction builder and receipt decoder.
+- sdk/src/codec.ts: canonical intent commitment and JOLT V1 wire encoder.
+- sdk/src/instruction.ts: ordered account assembly and privilege deduplication.
+- sdk/src/adapters/jupiter.ts: validated Jupiter v6 route adapter.
+- sdk/src/receipt.ts: JRC1 settlement receipt decoder.
 - JOLT_GUARD.md: wire format, accounts and policy-hook interface.
+- docs: architecture, integration, security and operations guides.
 
 The program supports optional PRE and POST policy hooks. A policy program can
 reject a route based on its own payload and accounts. Successful execution
@@ -37,6 +41,14 @@ Build and test the SDK with:
     cd sdk
     npm ci
     npm test
+
+Check all public routes and repository-browser controls with:
+
+    npm run test:site
+
+Verify the live devnet program account and deployed SBF digest with:
+
+    npm run verify:devnet
 
 Test the on-chain program with:
 

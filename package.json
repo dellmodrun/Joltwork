@@ -2,7 +2,10 @@
   "name": "joltwork-web",
   "private": true,
   "scripts": {
-    "build:client": "node build-client.mjs"
+    "build:client": "node build-client.mjs",
+    "build:site": "python bundle.py",
+    "test:site": "node scripts/check-site.mjs",
+    "verify:devnet": "node scripts/verify-deployment.mjs"
   },
   "dependencies": {
     "@pump-fun/pump-sdk": "4.1.0",

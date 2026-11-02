@@ -404,27 +404,70 @@
   });
 
   var sourceBase = "https://raw.githubusercontent.com/dellmodrun/Joltwork/main/";
+  var githubBase = "https://github.com/dellmodrun/Joltwork/blob/main/";
   var codeFiles = {};
   var codePaths = {
     program: "programs/jolt-guard/src/lib.rs",
     cargo: "programs/jolt-guard/Cargo.toml",
-    sdk: "sdk/src/index.ts",
-    tests: "sdk/test/codec.test.js",
-    package: "sdk/package.json",
+    sdkIndex: "sdk/src/index.ts",
+    sdkConstants: "sdk/src/constants.ts",
+    sdkTypes: "sdk/src/types.ts",
+    sdkCodec: "sdk/src/codec.ts",
+    sdkInstruction: "sdk/src/instruction.ts",
+    sdkReceipt: "sdk/src/receipt.ts",
+    jupiter: "sdk/src/adapters/jupiter.ts",
+    codecTest: "sdk/test/codec.test.js",
+    instructionTest: "sdk/test/instruction.test.js",
+    jupiterTest: "sdk/test/jupiter.test.js",
+    receiptTest: "sdk/test/receipt.test.js",
     launchClient: "launch-client.ts",
-    webPackage: "package.json",
+    appClient: "app.js",
     buildClient: "build-client.mjs",
-    spec: "JOLT_GUARD.md",
+    webPackage: "package.json",
+    sdkPackage: "sdk/package.json",
     deployment: "deployments/devnet.json",
+    verifyDeployment: "scripts/verify-deployment.mjs",
+    checkSite: "scripts/check-site.mjs",
+    protocolCi: ".github/workflows/protocol-ci.yml",
+    sbfCi: ".github/workflows/sbf-build.yml",
+    koraCi: ".github/workflows/kora-deploy-tool.yml",
     readme: "README.md",
-    ci: ".github/workflows/protocol-ci.yml"
+    architecture: "docs/ARCHITECTURE.md",
+    integration: "docs/INTEGRATION.md",
+    security: "docs/SECURITY.md",
+    operations: "docs/OPERATIONS.md",
+    spec: "JOLT_GUARD.md",
+    contributing: "CONTRIBUTING.md"
   };
+
+  function renderSource(text) {
+    var view = byId("code-view");
+    if (!view) return;
+    view.textContent = "";
+    var list = document.createElement("ol");
+    list.className = "code-lines";
+    text.replace(/\r\n/g, "\n").split("\n").forEach(function (line) {
+      var item = document.createElement("li");
+      var code = document.createElement("code");
+      code.textContent = line || " ";
+      item.appendChild(code);
+      list.appendChild(item);
+    });
+    view.appendChild(list);
+  }
+
+  function setCodeLinks(path) {
+    if (byId("code-raw")) byId("code-raw").href = sourceBase + path;
+    if (byId("code-github")) byId("code-github").href = githubBase + path;
+  }
 
   async function showCode(key, button) {
     if (!byId("code-view") || !byId("code-path")) return;
     var path = codePaths[key];
     byId("code-path").textContent = path;
     byId("code-view").textContent = "loading complete source…";
+    if (byId("code-meta")) byId("code-meta").textContent = "loading source…";
+    setCodeLinks(path);
     document.querySelectorAll("[data-code]").forEach(function (item) {
       item.classList.toggle("active", item === button);
     });
@@ -434,9 +477,14 @@
         if (!response.ok) throw new Error("source request failed");
         codeFiles[key] = await response.text();
       }
-      byId("code-view").textContent = codeFiles[key];
+      var text = codeFiles[key];
+      renderSource(text);
+      var lines = text.replace(/\r\n/g, "\n").split("\n").length;
+      var bytes = new Blob([text]).size;
+      if (byId("code-meta")) byId("code-meta").textContent = lines + " lines · " + bytes.toLocaleString() + " bytes · main";
     } catch (error) {
       byId("code-view").textContent = "The live source could not be loaded in this browser.\n\nOpen the same file in GitHub:\nhttps://github.com/dellmodrun/Joltwork/blob/main/" + path;
+      if (byId("code-meta")) byId("code-meta").textContent = "source unavailable · open GitHub";
     }
   }
 
@@ -446,6 +494,34 @@
     });
   });
   if (byId("code-view")) showCode("program", document.querySelector('[data-code="program"]'));
+
+  if (byId("code-filter")) byId("code-filter").addEventListener("input", function () {
+    var query = byId("code-filter").value.trim().toLowerCase();
+    var visible = 0;
+    document.querySelectorAll(".code-group").forEach(function (group) {
+      var groupVisible = 0;
+      group.querySelectorAll("[data-code]").forEach(function (button) {
+        var match = !query || button.textContent.toLowerCase().includes(query);
+        button.hidden = !match;
+        if (match) { groupVisible += 1; visible += 1; }
+      });
+      group.hidden = groupVisible === 0;
+    });
+    if (byId("code-file-count")) byId("code-file-count").textContent = visible + (visible === 1 ? " FILE" : " FILES");
+  });
+
+  if (byId("code-copy")) byId("code-copy").addEventListener("click", async function () {
+    var active = document.querySelector("[data-code].active");
+    var text = active ? codeFiles[active.dataset.code] : "";
+    if (!text) return showToast("Wait for the source file to load", "warn");
+    try {
+      await navigator.clipboard.writeText(text);
+      byId("code-copy").textContent = "COPIED";
+      setTimeout(function () { byId("code-copy").textContent = "COPY"; }, 1200);
+    } catch (error) {
+      showToast("Clipboard access was blocked", "warn");
+    }
+  });
 
   var menuButton = byId("menu-toggle");
   if (menuButton) menuButton.addEventListener("click", function () {

@@ -118,29 +118,69 @@
 </span>
 <span>TYPESCRIPT SDK<b>IMPLEMENTED</b>
 </span>
-<span>RUST + SDK TESTS<b>11 PASSING</b>
+<span>RUST + SDK TESTS<b>14 PASSING</b>
 </span>
 <span>DEVNET PROGRAM<b>3gAqr1U9…K2knfVG</b>
 </span>
 </div>
+<div class="repo-health" aria-label="Repository summary">
+<span><b>01</b>ON-CHAIN PROGRAM</span>
+<span><b>06</b>SDK MODULES</span>
+<span><b>04</b>TEST SUITES</span>
+<span><b>05</b>ENGINEERING DOCS</span>
+<span><b>03</b>CI WORKFLOWS</span>
+</div>
 <div class="code-browser">
-<aside>
+<aside class="code-sidebar">
+<label class="code-search"><span>FILTER FILES</span><input id="code-filter" type="search" placeholder="type a path…" autocomplete="off"></label>
+<div id="code-tree" class="code-tree">
+<div class="code-group"><b>ON-CHAIN</b>
 <button class="active" data-code="program">programs/jolt-guard/src/lib.rs</button>
-<button data-code="cargo">programs/jolt-guard/Cargo.toml</button>
-<button data-code="sdk">sdk/src/index.ts</button>
-<button data-code="tests">sdk/test/codec.test.js</button>
-<button data-code="package">sdk/package.json</button>
+<button data-code="cargo">programs/jolt-guard/Cargo.toml</button></div>
+<div class="code-group"><b>SDK / CORE</b>
+<button data-code="sdkIndex">sdk/src/index.ts</button>
+<button data-code="sdkConstants">sdk/src/constants.ts</button>
+<button data-code="sdkTypes">sdk/src/types.ts</button>
+<button data-code="sdkCodec">sdk/src/codec.ts</button>
+<button data-code="sdkInstruction">sdk/src/instruction.ts</button>
+<button data-code="sdkReceipt">sdk/src/receipt.ts</button></div>
+<div class="code-group"><b>SDK / ADAPTERS</b>
+<button data-code="jupiter">sdk/src/adapters/jupiter.ts</button></div>
+<div class="code-group"><b>TESTS</b>
+<button data-code="codecTest">sdk/test/codec.test.js</button>
+<button data-code="instructionTest">sdk/test/instruction.test.js</button>
+<button data-code="jupiterTest">sdk/test/jupiter.test.js</button>
+<button data-code="receiptTest">sdk/test/receipt.test.js</button></div>
+<div class="code-group"><b>WEB CLIENTS</b>
 <button data-code="launchClient">launch-client.ts</button>
-<button data-code="webPackage">package.json</button>
+<button data-code="appClient">app.js</button>
 <button data-code="buildClient">build-client.mjs</button>
-<button data-code="spec">JOLT_GUARD.md</button>
+<button data-code="webPackage">package.json</button>
+<button data-code="sdkPackage">sdk/package.json</button></div>
+<div class="code-group"><b>DEPLOYMENT</b>
 <button data-code="deployment">deployments/devnet.json</button>
+<button data-code="verifyDeployment">scripts/verify-deployment.mjs</button>
+<button data-code="checkSite">scripts/check-site.mjs</button>
+<button data-code="protocolCi">.github/workflows/protocol-ci.yml</button>
+<button data-code="sbfCi">.github/workflows/sbf-build.yml</button>
+<button data-code="koraCi">.github/workflows/kora-deploy-tool.yml</button></div>
+<div class="code-group"><b>DOCUMENTATION</b>
 <button data-code="readme">README.md</button>
-<button data-code="ci">.github/workflows/protocol-ci.yml</button>
+<button data-code="architecture">docs/ARCHITECTURE.md</button>
+<button data-code="integration">docs/INTEGRATION.md</button>
+<button data-code="security">docs/SECURITY.md</button>
+<button data-code="operations">docs/OPERATIONS.md</button>
+<button data-code="spec">JOLT_GUARD.md</button>
+<button data-code="contributing">CONTRIBUTING.md</button></div>
+</div>
+<div class="code-tree-foot"><span id="code-file-count">31 FILES</span><a href="https://github.com/dellmodrun/Joltwork" target="_blank" rel="noreferrer">FULL TREE ↗</a></div>
 </aside>
-<div>
-<div id="code-path" class="code-path">programs/jolt-guard/src/lib.rs</div>
-<pre id="code-view">loading complete source…</pre>
+<div class="code-panel">
+<div class="code-toolbar">
+<div><span id="code-path" class="code-path">programs/jolt-guard/src/lib.rs</span><small id="code-meta">loading source…</small></div>
+<div class="code-tools"><button id="code-copy" type="button">COPY</button><a id="code-raw" target="_blank" rel="noreferrer">RAW ↗</a><a id="code-github" target="_blank" rel="noreferrer">GITHUB ↗</a></div>
+</div>
+<div id="code-view" class="code-view" aria-live="polite"><div class="code-loading">loading complete source…</div></div>
 </div>
 </div>
 <div class="developer-links">
@@ -176,13 +216,13 @@
 </tr>
 <tr>
 <td>sdk/src</td>
-<td>account deduplication, Jupiter validation, encoding, receipt decoding</td>
+<td>typed constraints, canonical encoding, account assembly, adapters and receipt decoding</td>
 <td>wallets / apps</td>
 <td>implemented</td>
 </tr>
 <tr>
 <td>sdk/test</td>
-<td>codec and deterministic-format coverage</td>
+<td>separate codec, instruction, Jupiter and receipt suites</td>
 <td>CI</td>
 <td>active</td>
 </tr>
@@ -199,6 +239,8 @@
 <td>contributors</td>
 <td>active</td>
 </tr>
+<tr><td>docs</td><td>architecture, integration, security and operations runbooks</td><td>integrators / operators</td><td>maintained</td></tr>
+<tr><td>scripts</td><td>site contract and deployed-byte verification</td><td>release engineering</td><td>active</td></tr>
 </tbody>
 </table>
 </section>
