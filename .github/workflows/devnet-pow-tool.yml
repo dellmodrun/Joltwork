@@ -2,12 +2,26 @@ name: build devnet pow tool
 
 on:
   workflow_dispatch:
+    inputs:
+      task:
+        description: "Build the PoW client or request the initial devnet fee float"
+        required: true
+        default: build
+        type: choice
+        options:
+          - build
+          - fund
+      recipient:
+        description: "Public devnet address (fund task only)"
+        required: false
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   build:
+    if: inputs.task == 'build'
     runs-on: windows-latest
     steps:
       - uses: dtolnay/rust-toolchain@stable
@@ -19,3 +33,35 @@ jobs:
           name: devnet-pow-windows
           path: tool/bin/devnet-pow.exe
           if-no-files-found: error
+
+  fund:
+    if: inputs.task == 'fund'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request the official programmatic devnet airdrop
+        env:
+          RECIPIENT: ${{ inputs.recipient }}
+        run: |
+          node <<'NODE'
+          const recipient = process.env.RECIPIENT;
+          if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient || "")) {
+            throw new Error("A valid public Solana address is required");
+          }
+          const body = {
+            jsonrpc: "2.0",
+            id: 1,
+            method: "requestAirdrop",
+            params: [recipient, 10_000_000, { commitment: "confirmed" }],
+          };
+          const response = await fetch("https://api.devnet.solana.com", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          const text = await response.text();
+          console.log(`HTTP ${response.status}`);
+          console.log(text);
+          if (!response.ok) process.exit(1);
+          const result = JSON.parse(text);
+          if (!result.result) process.exit(1);
+          NODE
