@@ -23,47 +23,201 @@
     return value;
   }
 
-  function provider() {
-    return (window.phantom && window.phantom.solana) || window.solana || null;
+  function solanaAddress(value, field) {
+    if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value)) throw new Error(field + " must be a valid base58 Solana address");
+    return value;
   }
 
-  var walletButton = byId("connect-wallet");
-  if (walletButton && walletAddress) {
-    var savedLabel = walletButton.querySelector(".rail-label");
-    if (savedLabel) savedLabel.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
+  function metadataUri(value) {
+    var parsed;
+    try { parsed = new URL(value); } catch (error) { throw new Error("metadata uri must be a valid URL"); }
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("metadata uri must use http or https");
+    return parsed.href;
   }
-  if (walletButton) walletButton.addEventListener("click", async function () {
-    var button = this;
-    var wallet = provider();
-    if (!wallet || typeof wallet.connect !== "function") {
-      var missingLabel = button.querySelector(".rail-label");
-      if (missingLabel) missingLabel.textContent = "WALLET NOT DETECTED";
-      return;
+
+  var activeProvider = null;
+  var boundProviders = [];
+  var walletButton = byId("connect-wallet");
+
+  function shortAddress(address) {
+    return address ? address.slice(0, 5) + "…" + address.slice(-5) : "NOT CONNECTED";
+  }
+
+  function showToast(message, tone) {
+    var toast = byId("site-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "site-toast";
+      toast.className = "site-toast";
+      toast.setAttribute("role", "status");
+      document.body.appendChild(toast);
     }
+    toast.textContent = message;
+    toast.className = "site-toast visible " + (tone || "");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(function () { toast.classList.remove("visible"); }, 2600);
+  }
+
+  function setWalletAddress(address, providerObject) {
+    walletAddress = address ? String(address) : null;
+    activeProvider = providerObject || null;
+    if (walletAddress) sessionStorage.setItem("joltwork-wallet", walletAddress);
+    else sessionStorage.removeItem("joltwork-wallet");
+    var label = walletButton && walletButton.querySelector(".rail-label");
+    if (label) label.textContent = walletAddress ? shortAddress(walletAddress) : "CONNECT WALLET";
+    document.querySelectorAll("[data-wallet-state]").forEach(function (item) {
+      item.textContent = walletAddress ? shortAddress(walletAddress) : "not connected";
+      item.classList.toggle("connected", Boolean(walletAddress));
+    });
+    var disconnect = byId("wallet-disconnect");
+    if (disconnect) disconnect.hidden = !walletAddress;
+  }
+
+  function detectedWallets() {
+    var wallets = [];
+    var seen = [];
+    function add(name, wallet, install) {
+      if (wallet && typeof wallet.connect === "function" && seen.indexOf(wallet) === -1) {
+        seen.push(wallet);
+        wallets.push({ name: name, provider: wallet, install: install, detected: true });
+      } else if (!wallet) wallets.push({ name: name, provider: null, install: install, detected: false });
+    }
+    add("Phantom", window.phantom && window.phantom.solana, "https://phantom.com/download");
+    add("Solflare", window.solflare, "https://www.solflare.com/download/");
+    add("Backpack", (window.backpack && window.backpack.solana) || (window.xnft && window.xnft.solana), "https://backpack.app/download");
+    if (window.solana && seen.indexOf(window.solana) === -1) add("Solana Wallet", window.solana, "https://solana.com/ecosystem/explore?categories=wallet");
+    return wallets;
+  }
+
+  function bindWalletEvents(wallet) {
+    if (!wallet || typeof wallet.on !== "function" || boundProviders.indexOf(wallet) !== -1) return;
+    boundProviders.push(wallet);
+    wallet.on("accountChanged", function (publicKey) {
+      if (publicKey) setWalletAddress(publicKey, wallet);
+      else setWalletAddress(null, null);
+    });
+    wallet.on("disconnect", function () { setWalletAddress(null, null); });
+  }
+
+  function ensureWalletModal() {
+    if (byId("wallet-modal")) return;
+    var modal = document.createElement("div");
+    modal.id = "wallet-modal";
+    modal.className = "wallet-modal";
+    modal.hidden = true;
+    modal.innerHTML = '<button class="wallet-backdrop" data-wallet-close aria-label="Close wallet dialog"></button>' +
+      '<section class="wallet-dialog" role="dialog" aria-modal="true" aria-labelledby="wallet-title">' +
+      '<div class="wallet-dialog-head"><div><span>SOLANA / SIGNING AUTHORITY</span><h2 id="wallet-title">Connect a wallet</h2></div><button class="wallet-close" data-wallet-close aria-label="Close">×</button></div>' +
+      '<p>Select an injected wallet. Joltwork never requests a seed phrase or private key.</p>' +
+      '<div id="wallet-options" class="wallet-options"></div>' +
+      '<button id="wallet-disconnect" class="button wallet-disconnect" type="button">disconnect current wallet</button>' +
+      '<small>Only install wallets from their official websites. Review every transaction before signing.</small>' +
+      '</section>';
+    document.body.appendChild(modal);
+    modal.querySelectorAll("[data-wallet-close]").forEach(function (item) {
+      item.addEventListener("click", closeWalletModal);
+    });
+    byId("wallet-disconnect").addEventListener("click", disconnectWallet);
+  }
+
+  function renderWalletOptions() {
+    var options = byId("wallet-options");
+    if (!options) return;
+    options.innerHTML = "";
+    detectedWallets().forEach(function (wallet) {
+      var item;
+      if (wallet.detected) {
+        item = document.createElement("button");
+        item.type = "button";
+        item.className = "wallet-option";
+        item.innerHTML = '<span class="wallet-badge">' + wallet.name.charAt(0) + '</span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
+        item.addEventListener("click", function () { connectWallet(wallet); });
+      } else {
+        item = document.createElement("a");
+        item.className = "wallet-option muted";
+        item.href = wallet.install;
+        item.target = "_blank";
+        item.rel = "noreferrer";
+        item.innerHTML = '<span class="wallet-badge">' + wallet.name.charAt(0) + '</span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
+      }
+      options.appendChild(item);
+    });
+    byId("wallet-disconnect").hidden = !walletAddress;
+  }
+
+  function openWalletModal() {
+    ensureWalletModal();
+    renderWalletOptions();
+    byId("wallet-modal").hidden = false;
+    document.body.classList.add("modal-open");
+  }
+
+  function closeWalletModal() {
+    var modal = byId("wallet-modal");
+    if (modal) modal.hidden = true;
+    document.body.classList.remove("modal-open");
+  }
+
+  async function connectWallet(wallet) {
     try {
-      var connection = await wallet.connect();
-      walletAddress = String(connection.publicKey || wallet.publicKey);
-      sessionStorage.setItem("joltwork-wallet", walletAddress);
-      var label = button.querySelector(".rail-label");
-      if (label) label.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
+      var connection = await wallet.provider.connect();
+      var publicKey = connection && connection.publicKey || wallet.provider.publicKey;
+      if (!publicKey) throw new Error("Wallet returned no public key");
+      bindWalletEvents(wallet.provider);
+      setWalletAddress(publicKey, wallet.provider);
+      closeWalletModal();
+      showToast(wallet.name + " connected · " + shortAddress(String(publicKey)), "success");
     } catch (error) {
-      var declinedLabel = button.querySelector(".rail-label");
-      if (declinedLabel) declinedLabel.textContent = "CONNECTION DECLINED";
+      showToast(error && error.message ? error.message : "Wallet connection declined", "error");
     }
+  }
+
+  async function disconnectWallet() {
+    try {
+      if (activeProvider && typeof activeProvider.disconnect === "function") await activeProvider.disconnect();
+    } catch (error) { /* the local session must still be cleared */ }
+    setWalletAddress(null, null);
+    closeWalletModal();
+    showToast("Wallet disconnected");
+  }
+
+  if (walletButton) walletButton.addEventListener("click", openWalletModal);
+  document.querySelectorAll("[data-wallet-connect]").forEach(function (button) {
+    button.addEventListener("click", openWalletModal);
   });
+  setWalletAddress(walletAddress, null);
 
   var launchForm = byId("launch-form");
   if (launchForm) launchForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     var output = byId("launch-output");
+    var name = byId("coin-name").value.trim();
+    var symbol = byId("coin-symbol").value.trim().toUpperCase();
+    if (!name || name.length > 32) {
+      output.textContent = "error · coin name must contain 1–32 characters";
+      showToast("Check the coin name", "error");
+      return;
+    }
+    if (!/^[A-Z0-9_$.-]{1,13}$/.test(symbol)) {
+      output.textContent = "error · symbol must contain 1–13 supported characters";
+      showToast("Check the token symbol", "error");
+      return;
+    }
+    var uri;
+    try { uri = metadataUri(byId("coin-uri").value.trim()); }
+    catch (error) {
+      output.textContent = "error · " + error.message;
+      showToast(error.message, "error");
+      return;
+    }
     var manifest = {
       format: "JLM1",
       network: "solana-mainnet-beta",
       creator: walletAddress || "wallet-not-connected",
       coin: {
-        name: byId("coin-name").value.trim(),
-        symbol: byId("coin-symbol").value.trim().toUpperCase(),
-        metadataUri: byId("coin-uri").value.trim(),
+        name: name,
+        symbol: symbol,
+        metadataUri: uri,
         tokenProgram: "Token-2022",
         decimals: 6
       },
@@ -77,10 +231,6 @@
         enforcement: "jolt-guard-route-wrapper"
       }
     };
-    if (!manifest.coin.name || !manifest.coin.symbol || !manifest.coin.metadataUri) {
-      output.textContent = "error · name, symbol and metadata uri are required";
-      return;
-    }
     var canonical = JSON.stringify(manifest);
     output.textContent = JSON.stringify({
       launchManifestId: await sha256(canonical),
@@ -93,6 +243,7 @@
       ],
       signingAuthority: walletAddress || "connect wallet before transaction assembly"
     }, null, 2);
+    showToast("JLM1 launch manifest compiled", "success");
   });
 
   var intentForm = byId("intent-form");
@@ -103,7 +254,7 @@
       var manifest = {
         protocol: "jolt-guard-v1",
         authority: walletAddress || "wallet-not-connected",
-        routeProgram: byId("intent-route").value.trim(),
+        routeProgram: solanaAddress(byId("intent-route").value.trim(), "route program"),
         maxInput: unsignedInteger(byId("intent-input").value.trim(), "maximum input"),
         minOutput: unsignedInteger(byId("intent-output-min").value.trim(), "minimum output"),
         expiresAtSlot: unsignedInteger(byId("intent-expiry").value.trim(), "expiry slot"),
@@ -120,8 +271,10 @@
           "return JRC1 receipt or revert transaction"
         ]
       }, null, 2);
+      showToast("JOLT V1 intent compiled", "success");
     } catch (error) {
       output.textContent = "error · " + error.message;
+      showToast(error.message, "error");
     }
   });
 
@@ -132,6 +285,7 @@
         await navigator.clipboard.writeText(text);
         var previous = button.textContent;
         button.textContent = "copied";
+        showToast("Copied to clipboard", "success");
         setTimeout(function () { button.textContent = previous; }, 1200);
       } catch (error) {
         button.textContent = "select text";
@@ -149,6 +303,7 @@
       link.download = button.dataset.filename || "joltwork-manifest.json";
       link.click();
       URL.revokeObjectURL(link.href);
+      showToast("JSON manifest downloaded", "success");
     });
   });
 
@@ -250,5 +405,12 @@
 
   document.querySelectorAll(".site-rail a").forEach(function (link) {
     link.addEventListener("click", function () { document.body.classList.remove("menu-open"); });
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeWalletModal();
+      document.body.classList.remove("menu-open");
+    }
   });
 }());

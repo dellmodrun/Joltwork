@@ -42,9 +42,15 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 .ca-box{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:16px;padding:18px 22px;border:1px solid var(--line);background:var(--panel)}.ca-box div{display:flex;align-items:center;gap:18px}.ca-box span{color:var(--muted);font:8px "JetBrains Mono",monospace}.ca-box strong{font:12px "JetBrains Mono",monospace;font-weight:400}.ca-box p{max-width:520px;margin:0;color:var(--muted);text-align:right;font:8px/1.6 "JetBrains Mono",monospace}
 .dev-letter{margin-top:20px;padding:46px 52px;border:1px solid var(--line);background:var(--panel)}.dev-letter h2{max-width:780px;margin:18px 0 28px;font:40px/1.08 "EB Garamond",serif;font-weight:400}.dev-letter>p{max-width:900px;margin:0 0 18px;color:#d6d2c9;font-size:18px;line-height:1.78}.dev-letter .dev-signature{margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:16px}.dev-signature span{color:var(--muted);font:8px "JetBrains Mono",monospace}
 .prose-block{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin:0 0 28px;padding:24px;border:1px solid var(--line-soft);background:var(--panel-2)}.prose-block p{margin:0;color:#d0ccc3;font-size:16px;line-height:1.75}.prose-block.compact{display:block}.prose-block.compact p{max-width:940px}.prose-block.after-grid{margin:24px 0 0}.source-links{display:grid;grid-template-columns:1fr 1fr;gap:12px}.source-links a{display:block;padding:22px;border:1px solid var(--line);background:var(--panel-2);text-decoration:none}.source-links a:hover{background:#30302d}.source-links span,.source-links code{display:block;color:var(--muted);font:8px/1.5 "JetBrains Mono",monospace}.source-links strong{display:block;margin:14px 0 8px;font:22px "EB Garamond",serif;font-weight:400}.source-links code{overflow-wrap:anywhere;color:var(--good)}
+.rail-icon svg.fill-icon{fill:currentColor;stroke:none}
+:where(a,button,input,select,summary):focus-visible{outline:1px solid var(--text);outline-offset:3px}
+.wallet-context{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:14px;margin-top:24px;padding:13px 16px;border:1px solid var(--line);background:var(--panel-2);font:8px "JetBrains Mono",monospace}.wallet-context span{color:var(--muted)}.wallet-context b{font-weight:400}.wallet-context b.connected{color:var(--good)}.wallet-context small{justify-self:end;color:var(--muted);font:7px "JetBrains Mono",monospace}
+.wallet-modal[hidden]{display:none}.wallet-modal{position:fixed;z-index:100;inset:0;display:grid;place-items:center;padding:20px}.wallet-backdrop{position:absolute;inset:0;border:0;background:#111d;cursor:default}.wallet-dialog{position:relative;width:min(460px,100%);padding:26px;border:1px solid var(--line);background:var(--panel);box-shadow:0 24px 80px #0009}.wallet-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.wallet-dialog-head span{color:var(--muted);font:7px "JetBrains Mono",monospace}.wallet-dialog h2{margin:10px 0 0;font:30px "EB Garamond",serif;font-weight:400}.wallet-dialog>p{margin:18px 0;color:#cecac1;font-size:15px;line-height:1.6}.wallet-close{border:0;background:transparent;color:var(--muted);cursor:pointer;font:24px/1 sans-serif}.wallet-options{display:grid;gap:8px}.wallet-option{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;width:100%;padding:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);text-align:left;text-decoration:none;cursor:pointer}.wallet-option:hover{background:#333330}.wallet-option.muted{color:var(--muted)}.wallet-badge{display:grid;width:34px;height:34px;place-items:center;border:1px solid var(--line);font:10px "JetBrains Mono",monospace}.wallet-option b,.wallet-option small{display:block}.wallet-option b{font:9px "JetBrains Mono",monospace;font-weight:400}.wallet-option small{margin-top:5px;color:var(--muted);font:7px "JetBrains Mono",monospace}.wallet-option em{color:var(--good);font:7px "JetBrains Mono",monospace;font-style:normal}.wallet-disconnect{width:100%;margin-top:12px}.wallet-dialog>small{display:block;margin-top:18px;color:var(--muted);font:7px/1.6 "JetBrains Mono",monospace}.modal-open{overflow:hidden}
+.site-toast{position:fixed;z-index:120;right:22px;bottom:22px;max-width:min(360px,calc(100% - 44px));padding:13px 16px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s ease;font:8px/1.5 "JetBrains Mono",monospace}.site-toast.visible{opacity:1;transform:translateY(0)}.site-toast.success{border-color:#66806b;color:var(--good)}.site-toast.error{border-color:#8b5f5f;color:#e4baba}
 @media(min-width:901px){.app-page{transition:margin-left .28s cubic-bezier(.4,0,.2,1),width .28s cubic-bezier(.4,0,.2,1)}.site-rail:hover~.app-page{width:min(1232px,calc(100% - var(--rail-open) - 72px));margin-left:calc(var(--rail-open) + max(36px,(100vw - var(--rail-open) - 1232px)/2))}}
 @media(max-width:900px){.step-grid{grid-template-columns:1fr 1fr}.step-grid article:nth-child(2){border-right:0}.step-grid article:nth-child(-n+2){border-bottom:1px solid var(--line)}.fact-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:680px){.section-block{padding:22px}.section-head{display:block}.section-head p{margin-top:12px}.step-grid,.fact-grid,.split-panel,.prose-block,.source-links{grid-template-columns:1fr}.step-grid article{border-right:0;border-bottom:1px solid var(--line)}.step-grid article:last-child{border-bottom:0}.split-panel>article+article{border-left:0;border-top:1px solid var(--line)}.integration-table{font-size:7px}.integration-table th,.integration-table td{padding:8px 6px}.cta-panel{display:block}.cta-panel .button{margin-top:20px}.ca-box{display:block}.ca-box div{justify-content:space-between}.ca-box p{margin-top:12px;text-align:left}.dev-letter{padding:30px 24px}.dev-letter h2{font-size:34px}.dev-letter>p{font-size:16px}.prose-block{padding:18px}.prose-block p{font-size:15px}}
+@media(max-width:680px){.wallet-context{grid-template-columns:1fr auto}.wallet-context small{grid-column:1/-1;justify-self:start}.wallet-dialog{padding:22px}.site-toast{right:12px;bottom:12px}}
 </style></head>
 <body>
   <button id="menu-toggle" class="menu-toggle" aria-label="Open navigation" aria-expanded="false">≡</button>
@@ -59,9 +65,9 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
       <a href="https://arxiv.org/pdf/2610.36682" target="_blank" rel="noreferrer"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/></svg></span><span class="rail-label">RESEARCH PAPER</span></a>
     </nav>
     <div class="rail-bottom">
-      <a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer"><span class="rail-icon">X</span><span class="rail-label">FOLLOW ON X</span></a>
+      <a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer"><span class="rail-icon"><svg class="fill-icon" viewBox="0 0 24 24"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.1-8.1L3.1 2h6.3l4.4 5.8L18.9 2Zm-1.1 17.9h1.7L8.5 4H6.7l11.1 15.9Z"/></svg></span><span class="rail-label">FOLLOW ON X</span></a>
       <button id="connect-wallet" class="rail-action"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 6h16v14H3zM3 6l3-3h12v3M15 11h6v5h-6z"/></svg></span><span class="rail-label">CONNECT WALLET</span></button>
-      <a class="rail-action primary" href="./launch/"><span class="rail-icon">↗</span><span class="rail-label">LAUNCH TOKEN</span></a>
+      <a class="rail-action primary" href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M14 4c3-2 6-2 6-2s0 3-2 6l-5 5-4-4 5-5ZM9 9l-4 1-3 3 6 1m5-1 1 6 3-3 1-4M7 17c-2 0-3 1-3 3 2 0 3-1 3-3Z"/></svg></span><span class="rail-label">LAUNCH COIN</span></a>
     </div>
   </div></aside>
   <main class="app-page">
@@ -114,47 +120,201 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
     return value;
   }
 
-  function provider() {
-    return (window.phantom && window.phantom.solana) || window.solana || null;
+  function solanaAddress(value, field) {
+    if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value)) throw new Error(field + " must be a valid base58 Solana address");
+    return value;
   }
 
-  var walletButton = byId("connect-wallet");
-  if (walletButton && walletAddress) {
-    var savedLabel = walletButton.querySelector(".rail-label");
-    if (savedLabel) savedLabel.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
+  function metadataUri(value) {
+    var parsed;
+    try { parsed = new URL(value); } catch (error) { throw new Error("metadata uri must be a valid URL"); }
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("metadata uri must use http or https");
+    return parsed.href;
   }
-  if (walletButton) walletButton.addEventListener("click", async function () {
-    var button = this;
-    var wallet = provider();
-    if (!wallet || typeof wallet.connect !== "function") {
-      var missingLabel = button.querySelector(".rail-label");
-      if (missingLabel) missingLabel.textContent = "WALLET NOT DETECTED";
-      return;
+
+  var activeProvider = null;
+  var boundProviders = [];
+  var walletButton = byId("connect-wallet");
+
+  function shortAddress(address) {
+    return address ? address.slice(0, 5) + "…" + address.slice(-5) : "NOT CONNECTED";
+  }
+
+  function showToast(message, tone) {
+    var toast = byId("site-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "site-toast";
+      toast.className = "site-toast";
+      toast.setAttribute("role", "status");
+      document.body.appendChild(toast);
     }
+    toast.textContent = message;
+    toast.className = "site-toast visible " + (tone || "");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(function () { toast.classList.remove("visible"); }, 2600);
+  }
+
+  function setWalletAddress(address, providerObject) {
+    walletAddress = address ? String(address) : null;
+    activeProvider = providerObject || null;
+    if (walletAddress) sessionStorage.setItem("joltwork-wallet", walletAddress);
+    else sessionStorage.removeItem("joltwork-wallet");
+    var label = walletButton && walletButton.querySelector(".rail-label");
+    if (label) label.textContent = walletAddress ? shortAddress(walletAddress) : "CONNECT WALLET";
+    document.querySelectorAll("[data-wallet-state]").forEach(function (item) {
+      item.textContent = walletAddress ? shortAddress(walletAddress) : "not connected";
+      item.classList.toggle("connected", Boolean(walletAddress));
+    });
+    var disconnect = byId("wallet-disconnect");
+    if (disconnect) disconnect.hidden = !walletAddress;
+  }
+
+  function detectedWallets() {
+    var wallets = [];
+    var seen = [];
+    function add(name, wallet, install) {
+      if (wallet && typeof wallet.connect === "function" && seen.indexOf(wallet) === -1) {
+        seen.push(wallet);
+        wallets.push({ name: name, provider: wallet, install: install, detected: true });
+      } else if (!wallet) wallets.push({ name: name, provider: null, install: install, detected: false });
+    }
+    add("Phantom", window.phantom && window.phantom.solana, "https://phantom.com/download");
+    add("Solflare", window.solflare, "https://www.solflare.com/download/");
+    add("Backpack", (window.backpack && window.backpack.solana) || (window.xnft && window.xnft.solana), "https://backpack.app/download");
+    if (window.solana && seen.indexOf(window.solana) === -1) add("Solana Wallet", window.solana, "https://solana.com/ecosystem/explore?categories=wallet");
+    return wallets;
+  }
+
+  function bindWalletEvents(wallet) {
+    if (!wallet || typeof wallet.on !== "function" || boundProviders.indexOf(wallet) !== -1) return;
+    boundProviders.push(wallet);
+    wallet.on("accountChanged", function (publicKey) {
+      if (publicKey) setWalletAddress(publicKey, wallet);
+      else setWalletAddress(null, null);
+    });
+    wallet.on("disconnect", function () { setWalletAddress(null, null); });
+  }
+
+  function ensureWalletModal() {
+    if (byId("wallet-modal")) return;
+    var modal = document.createElement("div");
+    modal.id = "wallet-modal";
+    modal.className = "wallet-modal";
+    modal.hidden = true;
+    modal.innerHTML = '<button class="wallet-backdrop" data-wallet-close aria-label="Close wallet dialog"></button>' +
+      '<section class="wallet-dialog" role="dialog" aria-modal="true" aria-labelledby="wallet-title">' +
+      '<div class="wallet-dialog-head"><div><span>SOLANA / SIGNING AUTHORITY</span><h2 id="wallet-title">Connect a wallet</h2></div><button class="wallet-close" data-wallet-close aria-label="Close">×</button></div>' +
+      '<p>Select an injected wallet. Joltwork never requests a seed phrase or private key.</p>' +
+      '<div id="wallet-options" class="wallet-options"></div>' +
+      '<button id="wallet-disconnect" class="button wallet-disconnect" type="button">disconnect current wallet</button>' +
+      '<small>Only install wallets from their official websites. Review every transaction before signing.</small>' +
+      '</section>';
+    document.body.appendChild(modal);
+    modal.querySelectorAll("[data-wallet-close]").forEach(function (item) {
+      item.addEventListener("click", closeWalletModal);
+    });
+    byId("wallet-disconnect").addEventListener("click", disconnectWallet);
+  }
+
+  function renderWalletOptions() {
+    var options = byId("wallet-options");
+    if (!options) return;
+    options.innerHTML = "";
+    detectedWallets().forEach(function (wallet) {
+      var item;
+      if (wallet.detected) {
+        item = document.createElement("button");
+        item.type = "button";
+        item.className = "wallet-option";
+        item.innerHTML = '<span class="wallet-badge">' + wallet.name.charAt(0) + '</span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
+        item.addEventListener("click", function () { connectWallet(wallet); });
+      } else {
+        item = document.createElement("a");
+        item.className = "wallet-option muted";
+        item.href = wallet.install;
+        item.target = "_blank";
+        item.rel = "noreferrer";
+        item.innerHTML = '<span class="wallet-badge">' + wallet.name.charAt(0) + '</span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
+      }
+      options.appendChild(item);
+    });
+    byId("wallet-disconnect").hidden = !walletAddress;
+  }
+
+  function openWalletModal() {
+    ensureWalletModal();
+    renderWalletOptions();
+    byId("wallet-modal").hidden = false;
+    document.body.classList.add("modal-open");
+  }
+
+  function closeWalletModal() {
+    var modal = byId("wallet-modal");
+    if (modal) modal.hidden = true;
+    document.body.classList.remove("modal-open");
+  }
+
+  async function connectWallet(wallet) {
     try {
-      var connection = await wallet.connect();
-      walletAddress = String(connection.publicKey || wallet.publicKey);
-      sessionStorage.setItem("joltwork-wallet", walletAddress);
-      var label = button.querySelector(".rail-label");
-      if (label) label.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
+      var connection = await wallet.provider.connect();
+      var publicKey = connection && connection.publicKey || wallet.provider.publicKey;
+      if (!publicKey) throw new Error("Wallet returned no public key");
+      bindWalletEvents(wallet.provider);
+      setWalletAddress(publicKey, wallet.provider);
+      closeWalletModal();
+      showToast(wallet.name + " connected · " + shortAddress(String(publicKey)), "success");
     } catch (error) {
-      var declinedLabel = button.querySelector(".rail-label");
-      if (declinedLabel) declinedLabel.textContent = "CONNECTION DECLINED";
+      showToast(error && error.message ? error.message : "Wallet connection declined", "error");
     }
+  }
+
+  async function disconnectWallet() {
+    try {
+      if (activeProvider && typeof activeProvider.disconnect === "function") await activeProvider.disconnect();
+    } catch (error) { /* the local session must still be cleared */ }
+    setWalletAddress(null, null);
+    closeWalletModal();
+    showToast("Wallet disconnected");
+  }
+
+  if (walletButton) walletButton.addEventListener("click", openWalletModal);
+  document.querySelectorAll("[data-wallet-connect]").forEach(function (button) {
+    button.addEventListener("click", openWalletModal);
   });
+  setWalletAddress(walletAddress, null);
 
   var launchForm = byId("launch-form");
   if (launchForm) launchForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     var output = byId("launch-output");
+    var name = byId("coin-name").value.trim();
+    var symbol = byId("coin-symbol").value.trim().toUpperCase();
+    if (!name || name.length > 32) {
+      output.textContent = "error · coin name must contain 1–32 characters";
+      showToast("Check the coin name", "error");
+      return;
+    }
+    if (!/^[A-Z0-9_$.-]{1,13}$/.test(symbol)) {
+      output.textContent = "error · symbol must contain 1–13 supported characters";
+      showToast("Check the token symbol", "error");
+      return;
+    }
+    var uri;
+    try { uri = metadataUri(byId("coin-uri").value.trim()); }
+    catch (error) {
+      output.textContent = "error · " + error.message;
+      showToast(error.message, "error");
+      return;
+    }
     var manifest = {
       format: "JLM1",
       network: "solana-mainnet-beta",
       creator: walletAddress || "wallet-not-connected",
       coin: {
-        name: byId("coin-name").value.trim(),
-        symbol: byId("coin-symbol").value.trim().toUpperCase(),
-        metadataUri: byId("coin-uri").value.trim(),
+        name: name,
+        symbol: symbol,
+        metadataUri: uri,
         tokenProgram: "Token-2022",
         decimals: 6
       },
@@ -168,10 +328,6 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
         enforcement: "jolt-guard-route-wrapper"
       }
     };
-    if (!manifest.coin.name || !manifest.coin.symbol || !manifest.coin.metadataUri) {
-      output.textContent = "error · name, symbol and metadata uri are required";
-      return;
-    }
     var canonical = JSON.stringify(manifest);
     output.textContent = JSON.stringify({
       launchManifestId: await sha256(canonical),
@@ -184,6 +340,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
       ],
       signingAuthority: walletAddress || "connect wallet before transaction assembly"
     }, null, 2);
+    showToast("JLM1 launch manifest compiled", "success");
   });
 
   var intentForm = byId("intent-form");
@@ -194,7 +351,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
       var manifest = {
         protocol: "jolt-guard-v1",
         authority: walletAddress || "wallet-not-connected",
-        routeProgram: byId("intent-route").value.trim(),
+        routeProgram: solanaAddress(byId("intent-route").value.trim(), "route program"),
         maxInput: unsignedInteger(byId("intent-input").value.trim(), "maximum input"),
         minOutput: unsignedInteger(byId("intent-output-min").value.trim(), "minimum output"),
         expiresAtSlot: unsignedInteger(byId("intent-expiry").value.trim(), "expiry slot"),
@@ -211,8 +368,10 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
           "return JRC1 receipt or revert transaction"
         ]
       }, null, 2);
+      showToast("JOLT V1 intent compiled", "success");
     } catch (error) {
       output.textContent = "error · " + error.message;
+      showToast(error.message, "error");
     }
   });
 
@@ -223,6 +382,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
         await navigator.clipboard.writeText(text);
         var previous = button.textContent;
         button.textContent = "copied";
+        showToast("Copied to clipboard", "success");
         setTimeout(function () { button.textContent = previous; }, 1200);
       } catch (error) {
         button.textContent = "select text";
@@ -240,6 +400,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
       link.download = button.dataset.filename || "joltwork-manifest.json";
       link.click();
       URL.revokeObjectURL(link.href);
+      showToast("JSON manifest downloaded", "success");
     });
   });
 
@@ -341,6 +502,13 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 
   document.querySelectorAll(".site-rail a").forEach(function (link) {
     link.addEventListener("click", function () { document.body.classList.remove("menu-open"); });
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeWalletModal();
+      document.body.classList.remove("menu-open");
+    }
   });
 }());
 </script>
