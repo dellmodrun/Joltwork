@@ -160,47 +160,144 @@
 
   mountProductDepth();
 
+  function bytesToHex(bytes) {
+    return Array.from(bytes).map(function (value) {
+      return value.toString(16).padStart(2, "0");
+    }).join("");
+  }
+
+  function mountGuardProtocol() {
+    var section = document.createElement("section");
+    section.className = "guard-protocol";
+    section.innerHTML = `
+      <div class="guard-kicker">JOLTWORK / ON-CHAIN PROTOCOL 01</div>
+      <div class="guard-title-row">
+        <div>
+          <h2>Jolt Guard</h2>
+          <p>intent-level hooks and atomic settlement constraints for any Solana route.</p>
+        </div>
+        <span class="guard-state">PROTOCOL SOURCE LIVE</span>
+      </div>
+      <div class="guard-flow">
+        <div><b>01</b><span>SIGNED INTENT</span><small>max input · min output · expiry</small></div>
+        <i>→</i>
+        <div><b>02</b><span>PRE HOOK</span><small>policy program may reject</small></div>
+        <i>→</i>
+        <div><b>03</b><span>ROUTE CPI</span><small>arbitrary Solana router</small></div>
+        <i>→</i>
+        <div><b>04</b><span>POSTCONDITION</span><small>reload real token balances</small></div>
+        <i>→</i>
+        <div><b>05</b><span>COMMIT / REVERT</span><small>JRC1 settlement proof</small></div>
+      </div>
+      <div class="guard-body">
+        <div class="guard-copy">
+          <h3>the hook belongs to the trade, not the pool.</h3>
+          <p>Jolt Guard records source and destination token balances, invokes the selected route through CPI, then enforces the user-signed economic outcome. if realized input exceeds the ceiling, output falls below the floor, the intent expires, or a policy hook rejects the route, Solana rolls the entire transaction back.</p>
+          <div class="guard-facts">
+            <span><b>ATOMIC</b> route and validation share one transaction</span>
+            <span><b>COMPOSABLE</b> PRE and POST policy programs</span>
+            <span><b>ROUTE-AGNOSTIC</b> ordered account-index adapter</span>
+            <span><b>VERIFIABLE</b> compact JRC1 return receipt</span>
+          </div>
+          <a class="guard-spec-link" href="https://github.com/dellmodrun/Joltwork/blob/main/JOLT_GUARD.md" target="_blank" rel="noreferrer">read protocol specification ↗</a>
+        </div>
+        <div class="intent-composer">
+          <div class="composer-head"><span>INTENT POLICY COMPOSER</span><em>SHA-256</em></div>
+          <label>MAXIMUM INPUT / RAW UNITS<input id="guard-max-input" inputmode="numeric" value="100000000"></label>
+          <label>MINIMUM OUTPUT / RAW UNITS<input id="guard-min-output" inputmode="numeric" value="95000000"></label>
+          <label>EXPIRY SLOT<input id="guard-expiry" inputmode="numeric" value="500000000"></label>
+          <label>ROUTE PROGRAM<input id="guard-route" spellcheck="false" value="JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"></label>
+          <label>POLICY HOOK<select id="guard-policy"><option value="max-cost">maximum total cost</option><option value="allow-route">allowed route registry</option><option value="token-2022">token-2022 fee ceiling</option><option value="counterparty">counterparty policy</option></select></label>
+          <button id="guard-compile">compile signed intent</button>
+          <pre id="guard-output">configure a policy, then compile its canonical intent id.</pre>
+        </div>
+      </div>`;
+    document.querySelector("#analyzer").before(section);
+    document.querySelector("#analyzer .mono").textContent = "JOLTWORK / RECEIPT ENGINE";
+
+    section.querySelector("#guard-compile").addEventListener("click", async function () {
+      var manifest = {
+        protocol: "jolt-guard-v1",
+        maxInput: section.querySelector("#guard-max-input").value.trim(),
+        minOutput: section.querySelector("#guard-min-output").value.trim(),
+        expiresAtSlot: section.querySelector("#guard-expiry").value.trim(),
+        routeProgram: section.querySelector("#guard-route").value.trim(),
+        policy: section.querySelector("#guard-policy").value
+      };
+      var output = section.querySelector("#guard-output");
+      if (!/^\d+$/.test(manifest.maxInput) || !/^\d+$/.test(manifest.minOutput) || !/^\d+$/.test(manifest.expiresAtSlot)) {
+        output.textContent = "error - constraints must be unsigned integer raw units";
+        return;
+      }
+      var canonical = JSON.stringify(manifest);
+      var digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
+      output.textContent = JSON.stringify({
+        intentId: bytesToHex(new Uint8Array(digest)),
+        constraints: manifest,
+        enforcement: "atomic CPI postcondition",
+        result: "JRC1 receipt or full transaction revert"
+      }, null, 2);
+    });
+  }
+
+  mountGuardProtocol();
+
   var sourceFiles = {
     readme: [
       "# Joltwork",
       "",
-      "Settlement intelligence for Solana.",
+      "Intent-level hooks and verifiable settlement for Solana.",
       "",
-      "- confirmed transaction reconstruction",
-      "- exact token balance deltas",
-      "- program attribution",
-      "- mint and address inspection",
-      "- portable JSON receipts"
+      "Jolt Guard changes whether a route is allowed to settle.",
+      "A user signs maximum-input, minimum-output and expiry constraints.",
+      "The program executes the route through CPI and atomically rejects",
+      "settlement if realized token deltas violate the signed intent."
     ].join(NL),
     sdk: [
-      "export async function analyzeTransaction(signature) {",
-      "  const transaction = await rpc(\"getTransaction\", [signature]);",
-      "  return reconstructSettlement(transaction);",
+      "export function buildExecuteIntentInstruction(args) {",
+      "  const { shared, routeIndices, hookIndices } =",
+      "    dedupeSharedAccounts(args.routeAccounts, args.hookAccounts);",
+      "  return {",
+      "    programAddress: args.programAddress,",
+      "    accounts: fixedAccounts.concat(shared),",
+      "    data: encodeExecuteIntent({ routeIndices, hookIndices, ...args })",
+      "  };",
       "}"
     ].join(NL),
     indexer: [
-      "export function reconcile(pre, post) {",
-      "  return post.map((balance, index) => ({",
-      "    account: index,",
-      "    delta: balance - pre[index]",
-      "  }));",
-      "}"
+      "JOLT GUARD / EXECUTION",
+      "",
+      "1. verify authority, expiry and program accounts",
+      "2. read source and destination token balances",
+      "3. invoke PRE policy hook",
+      "4. invoke route program through CPI",
+      "5. reload token balances and enforce constraints",
+      "6. invoke POST policy hook",
+      "7. return JRC1 settlement receipt"
     ].join(NL),
     program: [
-      "pub fn register_program(ctx: Context<Register>, fingerprint: [u8; 32]) -> Result<()> {",
-      "  ctx.accounts.record.fingerprint = fingerprint;",
-      "  ctx.accounts.record.observed_slot = Clock::get()?.slot;",
-      "  Ok(())",
-      "}"
+      "let source_before = token_amount(source)?;",
+      "let destination_before = token_amount(destination)?;",
+      "",
+      "indexed_cpi(route_program, accounts,",
+      "  &intent.route_indices, intent.route_data.clone())?;",
+      "",
+      "let source_spent = source_before.checked_sub(token_amount(source)?)?;",
+      "let output = token_amount(destination)?.checked_sub(destination_before)?;",
+      "if source_spent > intent.max_input { return Err(MAX_INPUT); }",
+      "if output < intent.min_output { return Err(MIN_OUTPUT); }"
     ].join(NL),
     schema: [
-      "Receipt {",
-      "  signature: string,",
-      "  slot: u64,",
-      "  settlement: TokenDelta[],",
-      "  programs: PublicKey[],",
-      "  status: confirmed | failed",
-      "}"
+      "protocol-ci",
+      "",
+      "rust:",
+      "  cargo test --manifest-path programs/jolt-guard/Cargo.toml",
+      "",
+      "sdk:",
+      "  npm ci",
+      "  npm test",
+      "",
+      "checks: Rust parser + TypeScript codec + dependency audit"
     ].join(NL)
   };
 
@@ -523,7 +620,15 @@
     }
   }
 
+  var sourceLabels = {
+    readme: "README.md",
+    sdk: "sdk/src/index.ts",
+    indexer: "JOLT_GUARD.md",
+    program: "programs/jolt-guard/src/lib.rs",
+    schema: ".github/workflows/protocol-ci.yml"
+  };
   document.querySelectorAll("[data-file]").forEach(function (button) {
+    button.textContent = sourceLabels[button.dataset.file];
     button.addEventListener("click", function () {
       setSource(button.dataset.file, button);
     });

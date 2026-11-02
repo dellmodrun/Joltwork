@@ -19,6 +19,10 @@ const AMOUNT_OFFSET: usize = 64;
 const AMOUNT_END: usize = 72;
 const RECEIPT_MAGIC: &[u8; 4] = b"JRC1";
 const HOOK_MAGIC: &[u8; 4] = b"JHK1";
+const TOKEN_PROGRAM_ID: Pubkey =
+    solana_program::pubkey!("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const TOKEN_2022_PROGRAM_ID: Pubkey =
+    solana_program::pubkey!("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
 
 const INVALID_DATA: u32 = 1;
 const EXPIRED: u32 = 2;
@@ -112,6 +116,9 @@ fn custom(code: u32) -> ProgramError {
 }
 
 fn token_amount(account: &AccountInfo) -> Result<u64, ProgramError> {
+    if account.owner != &TOKEN_PROGRAM_ID && account.owner != &TOKEN_2022_PROGRAM_ID {
+        return Err(ProgramError::IllegalOwner);
+    }
     let data = account.try_borrow_data()?;
     let bytes = data.get(AMOUNT_OFFSET..AMOUNT_END).ok_or(ProgramError::InvalidAccountData)?;
     Ok(u64::from_le_bytes(bytes.try_into().map_err(|_| ProgramError::InvalidAccountData)?))
