@@ -120,7 +120,7 @@
 </span>
 <span>RUST + SDK TESTS<b>14 PASSING</b>
 </span>
-<span>DEVNET PROGRAM<b>3gAqr1U9…K2knfVG</b>
+<span>MAINNET PROGRAM<b>6HfEuWvE…S3ENTY</b>
 </span>
 </div>
 <div class="repo-health" aria-label="Repository summary">
@@ -153,12 +153,14 @@
 <button data-code="receiptTest">sdk/test/receipt.test.js</button></div>
 <div class="code-group"><b>WEB CLIENTS</b>
 <button data-code="launchClient">launch-client.ts</button>
+<button data-code="intentClient">intent-client.ts</button>
 <button data-code="appClient">app.js</button>
 <button data-code="buildClient">build-client.mjs</button>
 <button data-code="webPackage">package.json</button>
 <button data-code="sdkPackage">sdk/package.json</button></div>
 <div class="code-group"><b>DEPLOYMENT</b>
 <button data-code="deployment">deployments/devnet.json</button>
+<button data-code="mainnetDeployment">deployments/mainnet.json</button>
 <button data-code="verifyDeployment">scripts/verify-deployment.mjs</button>
 <button data-code="checkSite">scripts/check-site.mjs</button>
 <button data-code="protocolCi">.github/workflows/protocol-ci.yml</button>
@@ -173,7 +175,7 @@
 <button data-code="spec">JOLT_GUARD.md</button>
 <button data-code="contributing">CONTRIBUTING.md</button></div>
 </div>
-<div class="code-tree-foot"><span id="code-file-count">31 FILES</span><a href="https://github.com/dellmodrun/Joltwork" target="_blank" rel="noreferrer">FULL TREE ↗</a></div>
+<div class="code-tree-foot"><span id="code-file-count">33 FILES</span><a href="https://github.com/dellmodrun/Joltwork" target="_blank" rel="noreferrer">FULL TREE ↗</a></div>
 </aside>
 <div class="code-panel">
 <div class="code-toolbar">
@@ -251,7 +253,7 @@
 <h2>What the repository proves—and what deployment must still prove.</h2>
 </div>
 </div>
-<div class="prose-block"><p>Source code can prove that a mechanism has been implemented and can show the assumptions its authors made. The devnet manifest now also publishes the executable Program ID, source commit and reproducible SBF hash. It still cannot prove that every route adapter passes the right accounts or that no adversarial input was missed; those claims require integration coverage and external review.</p><p>This distinction matters to users. The public devnet binary is a real test deployment, while the browser Intent Composer remains an instruction and manifest surface until its router adapter is connected. Mainnet deployment, production monitoring and audit remain separate release gates.</p></div>
+<div class="prose-block"><p>Source code proves which mechanism was implemented; the mainnet and devnet manifests publish executable Program IDs, ProgramData accounts and the reproducible SBF hash. They do not prove that every route adapter is free of adversarial edge cases, which still requires integration coverage and independent review.</p><p>The browser now connects Jupiter Swap API V2 raw instructions to the mainnet Jolt Guard wrapper and asks the user wallet to sign the resulting versioned transaction. Deployment, integration and audit remain separate evidence, so each is presented explicitly.</p></div>
 <div class="split-panel">
 <article>
 <h3>Inspectable now</h3>
@@ -261,13 +263,13 @@
 <li>Pre-hook, route and post-hook CPI execution.</li>
 <li>Checked max-input and min-output arithmetic.</li>
 <li>SDK encoder and JRC1 receipt decoder.</li>
-<li>Verified, executable devnet Program ID and build manifest.</li>
+<li>Verified, executable mainnet and devnet Program IDs with build manifests.</li>
 </ul>
 </article>
 <article>
 <h3>Required for public mainnet use</h3>
 <ul class="check-list warn">
-<li>Published, verified mainnet Program ID.</li>
+<li>Independent audit of the published mainnet program and adapters.</li>
 <li>Audited router and launchpad adapters.</li>
 <li>Independent security review.</li>
 <li>Production RPC and transaction monitoring.</li>
@@ -277,7 +279,7 @@
 </div>
 <div class="callout">
 <b>PUBLIC TEST DEPLOYMENT, CLEAR PRODUCTION GATE</b>
-<p>The devnet program is real and independently inspectable. The site does not label it as mainnet or imply that the current Intent Composer submits router transactions before that adapter exists.</p>
+<p>The mainnet and devnet programs are real and independently inspectable. Published manifests bind their identities to the same reproducible SBF digest; audit and production monitoring remain separate evidence.</p>
 </div>
 </section>
 <section class="cta-panel">

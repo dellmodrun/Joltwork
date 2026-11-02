@@ -5,10 +5,13 @@
     "build:client": "node build-client.mjs",
     "build:site": "python bundle.py",
     "test:site": "node scripts/check-site.mjs",
-    "verify:devnet": "node scripts/verify-deployment.mjs"
+    "verify:devnet": "node scripts/verify-deployment.mjs devnet",
+    "verify:mainnet": "node scripts/verify-deployment.mjs mainnet"
   },
   "dependencies": {
     "@pump-fun/pump-sdk": "4.1.0",
+    "@solana/kit": "^8.6.0",
+    "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "1.98.2",
     "buffer": "6.0.3"
   },

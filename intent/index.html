@@ -149,6 +149,7 @@
 <button type="button" class="button" data-wallet-connect>connect wallet</button>
 <button type="button" id="intent-quote" class="button">get live quote</button>
 <button type="submit" class="button button-solid">compile intent manifest</button>
+<button type="button" id="intent-submit" class="button button-solid" disabled>sign protected swap</button>
 </div>
 </form>
 <div class="output-sheet">
@@ -162,8 +163,8 @@
 <pre id="intent-output">The canonical manifest and Jolt Guard constraints will appear here.</pre>
 </div>
 </div>
-<div class="status-band"><div><span>QUOTE</span><b class="ready">JUPITER SWAP API V2</b></div><div><span>DEVNET PROGRAM</span><b class="ready">3gAqr1U9…K2knfVG</b></div><div><span>MAINNET GUARD</span><b class="pending">DEPLOYMENT REQUIRED</b></div></div>
-<div class="callout"><b>ON-CHAIN STATUS</b><p>This workbench now requests a real mainnet quote from Jupiter V2 and converts its threshold into JOLT constraints. Protected submission remains locked until the same audited Jolt Guard binary is deployed on mainnet; the current executable <a href="https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet" target="_blank" rel="noreferrer">devnet program ↗</a> cannot safely be presented as a mainnet endpoint.</p></div>
+<div class="status-band"><div><span>QUOTE</span><b class="ready">JUPITER SWAP API V2</b></div><div><span>MAINNET PROGRAM</span><b class="ready">6HfEuWvE…S3ENTY</b></div><div><span>DEPLOYED SBF</span><b class="ready">SHA-256 VERIFIED</b></div></div>
+<div class="callout"><b>VERIFIED MAINNET DEPLOYMENT</b><p>Jolt Guard is executable on Solana mainnet at <a href="https://explorer.solana.com/address/6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY" target="_blank" rel="noreferrer"><code>6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY</code> ↗</a>. Its ProgramData bytecode matches the published SBF SHA-256 <code>469ab222…124ebdd</code>.</p></div>
 <div class="callout">
 <b>ATOMICITY</b>
 <p>If the route spends above the ceiling, receives below the floor, expires, or fails a selected hook, the entire Solana transaction returns an error and does not settle partially.</p>
@@ -316,6 +317,7 @@
 </footer>
 </main>
 <script src="./wallet-icons.js"></script>
+<script src="./intent-client.js"></script>
 <script src="./app.js">
 </script>
 </body>

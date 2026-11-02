@@ -6,6 +6,7 @@
   var verifiedMetadataUri = null;
   var verifiedMetadata = null;
   var launchManifestReady = false;
+  var intentManifestReady = false;
 
   function byId(id) {
     return document.getElementById(id);
@@ -86,6 +87,8 @@
     if (disconnect) disconnect.hidden = !walletAddress;
     var launchSubmit = byId("launch-submit");
     if (launchSubmit) launchSubmit.disabled = !walletAddress || !launchManifestReady || verifiedMetadataUri !== (byId("coin-uri") && byId("coin-uri").value.trim());
+    var intentSubmit = byId("intent-submit");
+    if (intentSubmit) intentSubmit.disabled = !walletAddress || !intentManifestReady;
   }
 
   function detectedWallets() {
@@ -398,7 +401,7 @@
         signature: result.signature,
         solscan: result.explorer,
         pump: result.pump,
-        note: "The token is live on mainnet. Its Joltwork policy remains a manifest until Jolt Guard is separately deployed on mainnet."
+        note: "The token is live on mainnet and its policy references Jolt Guard program 6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY."
       }, null, 2);
       showToast("Coin creation confirmed on Solana", "success");
     } catch (error) {
@@ -416,6 +419,8 @@
     var output = byId("intent-output");
     intentQuoteButton.disabled = true;
     intentQuoteButton.textContent = "requesting quote…";
+    intentManifestReady = false;
+    if (byId("intent-submit")) byId("intent-submit").disabled = true;
     try {
       var inputMint = solanaAddress(byId("intent-input-mint").value.trim(), "input mint");
       var outputMint = solanaAddress(byId("intent-output-mint").value.trim(), "output mint");
@@ -492,10 +497,42 @@
           "return JRC1 receipt or revert transaction"
         ]
       }, null, 2);
+      intentManifestReady = true;
+      if (byId("intent-submit")) byId("intent-submit").disabled = !walletAddress;
       showToast("JOLT V1 intent compiled", "success");
     } catch (error) {
       output.textContent = "error · " + error.message;
       showToast(error.message, "error");
+    }
+  });
+
+  var intentSubmit = byId("intent-submit");
+  if (intentSubmit) intentSubmit.addEventListener("click", async function () {
+    var output = byId("intent-output");
+    var provider = window.JoltworkWallet && window.JoltworkWallet.getProvider();
+    var authority = window.JoltworkWallet && window.JoltworkWallet.getAddress();
+    if (!provider || !authority) return openWalletModal();
+    if (!intentManifestReady || !latestIntentQuote) return showToast("Get a fresh quote and compile the intent first", "error");
+    if (!window.JoltworkIntent || typeof window.JoltworkIntent.submitProtectedSwap !== "function") return showToast("Protected swap module is unavailable", "error");
+    if (!window.confirm("Sign a mainnet swap protected by Jolt Guard? Review the token amounts and network fee in your wallet.")) return;
+    intentSubmit.disabled = true;
+    intentSubmit.textContent = "building protected swap…";
+    try {
+      var result = await window.JoltworkIntent.submitProtectedSwap({
+        provider: provider, authority: authority,
+        inputMint: byId("intent-input-mint").value.trim(), outputMint: byId("intent-output-mint").value.trim(),
+        amount: byId("intent-input").value.trim(), minimumOutput: byId("intent-output-min").value.trim(),
+        slippageBps: byId("intent-slippage").value.trim(), expiresAtSlot: byId("intent-expiry").value.trim()
+      });
+      output.textContent = JSON.stringify({ status: "confirmed", protection: "Jolt Guard mainnet", programId: "6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY", intentId: result.intentId, signature: result.signature, explorer: result.explorer }, null, 2);
+      showToast("Protected swap confirmed", "success");
+    } catch (error) {
+      output.textContent = "protected swap error · " + (error && error.message ? error.message : String(error));
+      showToast(error && error.message ? error.message : "Protected swap failed", "error");
+    } finally {
+      intentManifestReady = false;
+      intentSubmit.disabled = true;
+      intentSubmit.textContent = "sign protected swap";
     }
   });
 
@@ -546,11 +583,13 @@
     jupiterTest: "sdk/test/jupiter.test.js",
     receiptTest: "sdk/test/receipt.test.js",
     launchClient: "launch-client.ts",
+    intentClient: "intent-client.ts",
     appClient: "app.js",
     buildClient: "build-client.mjs",
     webPackage: "package.json",
     sdkPackage: "sdk/package.json",
     deployment: "deployments/devnet.json",
+    mainnetDeployment: "deployments/mainnet.json",
     verifyDeployment: "scripts/verify-deployment.mjs",
     checkSite: "scripts/check-site.mjs",
     protocolCi: ".github/workflows/protocol-ci.yml",

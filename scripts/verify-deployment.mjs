@@ -5,8 +5,10 @@ import { resolve } from "node:path";
 import { Connection, PublicKey } from "@solana/web3.js";
 
 const root = resolve(import.meta.dirname, "..");
-const manifest = JSON.parse(readFileSync(resolve(root, "deployments/devnet.json"), "utf8"));
-const endpoint = process.env.JOLTWORK_RPC_URL || "https://api.devnet.solana.com";
+const network = process.argv[2] || "devnet";
+assert.ok(["devnet", "mainnet"].includes(network), "network must be devnet or mainnet");
+const manifest = JSON.parse(readFileSync(resolve(root, `deployments/${network}.json`), "utf8"));
+const endpoint = process.env.JOLTWORK_RPC_URL || (network === "mainnet" ? "https://api.mainnet-beta.solana.com" : "https://api.devnet.solana.com");
 const connection = new Connection(endpoint, "confirmed");
 const programKey = new PublicKey(manifest.programId);
 const programDataKey = new PublicKey(manifest.programData);

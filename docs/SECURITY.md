@@ -14,7 +14,7 @@
 
 Adapters are part of the security boundary. A malicious or incorrectly decoded route instruction can select unintended accounts even when the guard itself behaves correctly. Production adapters should pin known program IDs, validate writable/signing roles and test adversarial account layouts.
 
-The current public deployment is devnet, not mainnet. It is suitable for integration testing and independent inspection. It is not presented as audited. Do not use it to custody production value.
+The same published SBF digest is deployed on mainnet and devnet. The mainnet deployment is executable and independently inspectable, but it is not presented as independently audited. Integrators should review the program, adapters and deployment manifest before enabling production value.
 
 ## Reporting
 

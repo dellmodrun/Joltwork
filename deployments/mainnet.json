@@ -1,0 +1,16 @@
+{
+  "name": "Jolt Guard",
+  "version": "1.0.0-mainnet",
+  "cluster": "solana-mainnet-beta",
+  "programId": "6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY",
+  "programData": "59jESBWTTpsaq2qKPEg3DP779naNYHqzPmZzEeh1jQKc",
+  "loader": "BPFLoaderUpgradeab1e11111111111111111111111",
+  "executable": true,
+  "upgradeAuthority": "6y6QaxRzGMQJbrtPxN6LYbQAswwPGSxNWYit4jXVUeYE",
+  "deployedAt": "2026-11-02T11:36:35Z",
+  "deployedSlot": 464480874,
+  "deploymentSignature": "bdj5nng3eNCVdqz1TfQA4H3A2fcRDjQnBs81GXkPgeXCchYYG57EVf2RF6ezkwH7BbUveNonotce9KYZmuAWrss",
+  "sourceCommit": "d1f21ed424a880479d11417a5ccce27de47d7fc8",
+  "sha256": "469ab22293e3d5ca2814b78ac293b39a9f5dc8cb0d652b93f7ee9b501124ebdd",
+  "explorer": "https://explorer.solana.com/address/6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY"
+}

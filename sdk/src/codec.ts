@@ -1,6 +1,6 @@
 import type { AccountMeta } from "@solana/kit";
 import { getAddressEncoder } from "@solana/kit";
-import { createHash } from "node:crypto";
+import { sha256 } from "@noble/hashes/sha2.js";
 import { JOLT_MAGIC, JOLT_VERSION } from "./constants.js";
 import type { EncodedIntentConstraints, IntentConstraints } from "./types.js";
 
@@ -49,7 +49,7 @@ export function computeIntentId(args: {
   const bindings = Buffer.alloc(2 + args.accounts.length * 32);
   bindings.writeUInt16LE(args.accounts.length, 0);
   args.accounts.forEach((account, index) => bindings.set(encoder.encode(account.address), 2 + index * 32));
-  return createHash("sha256").update("JOLT_INTENT_V1").update(header)
+  return sha256.create().update("JOLT_INTENT_V1").update(header)
     .update(Buffer.from(args.routeIndices)).update(Buffer.from(hookIndices))
     .update(args.routeData).update(hookPayload).update(bindings).digest();
 }
@@ -72,7 +72,7 @@ export function canonicalIntentJson(value: unknown): string {
 }
 
 export function hashIntentManifest(manifest: unknown): Uint8Array {
-  return createHash("sha256").update(canonicalIntentJson(manifest)).digest();
+  return sha256(canonicalIntentJson(manifest));
 }
 
 export function encodeExecuteIntent(args: {

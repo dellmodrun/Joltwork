@@ -182,7 +182,7 @@
 </div>
 <div class="callout">
 <b>SIGNING BOUNDARY</b>
-<p>Verify the public metadata JSON, compile the manifest, then use the separate mainnet action. Joltwork assembles Pump’s official create_v2 instruction, generates the new Mint signer in this browser and asks the connected wallet to review and pay for the transaction. Nothing is submitted without the wallet’s explicit approval. The Jolt Guard Program ID is currently published on devnet; mainnet enforcement remains a separate deployment gate.</p>
+<p>Verify the public metadata JSON, compile the manifest, then use the separate mainnet action. Joltwork assembles Pump’s official create_v2 instruction, generates the new Mint signer in this browser and asks the connected wallet to review and pay for the transaction. Nothing is submitted without explicit approval. The default intent policy references the verified mainnet Jolt Guard Program ID <code>6HfEu…S3ENTY</code>.</p>
 </div>
 <div class="callout"><b>RPC AND PRIVACY</b><p>The default browser-compatible RPC is operated by PublicNode, not Joltwork or Solana. It receives ordinary RPC requests and the signed transaction when submitted. Production operators should replace it with their own trusted Solana RPC endpoint before launch.</p></div>
 </section>

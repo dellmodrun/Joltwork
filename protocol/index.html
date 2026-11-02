@@ -156,7 +156,7 @@
 </div>
 <div>
 <span>PROGRAM + SDK</span>
-<b class="ready">IMPLEMENTED / 11 TESTS</b>
+<b class="ready">IMPLEMENTED / 14 TESTS</b>
 </div>
 <div>
 <span>DEVNET PROGRAM ID</span>
@@ -164,12 +164,12 @@
 </div>
 <div>
 <span>MAINNET PROGRAM ID</span>
-<b class="pending">NOT YET PUBLISHED</b>
+<b class="ready">6HfEuWvE…S3ENTY</b>
 </div>
 </div>
 <div class="callout">
-<b>VERIFIED DEVNET DEPLOYMENT</b>
-<p>Jolt Guard is executable on Solana devnet at <a href="https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet" target="_blank" rel="noreferrer"><code>3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG</code> ↗</a>. The published deployment manifest binds it to source commit <code>d1f21ed</code> and SBF SHA-256 <code>469ab222…124ebdd</code>. This is a public test deployment, not the future mainnet release.</p>
+<b>VERIFIED MAINNET + DEVNET DEPLOYMENTS</b>
+<p>Jolt Guard is executable on <a href="https://explorer.solana.com/address/6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY" target="_blank" rel="noreferrer">Solana mainnet at <code>6HfEu…S3ENTY</code> ↗</a> and on <a href="https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet" target="_blank" rel="noreferrer">devnet at <code>3gAqr…K2knfVG</code> ↗</a>. Both ProgramData accounts match SBF SHA-256 <code>469ab222…124ebdd</code>; the deployment manifests publish their exact identities and authorities.</p>
 </div>
 </section>
 <section class="section-block"><div class="section-head"><div><div class="eyebrow">A TRANSACTION IN PLAIN LANGUAGE</div><h2>The router finds a path. Joltwork decides whether its result is acceptable.</h2></div></div><div class="prose-block"><p>Suppose a wallet finds a route that may spend up to 1 SOL to buy a token. The user accepts only if at least 950,000 token units reach the destination account before a chosen expiry slot. The wallet encodes those limits and the selected route program into JOLT V1, then asks the user to sign.</p><p>Jolt Guard records the source and destination balances, runs the router through CPI and reads the balances again. Spending 0.98 SOL and receiving 970,000 units passes. Spending 1.01 SOL or receiving 940,000 units fails. The program is not judging whether the quoted price was “good”; it is enforcing the exact boundary the user authorized.</p></div></section>

@@ -46,9 +46,10 @@ Check all public routes and repository-browser controls with:
 
     npm run test:site
 
-Verify the live devnet program account and deployed SBF digest with:
+Verify a live program account and deployed SBF digest with:
 
     npm run verify:devnet
+    npm run verify:mainnet
 
 Test the on-chain program with:
 
@@ -65,3 +66,8 @@ The source commit, loader, program-data account and SBF SHA-256 are recorded in
 [`deployments/devnet.json`](deployments/devnet.json). This Kora-sponsored
 deployment is an integration target, not a mainnet production claim; Kora may
 reclaim devnet programs after seven days without on-chain activity.
+
+The verified mainnet deployment is
+[`6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY`](https://explorer.solana.com/address/6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY).
+Its ProgramData address, deployment signature, upgrade authority and matching
+SBF digest are published in [`deployments/mainnet.json`](deployments/mainnet.json).

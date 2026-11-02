@@ -226,7 +226,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 </div>
 <div>
 <span>PROGRAM + SDK</span>
-<b class="ready">IMPLEMENTED / 11 TESTS</b>
+<b class="ready">IMPLEMENTED / 14 TESTS</b>
 </div>
 <div>
 <span>DEVNET PROGRAM ID</span>
@@ -234,12 +234,12 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 </div>
 <div>
 <span>MAINNET PROGRAM ID</span>
-<b class="pending">NOT YET PUBLISHED</b>
+<b class="ready">6HfEuWvE…S3ENTY</b>
 </div>
 </div>
 <div class="callout">
-<b>VERIFIED DEVNET DEPLOYMENT</b>
-<p>Jolt Guard is executable on Solana devnet at <a href="https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet" target="_blank" rel="noreferrer"><code>3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG</code> ↗</a>. The published deployment manifest binds it to source commit <code>d1f21ed</code> and SBF SHA-256 <code>469ab222…124ebdd</code>. This is a public test deployment, not the future mainnet release.</p>
+<b>VERIFIED MAINNET + DEVNET DEPLOYMENTS</b>
+<p>Jolt Guard is executable on <a href="https://explorer.solana.com/address/6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY" target="_blank" rel="noreferrer">Solana mainnet at <code>6HfEu…S3ENTY</code> ↗</a> and on <a href="https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet" target="_blank" rel="noreferrer">devnet at <code>3gAqr…K2knfVG</code> ↗</a>. Both ProgramData accounts match SBF SHA-256 <code>469ab222…124ebdd</code>; the deployment manifests publish their exact identities and authorities.</p>
 </div>
 </section>
 <section class="section-block"><div class="section-head"><div><div class="eyebrow">A TRANSACTION IN PLAIN LANGUAGE</div><h2>The router finds a path. Joltwork decides whether its result is acceptable.</h2></div></div><div class="prose-block"><p>Suppose a wallet finds a route that may spend up to 1 SOL to buy a token. The user accepts only if at least 950,000 token units reach the destination account before a chosen expiry slot. The wallet encodes those limits and the selected route program into JOLT V1, then asks the user to sign.</p><p>Jolt Guard records the source and destination balances, runs the router through CPI and reads the balances again. Spending 0.98 SOL and receiving 970,000 units passes. Spending 1.01 SOL or receiving 940,000 units fails. The program is not judging whether the quoted price was “good”; it is enforcing the exact boundary the user authorized.</p></div></section>
@@ -527,6 +527,7 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
   var verifiedMetadataUri = null;
   var verifiedMetadata = null;
   var launchManifestReady = false;
+  var intentManifestReady = false;
 
   function byId(id) {
     return document.getElementById(id);
@@ -607,6 +608,8 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     if (disconnect) disconnect.hidden = !walletAddress;
     var launchSubmit = byId("launch-submit");
     if (launchSubmit) launchSubmit.disabled = !walletAddress || !launchManifestReady || verifiedMetadataUri !== (byId("coin-uri") && byId("coin-uri").value.trim());
+    var intentSubmit = byId("intent-submit");
+    if (intentSubmit) intentSubmit.disabled = !walletAddress || !intentManifestReady;
   }
 
   function detectedWallets() {
@@ -919,7 +922,7 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
         signature: result.signature,
         solscan: result.explorer,
         pump: result.pump,
-        note: "The token is live on mainnet. Its Joltwork policy remains a manifest until Jolt Guard is separately deployed on mainnet."
+        note: "The token is live on mainnet and its policy references Jolt Guard program 6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY."
       }, null, 2);
       showToast("Coin creation confirmed on Solana", "success");
     } catch (error) {
@@ -937,6 +940,8 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     var output = byId("intent-output");
     intentQuoteButton.disabled = true;
     intentQuoteButton.textContent = "requesting quote…";
+    intentManifestReady = false;
+    if (byId("intent-submit")) byId("intent-submit").disabled = true;
     try {
       var inputMint = solanaAddress(byId("intent-input-mint").value.trim(), "input mint");
       var outputMint = solanaAddress(byId("intent-output-mint").value.trim(), "output mint");
@@ -1013,10 +1018,42 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
           "return JRC1 receipt or revert transaction"
         ]
       }, null, 2);
+      intentManifestReady = true;
+      if (byId("intent-submit")) byId("intent-submit").disabled = !walletAddress;
       showToast("JOLT V1 intent compiled", "success");
     } catch (error) {
       output.textContent = "error · " + error.message;
       showToast(error.message, "error");
+    }
+  });
+
+  var intentSubmit = byId("intent-submit");
+  if (intentSubmit) intentSubmit.addEventListener("click", async function () {
+    var output = byId("intent-output");
+    var provider = window.JoltworkWallet && window.JoltworkWallet.getProvider();
+    var authority = window.JoltworkWallet && window.JoltworkWallet.getAddress();
+    if (!provider || !authority) return openWalletModal();
+    if (!intentManifestReady || !latestIntentQuote) return showToast("Get a fresh quote and compile the intent first", "error");
+    if (!window.JoltworkIntent || typeof window.JoltworkIntent.submitProtectedSwap !== "function") return showToast("Protected swap module is unavailable", "error");
+    if (!window.confirm("Sign a mainnet swap protected by Jolt Guard? Review the token amounts and network fee in your wallet.")) return;
+    intentSubmit.disabled = true;
+    intentSubmit.textContent = "building protected swap…";
+    try {
+      var result = await window.JoltworkIntent.submitProtectedSwap({
+        provider: provider, authority: authority,
+        inputMint: byId("intent-input-mint").value.trim(), outputMint: byId("intent-output-mint").value.trim(),
+        amount: byId("intent-input").value.trim(), minimumOutput: byId("intent-output-min").value.trim(),
+        slippageBps: byId("intent-slippage").value.trim(), expiresAtSlot: byId("intent-expiry").value.trim()
+      });
+      output.textContent = JSON.stringify({ status: "confirmed", protection: "Jolt Guard mainnet", programId: "6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY", intentId: result.intentId, signature: result.signature, explorer: result.explorer }, null, 2);
+      showToast("Protected swap confirmed", "success");
+    } catch (error) {
+      output.textContent = "protected swap error · " + (error && error.message ? error.message : String(error));
+      showToast(error && error.message ? error.message : "Protected swap failed", "error");
+    } finally {
+      intentManifestReady = false;
+      intentSubmit.disabled = true;
+      intentSubmit.textContent = "sign protected swap";
     }
   });
 
@@ -1067,11 +1104,13 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     jupiterTest: "sdk/test/jupiter.test.js",
     receiptTest: "sdk/test/receipt.test.js",
     launchClient: "launch-client.ts",
+    intentClient: "intent-client.ts",
     appClient: "app.js",
     buildClient: "build-client.mjs",
     webPackage: "package.json",
     sdkPackage: "sdk/package.json",
     deployment: "deployments/devnet.json",
+    mainnetDeployment: "deployments/mainnet.json",
     verifyDeployment: "scripts/verify-deployment.mjs",
     checkSite: "scripts/check-site.mjs",
     protocolCi: ".github/workflows/protocol-ci.yml",
