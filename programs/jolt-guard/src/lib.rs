@@ -227,12 +227,10 @@ fn canonical_intent_id(accounts: &[AccountInfo], intent: &ExecuteIntent) -> [u8;
     header.extend_from_slice(&(intent.route_data.len() as u32).to_le_bytes());
     header.extend_from_slice(&(intent.hook_payload.len() as u32).to_le_bytes());
 
-    let mut account_bindings = Vec::with_capacity(2 + accounts.len() * 34);
+    let mut account_bindings = Vec::with_capacity(2 + accounts.len() * 32);
     account_bindings.extend_from_slice(&(accounts.len() as u16).to_le_bytes());
     for account in accounts {
         account_bindings.extend_from_slice(account.key.as_ref());
-        account_bindings.push(u8::from(account.is_signer));
-        account_bindings.push(u8::from(account.is_writable));
     }
 
     hashv(&[

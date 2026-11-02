@@ -68,7 +68,7 @@ test("builds an instruction with fixed and deduplicated accounts", () => {
     ],
     hookPayload: Uint8Array.from([42]),
   });
-  assert.equal(instruction.accounts.length, 8);
+  assert.equal(instruction.accounts.length, 7);
   const sharedWritable = instruction.accounts.find(
     (meta) => meta.address === keys[5],
   );

@@ -34,7 +34,7 @@ duplicating transaction accounts.
 
 ## Execution
 
-1. Recompute the intent id from every account, privilege, constraint and payload.
+1. Recompute the intent id from every ordered account, constraint and payload.
 2. Verify authority, expiry and executable program accounts.
 3. Read source and destination token balances.
 4. Invoke the policy hook with phase PRE, if configured.

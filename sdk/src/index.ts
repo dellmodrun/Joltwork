@@ -11,7 +11,6 @@ import { createHash } from "node:crypto";
 
 const MAGIC = Buffer.from("JOLT");
 const VERSION = 1;
-const FIXED_ACCOUNTS = 5;
 
 export type IntentConstraints = {
   expiresAtSlot: bigint;
@@ -84,13 +83,11 @@ export function computeIntentId(args: {
     u32(hookPayload.length),
   ]);
   const addressEncoder = getAddressEncoder();
-  const accountBindings = Buffer.alloc(2 + args.accounts.length * 34);
+  const accountBindings = Buffer.alloc(2 + args.accounts.length * 32);
   accountBindings.writeUInt16LE(args.accounts.length, 0);
   args.accounts.forEach((account, index) => {
-    const offset = 2 + index * 34;
+    const offset = 2 + index * 32;
     accountBindings.set(addressEncoder.encode(account.address), offset);
-    accountBindings[offset + 32] = account.role >= AccountRole.READONLY_SIGNER ? 1 : 0;
-    accountBindings[offset + 33] = account.role === AccountRole.WRITABLE || account.role === AccountRole.WRITABLE_SIGNER ? 1 : 0;
   });
   return createHash("sha256")
     .update("JOLT_INTENT_V1")
@@ -103,31 +100,33 @@ export function computeIntentId(args: {
     .digest();
 }
 
-function dedupeSharedAccounts(
+function dedupeInstructionAccounts(
+  fixedAccounts: AccountMeta[],
   routeAccounts: AccountMeta[],
   hookAccounts: AccountMeta[],
-): { shared: AccountMeta[]; routeIndices: number[]; hookIndices: number[] } {
-  const shared: AccountMeta[] = [];
+): { accounts: AccountMeta[]; routeIndices: number[]; hookIndices: number[] } {
+  const accounts: AccountMeta[] = fixedAccounts.map((meta) => ({ ...meta }));
   const indexByKey = new Map<string, number>();
+  accounts.forEach((meta, index) => indexByKey.set(meta.address, index));
 
   function add(meta: AccountMeta): number {
     const key = meta.address;
     const existing = indexByKey.get(key);
     if (existing !== undefined) {
-      shared[existing] = {
+      accounts[existing] = {
         address: meta.address,
-        role: mergeRoles(shared[existing].role, meta.role),
+        role: mergeRoles(accounts[existing].role, meta.role),
       };
-      return FIXED_ACCOUNTS + existing;
+      return existing;
     }
-    const index = shared.length;
-    shared.push({ ...meta });
+    const index = accounts.length;
+    accounts.push({ ...meta });
     indexByKey.set(key, index);
-    return FIXED_ACCOUNTS + index;
+    return index;
   }
 
   return {
-    shared,
+    accounts,
     routeIndices: routeAccounts.map(add),
     hookIndices: hookAccounts.map(add),
   };
@@ -199,18 +198,21 @@ export function buildExecuteIntentInstruction(
   if (hookAccounts.length && !args.hookProgram) {
     throw new Error("hookProgram is required when hookAccounts are supplied");
   }
-  const { shared, routeIndices, hookIndices } = dedupeSharedAccounts(
-    args.routeAccounts,
-    hookAccounts,
-  );
-  const accounts: AccountMeta[] = [
+  const fixedAccounts: AccountMeta[] = [
     { address: args.authority, role: AccountRole.READONLY_SIGNER },
     { address: args.sourceTokenAccount, role: AccountRole.WRITABLE },
     { address: args.destinationTokenAccount, role: AccountRole.WRITABLE },
     { address: args.routeProgram, role: AccountRole.READONLY },
     { address: hookProgram, role: AccountRole.READONLY },
-    ...shared,
   ];
+  const { accounts, routeIndices, hookIndices } = dedupeInstructionAccounts(
+    fixedAccounts,
+    args.routeAccounts,
+    hookAccounts,
+  );
+  if ([...routeIndices, ...hookIndices].some((index) => index === 3 || index === 4)) {
+    throw new Error("route and hook program accounts cannot be passed as CPI data accounts");
+  }
   const computedIntentId = computeIntentId({
     constraints: args.constraints,
     accounts,
