@@ -84,7 +84,7 @@
     }
     add("Phantom", window.phantom && window.phantom.solana, "https://phantom.com/download");
     add("Solflare", window.solflare, "https://www.solflare.com/download/");
-    add("Backpack", (window.backpack && window.backpack.solana) || (window.xnft && window.xnft.solana), "https://backpack.app/download");
+    add("Backpack", (window.backpack && (window.backpack.solana || window.backpack)) || (window.xnft && window.xnft.solana), "https://backpack.app/download");
     if (window.solana && seen.indexOf(window.solana) === -1) add("Solana Wallet", window.solana, "https://solana.com/ecosystem/explore?categories=wallet");
     return wallets;
   }
@@ -124,6 +124,16 @@
     var options = byId("wallet-options");
     if (!options) return;
     options.innerHTML = "";
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      var currentUrl = encodeURIComponent(window.location.href);
+      var referrer = encodeURIComponent(window.location.origin);
+      var mobileHelp = document.createElement("div");
+      mobileHelp.className = "wallet-mobile-help";
+      mobileHelp.innerHTML = '<b>Using a mobile browser?</b><p>Open Joltwork inside a wallet browser so the provider can be injected securely.</p>' +
+        '<div><a href="https://phantom.com/ul/browse/' + currentUrl + '?ref=' + referrer + '">open in Phantom</a>' +
+        '<a href="https://solflare.com/ul/v1/browse/' + currentUrl + '?ref=' + referrer + '">open in Solflare</a></div>';
+      options.appendChild(mobileHelp);
+    }
     detectedWallets().forEach(function (wallet) {
       var item;
       if (wallet.detected) {
