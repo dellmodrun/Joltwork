@@ -3,6 +3,7 @@ external assets (fonts, images, favicon) as base64 data: URIs."""
 import base64
 import os
 import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent
 DIST = ROOT / "dist"
@@ -22,11 +23,11 @@ assets = {
 app = (ROOT / "app.js").read_text(encoding="utf-8")
 styles = (ROOT / "styles.css").read_text(encoding="utf-8")
 enhancements = (ROOT / "enhancements.css").read_text(encoding="utf-8")
-sources = [ROOT / "index.html"] + [ROOT / name / "index.html" for name in ("launch", "intent", "protocol", "code")]
+sources = [ROOT / "index.html"] + [ROOT / name / "index.html" for name in ("launch", "intent", "protocol", "code", "research")]
 
 for src in sources:
     html = src.read_text(encoding="utf-8")
-    html = html.replace('<script src="./app.js"></script>', "<script>" + app + "</script>")
+    html = re.sub(r'<script src="\./app\.js">\s*</script>', lambda _: "<script>" + app + "</script>", html)
     html = html.replace('<link rel="stylesheet" href="./styles.css">', "<style>" + styles + "</style>")
     html = html.replace('<link rel="stylesheet" href="./enhancements.css">', "<style>" + enhancements + "</style>")
     replacements = 0

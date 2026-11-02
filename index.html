@@ -1,48 +1,372 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Joltwork — transaction-bound intent hooks and atomic settlement for Solana."><title>Joltwork — Intent Hooks for Solana</title><link rel="icon" href="./joltwork.png"><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./enhancements.css"></head>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Joltwork — transaction-bound intent hooks and atomic settlement for Solana.">
+<title>Joltwork — Intent Hooks for Solana</title>
+<link rel="icon" href="./joltwork.png">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./enhancements.css">
+</head>
 <body>
   <button id="menu-toggle" class="menu-toggle" aria-label="Open navigation" aria-expanded="false">≡</button>
-  <aside class="site-rail" aria-label="Primary navigation"><div class="rail-inner">
-    <a class="rail-brand" href="./"><img src="./joltwork.png" alt=""><span>Joltwork<small>INTENT HOOKS / SOLANA</small></span></a>
+  <aside class="site-rail" aria-label="Primary navigation">
+<div class="rail-inner">
+    <a class="rail-brand" href="./">
+<img src="./joltwork.png" alt="">
+<span>Joltwork<small>INTENT HOOKS / SOLANA</small>
+</span>
+</a>
     <nav class="rail-nav">
-      <a class="active" href="./"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg></span><span class="rail-label">HOME</span></a>
-      <a href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m14 4 6 6-9 9-7 1 1-7zM12 6l6 6M4 20l5-5"/></svg></span><span class="rail-label">LAUNCH COIN</span></a>
-      <a href="./intent/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16M17 9l3 3-3 3"/></svg></span><span class="rail-label">TRADE WITH INTENT</span></a>
-      <a href="./protocol/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7zM8 12l3 3 5-6"/></svg></span><span class="rail-label">PROTOCOL</span></a>
-      <a href="./code/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m8 8-4 4 4 4m8-8 4 4-4 4m-2-11-4 14"/></svg></span><span class="rail-label">SOURCE / DEV NOTE</span></a>
-      <a href="https://arxiv.org/pdf/2610.36682" target="_blank" rel="noreferrer"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/></svg></span><span class="rail-label">RESEARCH PAPER</span></a>
+      <a class="active" href="./">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/>
+</svg>
+</span>
+<span class="rail-label">HOME</span>
+</a>
+      <a href="./launch/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="m14 4 6 6-9 9-7 1 1-7zM12 6l6 6M4 20l5-5"/>
+</svg>
+</span>
+<span class="rail-label">LAUNCH COIN</span>
+</a>
+      <a href="./intent/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M4 7h16M4 12h10M4 17h16M17 9l3 3-3 3"/>
+</svg>
+</span>
+<span class="rail-label">TRADE WITH INTENT</span>
+</a>
+      <a href="./protocol/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7zM8 12l3 3 5-6"/>
+</svg>
+</span>
+<span class="rail-label">PROTOCOL</span>
+</a>
+      <a href="./code/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="m8 8-4 4 4 4m8-8 4 4-4 4m-2-11-4 14"/>
+</svg>
+</span>
+<span class="rail-label">SOURCE CODE</span>
+</a>
+<a href="./research/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/>
+</svg>
+</span>
+<span class="rail-label">RESEARCH PAPER</span>
+</a>
     </nav>
     <div class="rail-bottom">
-      <a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer"><span class="rail-icon"><svg class="fill-icon" viewBox="0 0 24 24"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.1-8.1L3.1 2h6.3l4.4 5.8L18.9 2Zm-1.1 17.9h1.7L8.5 4H6.7l11.1 15.9Z"/></svg></span><span class="rail-label">FOLLOW ON X</span></a>
-      <button id="connect-wallet" class="rail-action"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 6h16v14H3zM3 6l3-3h12v3M15 11h6v5h-6z"/></svg></span><span class="rail-label">CONNECT WALLET</span></button>
-      <a class="rail-action primary" href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M14 4c3-2 6-2 6-2s0 3-2 6l-5 5-4-4 5-5ZM9 9l-4 1-3 3 6 1m5-1 1 6 3-3 1-4M7 17c-2 0-3 1-3 3 2 0 3-1 3-3Z"/></svg></span><span class="rail-label">LAUNCH COIN</span></a>
+      <a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer">
+<span class="rail-icon">
+<svg class="fill-icon" viewBox="0 0 24 24">
+<path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.1-8.1L3.1 2h6.3l4.4 5.8L18.9 2Zm-1.1 17.9h1.7L8.5 4H6.7l11.1 15.9Z"/>
+</svg>
+</span>
+<span class="rail-label">FOLLOW ON X</span>
+</a>
+      <button id="connect-wallet" class="rail-action">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M3 6h16v14H3zM3 6l3-3h12v3M15 11h6v5h-6z"/>
+</svg>
+</span>
+<span class="rail-label">CONNECT WALLET</span>
+</button>
+      <a class="rail-action primary" href="./launch/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M14 4c3-2 6-2 6-2s0 3-2 6l-5 5-4-4 5-5ZM9 9l-4 1-3 3 6 1m5-1 1 6 3-3 1-4M7 17c-2 0-3 1-3 3 2 0 3-1 3-3Z"/>
+</svg>
+</span>
+<span class="rail-label">LAUNCH COIN</span>
+</a>
     </div>
-  </div></aside>
+  </div>
+</aside>
   <main class="app-page">
     <section class="hero-banner" aria-labelledby="hero-title">
-      <div class="hero-copy"><div class="eyebrow">JOLTWORK / INTENT HOOKS ON SOLANA</div><h1 id="hero-title">A hook is not bound to one pool. It is bound to this transaction.</h1><p>Joltwork attaches settlement rules to the user’s individual trade intent. The route can cross routers, pools and token programs; the signed conditions remain with the transaction from execution to final settlement.</p><div class="primary-actions"><a class="button button-solid" href="./launch/">launch a coin</a><a class="button" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer">follow on x</a></div></div>
-      <div class="hero-logo"><img src="./joltwork.png" alt="Joltwork"></div>
+      <div class="hero-copy">
+<div class="eyebrow">JOLTWORK / INTENT HOOKS ON SOLANA</div>
+<h1 id="hero-title">A hook is not bound to one pool. It is bound to this transaction.</h1>
+<p>Joltwork attaches settlement rules to the user’s individual trade intent. The route can cross routers, pools and token programs; the signed conditions remain with the transaction from execution to final settlement.</p>
+<div class="primary-actions">
+<a class="button button-solid" href="./launch/">launch a coin</a>
+<a class="button" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer">follow on x</a>
+</div>
+</div>
+      <div class="hero-logo">
+<img src="./joltwork.png" alt="Joltwork">
+</div>
     </section>
-    <section class="ca-box" aria-label="Official contract address"><div><span>OFFICIAL CONTRACT ADDRESS</span><strong>TBA</strong></div><p>The official CA will be published here first. Verify this page before interacting with any token.</p></section>
+    <section class="ca-box" aria-label="Official contract address">
+<div>
+<span>OFFICIAL CONTRACT ADDRESS</span>
+<strong>TBA</strong>
+</div>
+<p>The official CA will be published here first. Verify this page before interacting with any token.</p>
+</section>
 
-    <section class="dev-letter"><div class="eyebrow">A NOTE FROM THE DEVELOPER</div><h2>Why I am building Joltwork.</h2><p>I started Joltwork with a simple frustration: a trader can carefully choose a route, set slippage and sign a transaction, yet the promise they saw in the interface is still separate from the result that finally settles on-chain. Most tools explain the trade before it happens or analyse it after it happens. I want the promise itself to become executable.</p><p>That is why the hook in Joltwork does not belong to one pool. It belongs to one transaction. The user signs the outcome they are willing to accept—how much may leave, how much must arrive, which route may execute, when the intent expires, and which extra policy must pass. Jolt Guard surrounds the route, measures what actually changed, and lets Solana commit the transaction only when those conditions hold.</p><p>I do not want Joltwork to be another dashboard wearing protocol language. I am building the program, SDK, manifest formats and product surfaces together so the idea can be used by token creators, wallets, routers and ordinary traders. I am publishing the work as it develops because the mechanism should be inspectable, testable and improved in public.</p><p class="dev-signature">— The Joltwork developer<br><span>Building intent-bound settlement on Solana.</span></p></section>
+    <section class="dev-letter">
+<div class="eyebrow">A NOTE FROM THE DEVELOPER</div>
+<h2>Why I am building Joltwork.</h2>
+<p>I started Joltwork with a simple frustration: a trader can carefully choose a route, set slippage and sign a transaction, yet the promise they saw in the interface is still separate from the result that finally settles on-chain. Most tools explain the trade before it happens or analyse it after it happens. I want the promise itself to become executable.</p>
+<p>That is why the hook in Joltwork does not belong to one pool. It belongs to one transaction. The user signs the outcome they are willing to accept—how much may leave, how much must arrive, which route may execute, when the intent expires, and which extra policy must pass. Jolt Guard surrounds the route, measures what actually changed, and lets Solana commit the transaction only when those conditions hold.</p>
+<p>I do not want Joltwork to be another dashboard wearing protocol language. I am building the program, SDK, manifest formats and product surfaces together so the idea can be used by token creators, wallets, routers and ordinary traders. I am publishing the work as it develops because the mechanism should be inspectable, testable and improved in public.</p>
+<p class="dev-signature">— The Joltwork developer<br>
+<span>Building intent-bound settlement on Solana.</span>
+</p>
+</section>
 
-    <section class="section-block evidence-block"><div class="section-head"><div><div class="eyebrow">WHY THIS WORKS ON SOLANA / OFFICIAL CAPABILITIES</div><h2>The runtime already provides the execution model Joltwork needs.</h2></div></div><div class="prose-block"><p>A Solana program can call another program through Cross-Program Invocation. The invoked route shares the same transaction’s remaining compute budget and receives only the signer and writable account privileges that the caller explicitly passes. Joltwork can therefore place Jolt Guard around a router or market instruction, run that route through CPI, reload the affected token accounts, and reject settlement when a signed postcondition is false. Because the instructions belong to one atomic transaction, a failed postcondition causes the transaction path to fail rather than leaving a partially accepted result.</p><p>Token-2022’s Transfer Hook solves a different problem. It attaches custom logic to a particular Mint and runs that logic on every transfer involving that token. Joltwork moves the hook boundary up to the complete transaction intent: one user-selected trade can cross a router, several pools and either token program, while Jolt Guard checks the final realized input and output of the route as a whole.</p></div><div class="source-links"><a href="https://solana.com/docs/core/cpi" target="_blank" rel="noreferrer"><span>SOLANA OFFICIAL DOCUMENTATION</span><strong>Cross-Program Invocation</strong><code>solana.com/docs/core/cpi</code></a><a href="https://solana.com/docs/tokens/extensions/transfer-hook" target="_blank" rel="noreferrer"><span>SOLANA OFFICIAL DOCUMENTATION</span><strong>Token-2022 Transfer Hook</strong><code>solana.com/docs/tokens/extensions/transfer-hook</code></a></div></section>
+    <section class="section-block evidence-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">WHY THIS WORKS ON SOLANA / OFFICIAL CAPABILITIES</div>
+<h2>The runtime already provides the execution model Joltwork needs.</h2>
+</div>
+</div>
+<div class="prose-block">
+<p>A Solana program can call another program through Cross-Program Invocation. The invoked route shares the same transaction’s remaining compute budget and receives only the signer and writable account privileges that the caller explicitly passes. Joltwork can therefore place Jolt Guard around a router or market instruction, run that route through CPI, reload the affected token accounts, and reject settlement when a signed postcondition is false. Because the instructions belong to one atomic transaction, a failed postcondition causes the transaction path to fail rather than leaving a partially accepted result.</p>
+<p>Token-2022’s Transfer Hook solves a different problem. It attaches custom logic to a particular Mint and runs that logic on every transfer involving that token. Joltwork moves the hook boundary up to the complete transaction intent: one user-selected trade can cross a router, several pools and either token program, while Jolt Guard checks the final realized input and output of the route as a whole.</p>
+</div>
+<div class="source-links">
+<a href="https://solana.com/docs/core/cpi" target="_blank" rel="noreferrer">
+<span>SOLANA OFFICIAL DOCUMENTATION</span>
+<strong>Cross-Program Invocation</strong>
+<code>solana.com/docs/core/cpi</code>
+</a>
+<a href="https://solana.com/docs/tokens/extensions/transfer-hook" target="_blank" rel="noreferrer">
+<span>SOLANA OFFICIAL DOCUMENTATION</span>
+<strong>Token-2022 Transfer Hook</strong>
+<code>solana.com/docs/tokens/extensions/transfer-hook</code>
+</a>
+</div>
+</section>
 
-    <section class="section-block"><div class="section-head"><div><div class="eyebrow">THE IDEA / IN PLAIN LANGUAGE</div><h2>One trade. One signed promise. One atomic result.</h2></div><p>A pool hook controls a pool. An intent hook protects the user’s selected transaction, even when the route moves through several programs.</p></div><div class="prose-block compact"><p>Think of a pool hook as a rule attached to a place: whenever activity enters that pool, the pool’s rule runs. An intent hook is a rule attached to a decision: whenever this user’s specific transaction executes, the user’s rule travels with it. This is why Joltwork can protect the complete economic outcome instead of only one stop along the route.</p></div><div class="split-panel"><article><h3>Pool-bound hooks</h3><ul class="check-list warn"><li>Live inside one liquidity venue.</li><li>Are usually selected by the pool or asset creator.</li><li>See only the activity that enters that venue.</li><li>Cannot describe the user’s complete multi-program route.</li></ul></article><article><h3>Jolt intent hooks</h3><ul class="check-list"><li>Travel with one user-authorized transaction.</li><li>Protect maximum input and minimum output.</li><li>Restrict route, expiry and custom policy conditions.</li><li>Commit with a receipt or revert the whole route.</li></ul></article></div></section>
+    <section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">THE IDEA / IN PLAIN LANGUAGE</div>
+<h2>One trade. One signed promise. One atomic result.</h2>
+</div>
+<p>A pool hook controls a pool. An intent hook protects the user’s selected transaction, even when the route moves through several programs.</p>
+</div>
+<div class="prose-block compact">
+<p>Think of a pool hook as a rule attached to a place: whenever activity enters that pool, the pool’s rule runs. An intent hook is a rule attached to a decision: whenever this user’s specific transaction executes, the user’s rule travels with it. This is why Joltwork can protect the complete economic outcome instead of only one stop along the route.</p>
+</div>
+<div class="split-panel">
+<article>
+<h3>Pool-bound hooks</h3>
+<ul class="check-list warn">
+<li>Live inside one liquidity venue.</li>
+<li>Are usually selected by the pool or asset creator.</li>
+<li>See only the activity that enters that venue.</li>
+<li>Cannot describe the user’s complete multi-program route.</li>
+</ul>
+</article>
+<article>
+<h3>Jolt intent hooks</h3>
+<ul class="check-list">
+<li>Travel with one user-authorized transaction.</li>
+<li>Protect maximum input and minimum output.</li>
+<li>Restrict route, expiry and custom policy conditions.</li>
+<li>Commit with a receipt or revert the whole route.</li>
+</ul>
+</article>
+</div>
+</section>
 
-    <section class="section-block"><div class="section-head"><div><div class="eyebrow">HOW IT WORKS</div><h2>Declare first. Execute second. Settle only if true.</h2></div><p>Joltwork does not invent liquidity. It wraps the route selected by the user or interface and enforces the signed economic boundary around it.</p></div><div class="step-grid"><article><span>01 / DECLARE</span><h3>Set the outcome</h3><p>The wallet defines max input, min output, expiry, route and optional policy data.</p></article><article><span>02 / AUTHORIZE</span><h3>Sign the intent</h3><p>A canonical manifest binds those constraints to the user and derives an intent identity.</p></article><article><span>03 / EXECUTE</span><h3>Run the route</h3><p>Jolt Guard snapshots balances and invokes the selected programs through CPI.</p></article><article><span>04 / VERIFY</span><h3>Commit or revert</h3><p>Real balances are reloaded. Valid outcomes return a JRC1 receipt; invalid ones roll back.</p></article></div><div class="prose-block after-grid"><p>For a trader, this means the interface is no longer asking them to trust a descriptive quote alone. The maximum spend and minimum receive values become part of the instruction data. For an integrator, it means an existing route can remain responsible for finding liquidity while Jolt Guard remains responsible for deciding whether the realized result is acceptable.</p><p>The receipt is important for the same reason. A successful JRC1 result records the intent identity and measured balance changes, giving wallets and indexers a direct settlement artifact instead of forcing them to reconstruct the user’s original guarantee from interface text.</p></div></section>
+    <section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">HOW IT WORKS</div>
+<h2>Declare first. Execute second. Settle only if true.</h2>
+</div>
+<p>Joltwork does not invent liquidity. It wraps the route selected by the user or interface and enforces the signed economic boundary around it.</p>
+</div>
+<div class="step-grid">
+<article>
+<span>01 / DECLARE</span>
+<h3>Set the outcome</h3>
+<p>The wallet defines max input, min output, expiry, route and optional policy data.</p>
+</article>
+<article>
+<span>02 / AUTHORIZE</span>
+<h3>Sign the intent</h3>
+<p>A canonical manifest binds those constraints to the user and derives an intent identity.</p>
+</article>
+<article>
+<span>03 / EXECUTE</span>
+<h3>Run the route</h3>
+<p>Jolt Guard snapshots balances and invokes the selected programs through CPI.</p>
+</article>
+<article>
+<span>04 / VERIFY</span>
+<h3>Commit or revert</h3>
+<p>Real balances are reloaded. Valid outcomes return a JRC1 receipt; invalid ones roll back.</p>
+</article>
+</div>
+<div class="prose-block after-grid">
+<p>For a trader, this means the interface is no longer asking them to trust a descriptive quote alone. The maximum spend and minimum receive values become part of the instruction data. For an integrator, it means an existing route can remain responsible for finding liquidity while Jolt Guard remains responsible for deciding whether the realized result is acceptable.</p>
+<p>The receipt is important for the same reason. A successful JRC1 result records the intent identity and measured balance changes, giving wallets and indexers a direct settlement artifact instead of forcing them to reconstruct the user’s original guarantee from interface text.</p>
+</div>
+</section>
 
-    <section class="route-grid" aria-label="Joltwork products"><a class="route-card" href="./launch/"><span class="card-icon">L</span><h3>Launch Coin</h3><p>Create a Token-2022 asset and compile the default intent policy traders will see.</p><small>OPEN LAUNCHER →</small></a><a class="route-card" href="./intent/"><span class="card-icon">I</span><h3>Trade with Intent</h3><p>Turn route, cost, output and expiry limits into a deterministic transaction manifest.</p><small>OPEN COMPOSER →</small></a><a class="route-card" href="./protocol/"><span class="card-icon">G</span><h3>Jolt Guard</h3><p>Inspect the pre-hook, CPI execution, postcondition checks and receipt format.</p><small>READ PROTOCOL →</small></a></section>
+    <section class="route-grid" aria-label="Joltwork products">
+<a class="route-card" href="./launch/">
+<span class="card-icon">L</span>
+<h3>Launch Coin</h3>
+<p>Create a Token-2022 asset and compile the default intent policy traders will see.</p>
+<small>OPEN LAUNCHER →</small>
+</a>
+<a class="route-card" href="./intent/">
+<span class="card-icon">I</span>
+<h3>Trade with Intent</h3>
+<p>Turn route, cost, output and expiry limits into a deterministic transaction manifest.</p>
+<small>OPEN COMPOSER →</small>
+</a>
+<a class="route-card" href="./protocol/">
+<span class="card-icon">G</span>
+<h3>Jolt Guard</h3>
+<p>Inspect the pre-hook, CPI execution, postcondition checks and receipt format.</p>
+<small>READ PROTOCOL →</small>
+</a>
+</section>
 
-    <section class="section-block"><div class="section-head"><div><div class="eyebrow">WHAT EXISTS / WHAT COMES NEXT</div><h2>Building the protocol as a complete stack.</h2></div></div><div class="prose-block compact"><p>The lists below are not a decorative roadmap. They separate the mechanism already represented in source and tests from the work required to make it a production network service. I want users to be able to see that boundary clearly and watch it move as each release is shipped.</p></div><div class="split-panel"><article><h3>Built now</h3><ul class="check-list"><li>Rust Jolt Guard program with pre, execute and post phases.</li><li>TypeScript instruction builder and account indexing SDK.</li><li>JLM1 launch and JOLT V1 intent compilers.</li><li>JHK1 policy and JRC1 receipt specifications.</li><li>Protocol CI, SDK tests and inspectable source.</li></ul></article><article><h3>Shipping next</h3><ul class="check-list warn"><li>Verified public Solana deployment and Program ID.</li><li>Wallet-side transaction assembly and signing flow.</li><li>Production adapters for launchpads and routers.</li><li>Independent security review and adversarial test coverage.</li><li>On-chain policy registry and settlement explorer.</li></ul></article></div></section>
+    <section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">WHAT EXISTS / WHAT COMES NEXT</div>
+<h2>Building the protocol as a complete stack.</h2>
+</div>
+</div>
+<div class="prose-block compact">
+<p>The lists below are not a decorative roadmap. They separate the mechanism already represented in source and tests from the work required to make it a production network service. I want users to be able to see that boundary clearly and watch it move as each release is shipped.</p>
+</div>
+<div class="split-panel">
+<article>
+<h3>Built now</h3>
+<ul class="check-list">
+<li>Rust Jolt Guard program with pre, execute and post phases.</li>
+<li>TypeScript instruction builder and account indexing SDK.</li>
+<li>JLM1 launch and JOLT V1 intent compilers.</li>
+<li>JHK1 policy and JRC1 receipt specifications.</li>
+<li>Protocol CI, SDK tests and inspectable source.</li>
+</ul>
+</article>
+<article>
+<h3>Shipping next</h3>
+<ul class="check-list warn">
+<li>Verified public Solana deployment and Program ID.</li>
+<li>Wallet-side transaction assembly and signing flow.</li>
+<li>Production adapters for launchpads and routers.</li>
+<li>Independent security review and adversarial test coverage.</li>
+<li>On-chain policy registry and settlement explorer.</li>
+</ul>
+</article>
+</div>
+</section>
 
-    <section class="section-block"><div class="section-head"><div><div class="eyebrow">WHO JOLTWORK IS FOR</div><h2>A shared settlement layer for the transaction stack.</h2></div></div><div class="prose-block compact"><p>The same intent has different value at each layer. A trader gets a real limit; a wallet gets something precise to explain; a router keeps freedom to search for liquidity; a token creator can publish a baseline policy; and an indexer receives a compact record of what actually settled.</p></div><div class="fact-grid"><article><b>TRADERS</b><strong>Sign the real limit</strong><p>Protect a route with explicit spend, receive, expiry and policy conditions.</p></article><article><b>COIN CREATORS</b><strong>Publish a baseline</strong><p>Launch an asset with a default policy that interfaces can explain and strengthen.</p></article><article><b>WALLETS</b><strong>Show enforceable terms</strong><p>Present the signed intent and successful receipt in language users can verify.</p></article><article><b>ROUTERS</b><strong>Keep route freedom</strong><p>Continue optimizing liquidity while executing inside a user-defined boundary.</p></article><article><b>POLICY DEVELOPERS</b><strong>Compose new rules</strong><p>Build JHK1 programs for fees, counterparties, treasuries or application logic.</p></article><article><b>INDEXERS</b><strong>Read realized outcomes</strong><p>Consume JRC1 return data instead of inferring every guarantee from UI text.</p></article></div></section>
+    <section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">WHO JOLTWORK IS FOR</div>
+<h2>A shared settlement layer for the transaction stack.</h2>
+</div>
+</div>
+<div class="prose-block compact">
+<p>The same intent has different value at each layer. A trader gets a real limit; a wallet gets something precise to explain; a router keeps freedom to search for liquidity; a token creator can publish a baseline policy; and an indexer receives a compact record of what actually settled.</p>
+</div>
+<div class="fact-grid">
+<article>
+<b>TRADERS</b>
+<strong>Sign the real limit</strong>
+<p>Protect a route with explicit spend, receive, expiry and policy conditions.</p>
+</article>
+<article>
+<b>COIN CREATORS</b>
+<strong>Publish a baseline</strong>
+<p>Launch an asset with a default policy that interfaces can explain and strengthen.</p>
+</article>
+<article>
+<b>WALLETS</b>
+<strong>Show enforceable terms</strong>
+<p>Present the signed intent and successful receipt in language users can verify.</p>
+</article>
+<article>
+<b>ROUTERS</b>
+<strong>Keep route freedom</strong>
+<p>Continue optimizing liquidity while executing inside a user-defined boundary.</p>
+</article>
+<article>
+<b>POLICY DEVELOPERS</b>
+<strong>Compose new rules</strong>
+<p>Build JHK1 programs for fees, counterparties, treasuries or application logic.</p>
+</article>
+<article>
+<b>INDEXERS</b>
+<strong>Read realized outcomes</strong>
+<p>Consume JRC1 return data instead of inferring every guarantee from UI text.</p>
+</article>
+</div>
+</section>
 
-    <section class="section-block"><div class="section-head"><div><div class="eyebrow">COMMON QUESTIONS</div><h2>The boundaries are part of the product.</h2></div></div><div class="faq"><details><summary>Is Joltwork another AMM or a Solana explorer?</summary><p>No. Joltwork is a settlement wrapper and policy interface. Existing launchpads, AMMs and routers provide liquidity; Jolt Guard enforces the user’s signed conditions around their route.</p></details><details><summary>Why not attach the hook directly to every pool?</summary><p>Because a user’s route may cross several programs and pools. Binding the hook to the intent gives the transaction one economic boundary from start to finish.</p></details><details><summary>What happens when a condition fails?</summary><p>The guard returns an error. Solana’s atomic transaction model rolls back the route, so the protected transaction does not settle partially.</p></details><details><summary>Where will the official token address appear?</summary><p>Only in the official contract-address box at the top of this page and through the linked Joltwork X account. Until then, the displayed value remains TBA.</p></details></div></section>
+    <section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">COMMON QUESTIONS</div>
+<h2>The boundaries are part of the product.</h2>
+</div>
+</div>
+<div class="faq">
+<details>
+<summary>Is Joltwork another AMM or a Solana explorer?</summary>
+<p>No. Joltwork is a settlement wrapper and policy interface. Existing launchpads, AMMs and routers provide liquidity; Jolt Guard enforces the user’s signed conditions around their route.</p>
+</details>
+<details>
+<summary>Why not attach the hook directly to every pool?</summary>
+<p>Because a user’s route may cross several programs and pools. Binding the hook to the intent gives the transaction one economic boundary from start to finish.</p>
+</details>
+<details>
+<summary>What happens when a condition fails?</summary>
+<p>The guard returns an error. Solana’s atomic transaction model rolls back the route, so the protected transaction does not settle partially.</p>
+</details>
+<details>
+<summary>Where will the official token address appear?</summary>
+<p>Only in the official contract-address box at the top of this page and through the linked Joltwork X account. Until then, the displayed value remains TBA.</p>
+</details>
+</div>
+</section>
 
-    <section class="cta-panel"><div><h2>Read the mechanism, inspect the code, then try the product.</h2><p>Joltwork is being built in public so every settlement rule can be traced from interface to program.</p></div><div class="primary-actions"><a class="button button-solid" href="./launch/">launch a coin</a><a class="button" href="./code/">inspect source</a></div></section>
-    <footer><span>JOLTWORK / SOLANA</span><span>INTENT HOOKS / ATOMIC SETTLEMENT</span><span>© 2026 JOLTWORK</span></footer>
-  </main><script src="./app.js"></script>
-</body></html>
+    <section class="cta-panel">
+<div>
+<h2>Read the mechanism, inspect the code, then try the product.</h2>
+<p>Joltwork is being built in public so every settlement rule can be traced from interface to program.</p>
+</div>
+<div class="primary-actions">
+<a class="button button-solid" href="./launch/">launch a coin</a>
+<a class="button" href="./code/">inspect source</a>
+</div>
+</section>
+    <footer>
+<span>JOLTWORK / SOLANA</span>
+<span>INTENT HOOKS / ATOMIC SETTLEMENT</span>
+<span>© 2026 JOLTWORK</span>
+</footer>
+  </main>
+<script src="./app.js">
+</script>
+</body>
+</html>

@@ -39,6 +39,16 @@
   var boundProviders = [];
   var walletButton = byId("connect-wallet");
 
+  function walletLogo(name) {
+    var icons = {
+      Phantom: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#ab9ff2"/><path fill="#fff" d="M32.5 19.2c0 7.7-5.8 13.5-13.6 13.5-5.6 0-10.3-3-12.4-7.4-.3-.6.2-1.3.9-1.3h4.1c.6 0 1.1-.4 1.2-1l.5-2.2c.1-.6.7-1 1.3-1h.9c.7 0 1.2.6 1.1 1.3l-.4 2.1c-.1.5.3.9.8.9h1.4c.6 0 1.1-.4 1.2-1l.5-2.2c.1-.6.7-1 1.3-1h.9c.7 0 1.2.6 1.1 1.3l-.4 2.1c-.1.5.3.9.8.9 3.2-.1 5.8-2.7 5.8-5.9 0-5.1-4.2-9.3-9.4-9.3-4.9 0-9 3.7-9.4 8.5-.1.7-.6 1.2-1.3 1.2H7.6c-.7 0-1.2-.6-1.2-1.3C7 10.5 12.8 5 20.1 5c6.9 0 12.4 5.7 12.4 14.2Z"/></svg>',
+      Solflare: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#111"/><path fill="#fc9d18" d="m20 5 4 8 9-2-5 8 7 6-10 1-1 9-6-7-8 5 2-10-8-4 9-4-1-9 8 7Z"/><circle cx="20" cy="20" r="6" fill="#ffd36a"/></svg>',
+      Backpack: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#e33e2f"/><path fill="#fff" d="M14 11a6 6 0 0 1 12 0v2h2.5a3.5 3.5 0 0 1 3.5 3.5V31H8V16.5a3.5 3.5 0 0 1 3.5-3.5H14v-2Zm3 2h6v-2a3 3 0 0 0-6 0v2Zm-4 5v8h14v-8H13Z"/></svg>',
+      "Solana Wallet": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#111"/><path fill="#14f195" d="M11 10h22l-4 5H7l4-5Zm-4 9h22l4 5H11l-4-5Zm4 9h22l-4 5H7l4-5Z"/></svg>'
+    };
+    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(icons[name] || icons["Solana Wallet"]);
+  }
+
   function shortAddress(address) {
     return address ? address.slice(0, 5) + "…" + address.slice(-5) : "NOT CONNECTED";
   }
@@ -79,8 +89,8 @@
     function add(name, wallet, install) {
       if (wallet && typeof wallet.connect === "function" && seen.indexOf(wallet) === -1) {
         seen.push(wallet);
-        wallets.push({ name: name, provider: wallet, install: install, detected: true });
-      } else if (!wallet) wallets.push({ name: name, provider: null, install: install, detected: false });
+        wallets.push({ name: name, provider: wallet, install: install, icon: walletLogo(name), detected: true });
+      } else if (!wallet) wallets.push({ name: name, provider: null, install: install, icon: walletLogo(name), detected: false });
     }
     add("Phantom", window.phantom && window.phantom.solana, "https://phantom.com/download");
     add("Solflare", window.solflare, "https://www.solflare.com/download/");
@@ -140,7 +150,7 @@
         item = document.createElement("button");
         item.type = "button";
         item.className = "wallet-option";
-        item.innerHTML = '<span class="wallet-badge">' + wallet.name.charAt(0) + '</span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
+        item.innerHTML = '<span class="wallet-badge"><img src="' + wallet.icon + '" alt=""></span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
         item.addEventListener("click", function () { connectWallet(wallet); });
       } else {
         item = document.createElement("a");
@@ -148,7 +158,7 @@
         item.href = wallet.install;
         item.target = "_blank";
         item.rel = "noreferrer";
-        item.innerHTML = '<span class="wallet-badge">' + wallet.name.charAt(0) + '</span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
+        item.innerHTML = '<span class="wallet-badge"><img src="' + wallet.icon + '" alt=""></span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
       }
       options.appendChild(item);
     });
@@ -234,7 +244,7 @@
       launch: {
         route: byId("coin-route").value,
         quoteAsset: byId("coin-quote").value,
-        holderRewards: byId("coin-rewards").value === "true"
+        network: byId("coin-network") ? byId("coin-network").value : "solana-mainnet-beta"
       },
       defaultIntentPolicy: {
         type: byId("coin-policy").value,
@@ -317,87 +327,37 @@
     });
   });
 
-  var codeFiles = {
-    program: [
-      "let source_before = token_amount(source)?;",
-      "let destination_before = token_amount(destination)?;",
-      "",
-      "indexed_cpi(",
-      "    route_program,",
-      "    accounts,",
-      "    &intent.route_indices,",
-      "    intent.route_data.clone(),",
-      ")?;",
-      "",
-      "let source_spent = source_before",
-      "    .checked_sub(token_amount(source)?)?;",
-      "let destination_received = token_amount(destination)?",
-      "    .checked_sub(destination_before)?;",
-      "",
-      "if source_spent > intent.max_input {",
-      "    return Err(custom(MAX_INPUT));",
-      "}",
-      "if destination_received < intent.min_output {",
-      "    return Err(custom(MIN_OUTPUT));",
-      "}"
-    ].join("\n"),
-    sdk: [
-      "export function buildExecuteIntentInstruction(args) {",
-      "  const { shared, routeIndices, hookIndices } =",
-      "    dedupeSharedAccounts(args.routeAccounts, args.hookAccounts);",
-      "",
-      "  return {",
-      "    programAddress: args.programAddress,",
-      "    accounts: fixedAccounts.concat(shared),",
-      "    data: encodeExecuteIntent({",
-      "      constraints: args.constraints,",
-      "      routeIndices,",
-      "      hookIndices,",
-      "      routeData: args.routeData",
-      "    })",
-      "  };",
-      "}"
-    ].join("\n"),
-    spec: [
-      "JOLT GUARD / EXECUTION",
-      "",
-      "1. verify authority, expiry and program accounts",
-      "2. read source and destination token balances",
-      "3. invoke policy hook with phase PRE",
-      "4. invoke the selected route through CPI",
-      "5. reload balances and calculate integer deltas",
-      "6. reject max-input or min-output violations",
-      "7. invoke policy hook with phase POST",
-      "8. return JRC1 settlement proof"
-    ].join("\n"),
-    ci: [
-      "protocol-ci",
-      "",
-      "rust:",
-      "  cargo test --manifest-path programs/jolt-guard/Cargo.toml",
-      "",
-      "sdk:",
-      "  npm ci",
-      "  npm test",
-      "",
-      "latest result: PASS"
-    ].join("\n")
-  };
-
+  var sourceBase = "https://raw.githubusercontent.com/dellmodrun/Joltwork/main/";
+  var codeFiles = {};
   var codePaths = {
     program: "programs/jolt-guard/src/lib.rs",
+    cargo: "programs/jolt-guard/Cargo.toml",
     sdk: "sdk/src/index.ts",
+    tests: "sdk/test/codec.test.js",
+    package: "sdk/package.json",
     spec: "JOLT_GUARD.md",
+    readme: "README.md",
     ci: ".github/workflows/protocol-ci.yml"
   };
 
-  function showCode(key, button) {
+  async function showCode(key, button) {
     if (!byId("code-view") || !byId("code-path")) return;
-    byId("code-view").textContent = codeFiles[key];
-    byId("code-path").textContent = codePaths[key];
+    var path = codePaths[key];
+    byId("code-path").textContent = path;
+    byId("code-view").textContent = "loading complete source…";
     document.querySelectorAll("[data-code]").forEach(function (item) {
       item.classList.toggle("active", item === button);
     });
+    try {
+      if (!codeFiles[key]) {
+        var response = await fetch(sourceBase + path, { cache: "no-store" });
+        if (!response.ok) throw new Error("source request failed");
+        codeFiles[key] = await response.text();
+      }
+      byId("code-view").textContent = codeFiles[key];
+    } catch (error) {
+      byId("code-view").textContent = "The live source could not be loaded in this browser.\n\nOpen the same file in GitHub:\nhttps://github.com/dellmodrun/Joltwork/blob/main/" + path;
+    }
   }
 
   document.querySelectorAll("[data-code]").forEach(function (button) {

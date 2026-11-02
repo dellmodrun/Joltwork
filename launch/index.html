@@ -1,20 +1,291 @@
-<!doctype html><html lang="en"><head><base href="../"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Launch a Solana coin with a Joltwork intent policy."><title>Launch Coin — Joltwork</title><link rel="icon" href="./joltwork.png"><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./enhancements.css"></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<base href="../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Launch a Solana coin with a Joltwork intent policy.">
+<title>Launch Coin — Joltwork</title>
+<link rel="icon" href="./joltwork.png">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./enhancements.css">
+</head>
+<body>
 <button id="menu-toggle" class="menu-toggle" aria-label="Open navigation" aria-expanded="false">≡</button>
-<aside class="site-rail" aria-label="Primary navigation"><div class="rail-inner"><a class="rail-brand" href="./"><img src="./joltwork.png" alt=""><span>Joltwork<small>INTENT HOOKS / SOLANA</small></span></a><nav class="rail-nav">
-<a href="./"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg></span><span class="rail-label">HOME</span></a>
-<a class="active" href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m14 4 6 6-9 9-7 1 1-7zM12 6l6 6M4 20l5-5"/></svg></span><span class="rail-label">LAUNCH COIN</span></a>
-<a href="./intent/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16M17 9l3 3-3 3"/></svg></span><span class="rail-label">TRADE WITH INTENT</span></a>
-<a href="./protocol/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7zM8 12l3 3 5-6"/></svg></span><span class="rail-label">PROTOCOL</span></a>
-<a href="./code/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m8 8-4 4 4 4m8-8 4 4-4 4m-2-11-4 14"/></svg></span><span class="rail-label">SOURCE / DEV NOTE</span></a>
-<a href="https://arxiv.org/pdf/2610.36682" target="_blank" rel="noreferrer"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/></svg></span><span class="rail-label">RESEARCH PAPER</span></a></nav>
-<div class="rail-bottom"><a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer"><span class="rail-icon"><svg class="fill-icon" viewBox="0 0 24 24"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.1-8.1L3.1 2h6.3l4.4 5.8L18.9 2Zm-1.1 17.9h1.7L8.5 4H6.7l11.1 15.9Z"/></svg></span><span class="rail-label">FOLLOW ON X</span></a><button id="connect-wallet" class="rail-action"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 6h16v14H3zM3 6l3-3h12v3M15 11h6v5h-6z"/></svg></span><span class="rail-label">CONNECT WALLET</span></button><a class="rail-action primary" href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M14 4c3-2 6-2 6-2s0 3-2 6l-5 5-4-4 5-5ZM9 9l-4 1-3 3 6 1m5-1 1 6 3-3 1-4M7 17c-2 0-3 1-3 3 2 0 3-1 3-3Z"/></svg></span><span class="rail-label">LAUNCH COIN</span></a></div></div></aside>
-<main class="app-page"><header class="page-title"><div class="page-title-row"><div><div class="eyebrow">PRODUCT / TOKEN LAUNCHER</div><h1>Launch Coin</h1></div><span class="page-code">JLM1 / TOKEN-2022 / SOLANA</span></div><p>Create a Token-2022 coin and compile the default economic policy that interfaces can present to every trader.</p></header>
-<section class="chapter"><div class="chapter-label">LAUNCH WORKBENCH</div><h2>Define the asset and its settlement policy.</h2><div class="wallet-context"><span>SIGNING AUTHORITY</span><b data-wallet-state>not connected</b><small>The creator wallet will be written into the compiled manifest.</small></div><div class="workbench">
-<form id="launch-form" class="form-sheet"><div class="form-heading"><span>LAUNCH MANIFEST</span><span>JLM1</span></div><div class="field-pair"><label>COIN NAME<input id="coin-name" maxlength="32" value="Joltwork Coin" required></label><label>SYMBOL<input id="coin-symbol" maxlength="13" value="JOLT" required></label></div><label>METADATA URI<input id="coin-uri" type="url" value="https://example.com/jolt.json" required></label><div class="field-pair"><label>QUOTE ASSET<select id="coin-quote"><option value="SOL">SOL</option><option value="USDC">USDC</option><option value="PUMP_COIN">PUMP COIN</option></select></label><label>LAUNCH ROUTE<select id="coin-route"><option value="pump-create-v2">PUMP CREATE_V2</option><option value="jolt-native">JOLT NATIVE</option></select></label></div><div class="field-pair"><label>DEFAULT POLICY<select id="coin-policy"><option value="max-cost">MAXIMUM TOTAL COST</option><option value="allowed-route">ALLOWED ROUTE</option><option value="token-fee-cap">TOKEN FEE CEILING</option><option value="none">NONE</option></select></label><label>HOLDER REWARDS<select id="coin-rewards"><option value="false">DISABLED</option><option value="true">ENABLED</option></select></label></div><div class="form-actions"><button type="button" class="button" data-wallet-connect>connect wallet</button><button type="submit" class="button button-solid">compile launch plan</button></div></form>
-<div class="output-sheet"><div class="form-heading"><span>COMPILED OUTPUT</span><span class="output-tools"><button class="text-button" data-copy="launch-output">copy</button><button class="text-button" data-download="launch-output" data-filename="joltwork-launch-manifest.json">download</button></span></div><pre id="launch-output">Complete the launch manifest to derive its deterministic policy identity.</pre></div></div><div class="callout"><b>SIGNING BOUNDARY</b><p>The compiler creates an inspectable launch plan. A connected wallet remains the only authority permitted to approve transaction assembly and submission.</p></div></section>
-<section class="home-panel"><div class="eyebrow">WHAT GETS CREATED</div><h2>One launch, three protocol artifacts.</h2><div class="module-grid"><article><b>01 / TOKEN-2022 MINT</b><p>The asset, metadata and authority configuration.</p></article><article><b>02 / MARKET ROUTE</b><p>Pump create_v2 or a Jolt-native market initialization plan.</p></article><article><b>03 / DEFAULT INTENT POLICY</b><p>A discoverable baseline that wallets may strengthen per transaction.</p></article></div></section>
-<section class="section-block"><div class="section-head"><div><div class="eyebrow">LAUNCH PIPELINE</div><h2>A reviewable path from metadata to market.</h2></div><p>Each stage produces explicit data so a creator can review authorities, route configuration and policy before signing.</p></div><div class="step-grid"><article><span>01 / ASSET</span><h3>Define metadata</h3><p>Name, symbol and URI are normalized into the JLM1 launch manifest.</p></article><article><span>02 / POLICY</span><h3>Select rules</h3><p>Choose a baseline cost, route or fee constraint for supported interfaces.</p></article><article><span>03 / ROUTE</span><h3>Assemble</h3><p>Prepare Token-2022 creation and the selected Pump or native market instructions.</p></article><article><span>04 / AUTHORITY</span><h3>Review & sign</h3><p>The connected creator approves the final transaction from their own wallet.</p></article></div></section>
-<section class="section-block"><div class="section-head"><div><div class="eyebrow">PRE-FLIGHT</div><h2>Launch readiness checklist.</h2></div></div><div class="split-panel"><article><h3>Required inputs</h3><ul class="check-list"><li>Metadata URI resolves to valid token metadata.</li><li>Name and symbol fit the selected launch route limits.</li><li>Creator wallet has sufficient SOL for rent and fees.</li><li>Quote asset and initial market route are confirmed.</li></ul></article><article><h3>Creator decisions</h3><ul class="check-list warn"><li>Whether mint and metadata authorities remain mutable.</li><li>Which default policy wallets should display.</li><li>Whether holder rewards are enabled.</li><li>Which treasury and social links are published.</li></ul></article></div></section>
-<section class="section-block"><div class="section-head"><div><div class="eyebrow">FAQ / LAUNCH</div><h2>Before creating a coin.</h2></div></div><div class="faq"><details><summary>Does a default policy prevent users from adding stricter limits?</summary><p>No. The issuer policy is a baseline. A trader may bind tighter max-input, min-output, expiry or route constraints to an individual transaction.</p></details><details><summary>Is the policy tied to one liquidity pool?</summary><p>No. Joltwork’s intent policy is evaluated around the chosen transaction route, allowing it to move across supported launchpads, routers and markets.</p></details><details><summary>Who signs the launch transaction?</summary><p>The connected creator wallet. Joltwork compiles the plan and exposes the exact output; it does not take custody of the creator’s signing authority.</p></details></div></section>
-<section class="cta-panel"><div><h2>Need the execution model first?</h2><p>Review Jolt Guard’s pre-hook, CPI route and postcondition phases.</p></div><a class="button" href="./protocol/">read protocol</a></section>
-<footer><span>JOLTWORK / LAUNCH</span><span>JLM1 MANIFEST COMPILER</span><span>© 2026 JOLTWORK</span></footer></main><script src="./app.js"></script></body></html>
+<aside class="site-rail" aria-label="Primary navigation">
+<div class="rail-inner">
+<a class="rail-brand" href="./">
+<img src="./joltwork.png" alt="">
+<span>Joltwork<small>INTENT HOOKS / SOLANA</small>
+</span>
+</a>
+<nav class="rail-nav">
+<a href="./">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/>
+</svg>
+</span>
+<span class="rail-label">HOME</span>
+</a>
+<a class="active" href="./launch/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="m14 4 6 6-9 9-7 1 1-7zM12 6l6 6M4 20l5-5"/>
+</svg>
+</span>
+<span class="rail-label">LAUNCH COIN</span>
+</a>
+<a href="./intent/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M4 7h16M4 12h10M4 17h16M17 9l3 3-3 3"/>
+</svg>
+</span>
+<span class="rail-label">TRADE WITH INTENT</span>
+</a>
+<a href="./protocol/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7zM8 12l3 3 5-6"/>
+</svg>
+</span>
+<span class="rail-label">PROTOCOL</span>
+</a>
+<a href="./code/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="m8 8-4 4 4 4m8-8 4 4-4 4m-2-11-4 14"/>
+</svg>
+</span>
+<span class="rail-label">SOURCE CODE</span>
+</a>
+<a href="./research/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/>
+</svg>
+</span>
+<span class="rail-label">RESEARCH PAPER</span>
+</a>
+</nav>
+<div class="rail-bottom">
+<a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer">
+<span class="rail-icon">
+<svg class="fill-icon" viewBox="0 0 24 24">
+<path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.1-8.1L3.1 2h6.3l4.4 5.8L18.9 2Zm-1.1 17.9h1.7L8.5 4H6.7l11.1 15.9Z"/>
+</svg>
+</span>
+<span class="rail-label">FOLLOW ON X</span>
+</a>
+<button id="connect-wallet" class="rail-action">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M3 6h16v14H3zM3 6l3-3h12v3M15 11h6v5h-6z"/>
+</svg>
+</span>
+<span class="rail-label">CONNECT WALLET</span>
+</button>
+<a class="rail-action primary" href="./launch/">
+<span class="rail-icon">
+<svg viewBox="0 0 24 24">
+<path d="M14 4c3-2 6-2 6-2s0 3-2 6l-5 5-4-4 5-5ZM9 9l-4 1-3 3 6 1m5-1 1 6 3-3 1-4M7 17c-2 0-3 1-3 3 2 0 3-1 3-3Z"/>
+</svg>
+</span>
+<span class="rail-label">LAUNCH COIN</span>
+</a>
+</div>
+</div>
+</aside>
+<main class="app-page">
+<header class="page-title">
+<div class="page-title-row">
+<div>
+<div class="eyebrow">PRODUCT / TOKEN LAUNCHER</div>
+<h1>Launch Coin</h1>
+</div>
+<span class="page-code">JLM1 / TOKEN-2022 / SOLANA</span>
+</div>
+<p>Define a Solana token launch, bind a default intent policy and export one reviewable plan before any wallet is asked to sign.</p>
+</header>
+<section class="chapter">
+<div class="chapter-label">LAUNCH WORKBENCH</div>
+<h2>One focused path: asset, market, policy, review.</h2>
+<div class="wallet-context">
+<span>SIGNING AUTHORITY</span>
+<b data-wallet-state>not connected</b>
+<small>The creator wallet will be written into the compiled manifest.</small>
+</div>
+<div class="workbench">
+<form id="launch-form" class="form-sheet">
+<div class="form-heading">
+<span>LAUNCH MANIFEST</span>
+<span>JLM1</span>
+</div>
+<div class="field-pair">
+<label>COIN NAME<input id="coin-name" maxlength="32" value="Joltwork Coin" required>
+</label>
+<label>SYMBOL<input id="coin-symbol" maxlength="13" value="JOLT" required>
+</label>
+</div>
+<label>METADATA URI<input id="coin-uri" type="url" value="https://example.com/jolt.json" required>
+</label>
+<div class="field-pair">
+<label>QUOTE ASSET<select id="coin-quote">
+<option value="SOL">SOL</option>
+<option value="USDC">USDC</option>
+<option value="PUMP_COIN">PUMP COIN</option>
+</select>
+</label>
+<label>LAUNCH ROUTE<select id="coin-route">
+<option value="pump-create-v2">PUMP CREATE_V2</option>
+</select>
+</label>
+</div>
+<div class="field-pair">
+<label>DEFAULT POLICY<select id="coin-policy">
+<option value="max-cost">MAXIMUM TOTAL COST</option>
+<option value="allowed-route">ALLOWED ROUTE</option>
+<option value="token-fee-cap">TOKEN FEE CEILING</option>
+<option value="none">NONE</option>
+</select>
+</label>
+<label>NETWORK<select id="coin-network"><option value="solana-mainnet-beta">SOLANA MAINNET</option></select></label>
+</div>
+<div class="form-actions">
+<button type="button" class="button" data-wallet-connect>connect wallet</button>
+<button type="submit" class="button button-solid">compile launch plan</button>
+</div>
+</form>
+<div class="output-sheet">
+<div class="form-heading">
+<span>COMPILED OUTPUT</span>
+<span class="output-tools">
+<button class="text-button" data-copy="launch-output">copy</button>
+<button class="text-button" data-download="launch-output" data-filename="joltwork-launch-manifest.json">download</button>
+</span>
+</div>
+<pre id="launch-output">Complete the launch manifest to derive its deterministic policy identity.</pre>
+</div>
+</div>
+<div class="callout">
+<b>SIGNING BOUNDARY</b>
+<p>This release compiles an inspectable JLM1 plan; it does not claim that a mint has been created. Mainnet submission will be enabled only with a published Jolt Guard Program ID and a tested Pump adapter. The connected wallet remains the sole signing authority.</p>
+</div>
+</section>
+<section class="home-panel">
+<div class="eyebrow">WHAT GETS CREATED</div>
+<h2>One launch, three protocol artifacts.</h2>
+<div class="module-grid">
+<article>
+<b>01 / TOKEN-2022 MINT</b>
+<p>The asset, metadata and authority configuration.</p>
+</article>
+<article>
+<b>02 / MARKET ROUTE</b>
+<p>An explicit Pump create_v2 route plan—no fictional Jolt-native exchange.</p>
+</article>
+<article>
+<b>03 / DEFAULT INTENT POLICY</b>
+<p>A discoverable baseline that wallets may strengthen per transaction.</p>
+</article>
+</div>
+</section>
+<section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">LAUNCH PIPELINE</div>
+<h2>A reviewable path from metadata to market.</h2>
+</div>
+<p>Each stage produces explicit data so a creator can review authorities, route configuration and policy before signing.</p>
+</div>
+<div class="step-grid">
+<article>
+<span>01 / ASSET</span>
+<h3>Define metadata</h3>
+<p>Name, symbol and URI are normalized into the JLM1 launch manifest.</p>
+</article>
+<article>
+<span>02 / POLICY</span>
+<h3>Select rules</h3>
+<p>Choose a baseline cost, route or fee constraint for supported interfaces.</p>
+</article>
+<article>
+<span>03 / ROUTE</span>
+<h3>Assemble</h3>
+<p>Prepare the selected Pump market route and the ordered accounts an adapter must assemble.</p>
+</article>
+<article>
+<span>04 / AUTHORITY</span>
+<h3>Review & sign</h3>
+<p>The connected creator approves the final transaction from their own wallet.</p>
+</article>
+</div>
+</section>
+<section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">PRE-FLIGHT</div>
+<h2>Launch readiness checklist.</h2>
+</div>
+</div>
+<div class="split-panel">
+<article>
+<h3>Required inputs</h3>
+<ul class="check-list">
+<li>Metadata URI resolves to valid token metadata.</li>
+<li>Name and symbol fit the selected launch route limits.</li>
+<li>Creator wallet has sufficient SOL for rent and fees.</li>
+<li>Quote asset and initial market route are confirmed.</li>
+</ul>
+</article>
+<article>
+<h3>Creator decisions</h3>
+<ul class="check-list warn">
+<li>Whether mint and metadata authorities remain mutable.</li>
+<li>Which default policy wallets should display.</li>
+<li>Whether metadata and mint authorities remain or are revoked.</li>
+<li>Which treasury and social links are published.</li>
+</ul>
+</article>
+</div>
+</section>
+<section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">FAQ / LAUNCH</div>
+<h2>Before creating a coin.</h2>
+</div>
+</div>
+<div class="faq">
+<details>
+<summary>Does a default policy prevent users from adding stricter limits?</summary>
+<p>No. The issuer policy is a baseline. A trader may bind tighter max-input, min-output, expiry or route constraints to an individual transaction.</p>
+</details>
+<details>
+<summary>Is the policy tied to one liquidity pool?</summary>
+<p>No. Joltwork’s intent policy is evaluated around the chosen transaction route, allowing it to move across supported launchpads, routers and markets.</p>
+</details>
+<details>
+<summary>Who signs the launch transaction?</summary>
+<p>The connected creator wallet. Joltwork compiles the plan and exposes the exact output; it does not take custody of the creator’s signing authority.</p>
+</details>
+</div>
+</section>
+<section class="cta-panel">
+<div>
+<h2>Need the execution model first?</h2>
+<p>Review Jolt Guard’s pre-hook, CPI route and postcondition phases.</p>
+</div>
+<a class="button" href="./protocol/">read protocol</a>
+</section>
+<footer>
+<span>JOLTWORK / LAUNCH</span>
+<span>JLM1 MANIFEST COMPILER</span>
+<span>© 2026 JOLTWORK</span>
+</footer>
+</main>
+<script src="./app.js">
+</script>
+</body>
+</html>
