@@ -1,40 +1,44 @@
 # Joltwork
 
-a chaos-theoretic market stability protocol on solana — landing page.
+Intent-level hooks and verifiable settlement for Solana.
 
-## structure
+Joltwork is not a block explorer. Jolt Guard changes whether a route is allowed
+to settle. A user signs maximum-input, minimum-output and expiry constraints;
+the program executes the route through CPI and atomically rejects settlement if
+the realized token-account deltas violate the intent.
 
-```
-index.html              dev version, references external assets
-fonts/                  EB Garamond + JetBrains Mono (woff2, self-hosted)
-joltwork.png            transparent hero logo
-favicon.svg             tab icon
-dist/index.html         single-file bundle (all assets base64-inlined)
-bundle.py               script that rebuilds dist/index.html from sources
-```
+## Protocol
 
-## local dev
+- programs/jolt-guard: native Rust Solana program.
+- sdk: Solana Kit instruction builder and receipt decoder.
+- JOLT_GUARD.md: wire format, accounts and policy-hook interface.
 
-```
-python -m http.server 8000
-```
+The program supports optional PRE and POST policy hooks. A policy program can
+reject a route based on its own payload and accounts. Successful execution
+returns a compact JRC1 receipt containing the intent id, realized input and
+realized output.
 
-then open http://localhost:8000
+## Web product
 
-## rebuilding the standalone bundle
+- index.html and app.js: public Joltwork interface.
+- dist/index.html: single-file build with embedded visual assets.
+- bundle.py: regenerates the single-file build.
 
-after editing `index.html` or any asset:
+Run the site locally with:
 
-```
-python bundle.py
-```
+    python -m http.server 8000
 
-this regenerates `dist/index.html` with every external resource inlined as a
-base64 data uri — a single file you can drop into any static host or open
-directly with `file://`.
+Build and test the SDK with:
 
-## deploy
+    cd sdk
+    npm ci
+    npm test
 
-push to any static host. for github pages, point pages at the repo root and
-the dev version works directly; for a hosted single-file deploy, serve
-`dist/index.html` as the root document.
+Test the on-chain program with:
+
+    cargo test --manifest-path programs/jolt-guard/Cargo.toml
+
+## Deployment
+
+GitHub Pages serves the repository root. The protocol CI compiles the Rust
+program and TypeScript SDK independently from the static-site deployment.

@@ -1,0 +1,21 @@
+[package]
+name = "jolt-guard"
+version = "0.1.0"
+edition = "2021"
+description = "Atomic intent hooks and settlement postconditions for Solana routes"
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[features]
+no-entrypoint = []
+
+[dependencies]
+solana-program = "4.0"
+
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+
