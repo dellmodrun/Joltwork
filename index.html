@@ -9,8 +9,19 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <aside class="site-rail" aria-label="Section navigation">
+    <a class="rail-mark" href="#top" aria-label="Joltwork home"><img src="./joltwork.png" alt=""></a>
+    <nav>
+      <a href="#top"><span>00</span>INDEX</a>
+      <a href="#launch"><span>01</span>LAUNCH</a>
+      <a href="#intent"><span>02</span>INTENT</a>
+      <a href="#protocol"><span>03</span>GUARD</a>
+      <a href="#code"><span>04</span>CODE</a>
+    </nav>
+    <a class="rail-x" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer" aria-label="Joltwork on X">X</a>
+  </aside>
   <main class="paper">
-    <header class="site-head">
+    <header id="top" class="site-head">
       <nav class="top-links" aria-label="Primary navigation">
         <a href="#launch">launch/coin</a><span>·</span>
         <a href="#intent">trade/intent</a><span>·</span>
@@ -31,13 +42,26 @@
     </header>
 
     <section class="abstract" aria-labelledby="abstract-title">
-      <div class="eyebrow">ABSTRACT / PRODUCT THESIS</div>
-      <h1 id="abstract-title">Launch coins with rules.<br>Trade with guarantees.</h1>
-      <p>Joltwork is a programmable settlement layer for Solana. A coin issuer can publish a default economic policy; a trader can bind stricter constraints to one transaction. Jolt Guard executes the selected route through CPI and permits settlement only when the realized token balances satisfy the signed intent.</p>
-      <div class="primary-actions">
-        <a class="button button-solid" href="#launch">launch a coin</a>
-        <a class="button" href="#intent">compose an intent</a>
+      <div class="abstract-copy">
+        <div class="eyebrow">ABSTRACT / PRODUCT THESIS</div>
+        <h1 id="abstract-title">Launch coins with rules.<br>Trade with guarantees.</h1>
+        <p>Joltwork is a programmable settlement layer for Solana. A coin issuer can publish a default economic policy; a trader can bind stricter constraints to one transaction. Jolt Guard executes the selected route through CPI and permits settlement only when the realized token balances satisfy the signed intent.</p>
+        <div class="primary-actions">
+          <a class="button button-solid" href="#launch">launch a coin</a>
+          <a class="button" href="#intent">compose an intent</a>
+        </div>
       </div>
+      <aside class="thesis-card" aria-label="Protocol summary">
+        <div class="form-heading"><span>JOLT GUARD</span><span>SPEC / 01</span></div>
+        <p class="equation">accept ⇔<br><i>Δin ≤ ceiling</i><br>∧ <i>Δout ≥ floor</i><br>∧ <i>policy = true</i></p>
+        <dl>
+          <div><dt>binding</dt><dd>transaction</dd></div>
+          <div><dt>execution</dt><dd>atomic CPI</dd></div>
+          <div><dt>failure</dt><dd>full revert</dd></div>
+          <div><dt>receipt</dt><dd>JRC1</dd></div>
+        </dl>
+        <span class="live-note"><i></i> protocol build passing</span>
+      </aside>
     </section>
 
     <figure class="mechanism-figure" aria-labelledby="figure-one">
