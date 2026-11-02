@@ -57,4 +57,5 @@ for (const launch of marketRegistry.launches) {
   if (launch.signature) assert.match(launch.signature, /^[1-9A-HJ-NP-Za-km-z]{64,88}$/, "registry contains an invalid transaction signature");
 }
 assert.ok(marketRegistry.launches.some((launch) => launch.official && launch.mint === "BiVtAN54KERsGBGqM1ZPBMRVFqBEHZQLU1moZvqDpump"), "official token missing from markets registry");
+assert.ok(marketRegistry.launches.some((launch) => launch.independent && launch.mint === "yPJvY6tY74JJiUTqu7HU5khSzPQz5EfVwjLmSE9pkYs"), "independent MOSS launch missing from markets registry");
 console.log(`site contract: ${pages.length} routes, live markets, live quote controls, metadata gate, same-origin code browser, no GitHub links, custom domain joltwork.fun`);

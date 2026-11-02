@@ -1,7 +1,7 @@
 {
   "format": "JOLTWORK_MARKETS_V1",
   "network": "solana-mainnet-beta",
-  "updatedAt": "2026-11-02T12:21:53.000Z",
+  "updatedAt": "2026-11-02T12:38:26.000Z",
   "launches": [
     {
       "format": "JOLTWORK_OFFICIAL_TOKEN_V1",
@@ -18,6 +18,24 @@
       "pump": "https://pump.fun/coin/BiVtAN54KERsGBGqM1ZPBMRVFqBEHZQLU1moZvqDpump",
       "explorer": "https://explorer.solana.com/address/BiVtAN54KERsGBGqM1ZPBMRVFqBEHZQLU1moZvqDpump",
       "createdAt": "2026-11-02T12:21:53.000Z"
+    },
+    {
+      "format": "JOLTWORK_LAUNCH_RECEIPT_V1",
+      "network": "solana-mainnet-beta",
+      "independent": true,
+      "name": "Mossy Pebble",
+      "symbol": "MOSS",
+      "description": "A small stone, a little moss, and no grand promises. An independent community token created as a live launch test.",
+      "image": "https://cdn.jsdelivr.net/gh/dellmodrun/MossyPebble@main/mossy-pebble.png",
+      "metadataUri": "https://cdn.jsdelivr.net/gh/dellmodrun/MossyPebble@main/metadata.json",
+      "website": "",
+      "twitter": "",
+      "mint": "yPJvY6tY74JJiUTqu7HU5khSzPQz5EfVwjLmSE9pkYs",
+      "creator": "6y6QaxRzGMQJbrtPxN6LYbQAswwPGSxNWYit4jXVUeYE",
+      "signature": "rgvtFZLkFyPDZ7vWukp6Gu9u99YGmiMnujQG66CPBmFSwTZt2eGpAE5Sj4LzU5TeG8CQsDBzjNc6WHYzJRYYE8H",
+      "pump": "https://pump.fun/coin/yPJvY6tY74JJiUTqu7HU5khSzPQz5EfVwjLmSE9pkYs",
+      "explorer": "https://explorer.solana.com/address/yPJvY6tY74JJiUTqu7HU5khSzPQz5EfVwjLmSE9pkYs",
+      "createdAt": "2026-11-02T12:38:26.000Z"
     },
     {
       "format": "JOLTWORK_LAUNCH_RECEIPT_V1",
