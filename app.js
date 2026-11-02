@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var walletAddress = null;
+  var walletAddress = sessionStorage.getItem("joltwork-wallet") || null;
 
   function byId(id) {
     return document.getElementById(id);
@@ -28,19 +28,27 @@
   }
 
   var walletButton = byId("connect-wallet");
+  if (walletButton && walletAddress) {
+    var savedLabel = walletButton.querySelector(".rail-label");
+    if (savedLabel) savedLabel.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
+  }
   if (walletButton) walletButton.addEventListener("click", async function () {
     var button = this;
     var wallet = provider();
     if (!wallet || typeof wallet.connect !== "function") {
-      button.textContent = "wallet not detected";
+      var missingLabel = button.querySelector(".rail-label");
+      if (missingLabel) missingLabel.textContent = "WALLET NOT DETECTED";
       return;
     }
     try {
       var connection = await wallet.connect();
       walletAddress = String(connection.publicKey || wallet.publicKey);
-      button.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
+      sessionStorage.setItem("joltwork-wallet", walletAddress);
+      var label = button.querySelector(".rail-label");
+      if (label) label.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
     } catch (error) {
-      button.textContent = "connection declined";
+      var declinedLabel = button.querySelector(".rail-label");
+      if (declinedLabel) declinedLabel.textContent = "CONNECTION DECLINED";
     }
   });
 
@@ -128,6 +136,19 @@
       } catch (error) {
         button.textContent = "select text";
       }
+    });
+  });
+
+  document.querySelectorAll("[data-download]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var target = byId(button.dataset.download);
+      if (!target || !target.textContent.trim().startsWith("{")) return;
+      var blob = new Blob([target.textContent], { type: "application/json" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = button.dataset.filename || "joltwork-manifest.json";
+      link.click();
+      URL.revokeObjectURL(link.href);
     });
   });
 

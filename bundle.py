@@ -21,12 +21,14 @@ assets = {
 
 app = (ROOT / "app.js").read_text(encoding="utf-8")
 styles = (ROOT / "styles.css").read_text(encoding="utf-8")
+enhancements = (ROOT / "enhancements.css").read_text(encoding="utf-8")
 sources = [ROOT / "index.html"] + [ROOT / name / "index.html" for name in ("launch", "intent", "protocol", "code")]
 
 for src in sources:
     html = src.read_text(encoding="utf-8")
     html = html.replace('<script src="./app.js"></script>', "<script>" + app + "</script>")
     html = html.replace('<link rel="stylesheet" href="./styles.css">', "<style>" + styles + "</style>")
+    html = html.replace('<link rel="stylesheet" href="./enhancements.css">', "<style>" + enhancements + "</style>")
     replacements = 0
     for url, (mime, path) in assets.items():
         if not path.exists():
