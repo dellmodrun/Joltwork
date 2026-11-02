@@ -1,5 +1,7 @@
 #![deny(unsafe_code)]
 
+#[cfg(not(test))]
+use solana_program::sysvar::{clock::Clock, Sysvar};
 use solana_program::{
     account_info::AccountInfo,
     entrypoint,
@@ -9,7 +11,6 @@ use solana_program::{
     program::{invoke, set_return_data},
     program_error::ProgramError,
     pubkey::Pubkey,
-    sysvar::{clock::Clock, Sysvar},
 };
 
 const MAGIC: &[u8; 4] = b"JOLT";
@@ -89,8 +90,14 @@ impl<'a> Cursor<'a> {
         Self { data, offset: 0 }
     }
     fn take(&mut self, length: usize) -> Result<&'a [u8], ProgramError> {
-        let end = self.offset.checked_add(length).ok_or_else(|| custom(INVALID_DATA))?;
-        let value = self.data.get(self.offset..end).ok_or_else(|| custom(INVALID_DATA))?;
+        let end = self
+            .offset
+            .checked_add(length)
+            .ok_or_else(|| custom(INVALID_DATA))?;
+        let value = self
+            .data
+            .get(self.offset..end)
+            .ok_or_else(|| custom(INVALID_DATA))?;
         self.offset = end;
         Ok(value)
     }
@@ -98,13 +105,19 @@ impl<'a> Cursor<'a> {
         Ok(self.take(1)?[0])
     }
     fn u16(&mut self) -> Result<u16, ProgramError> {
-        Ok(u16::from_le_bytes(self.take(2)?.try_into().map_err(|_| custom(INVALID_DATA))?))
+        Ok(u16::from_le_bytes(
+            self.take(2)?.try_into().map_err(|_| custom(INVALID_DATA))?,
+        ))
     }
     fn u32(&mut self) -> Result<u32, ProgramError> {
-        Ok(u32::from_le_bytes(self.take(4)?.try_into().map_err(|_| custom(INVALID_DATA))?))
+        Ok(u32::from_le_bytes(
+            self.take(4)?.try_into().map_err(|_| custom(INVALID_DATA))?,
+        ))
     }
     fn u64(&mut self) -> Result<u64, ProgramError> {
-        Ok(u64::from_le_bytes(self.take(8)?.try_into().map_err(|_| custom(INVALID_DATA))?))
+        Ok(u64::from_le_bytes(
+            self.take(8)?.try_into().map_err(|_| custom(INVALID_DATA))?,
+        ))
     }
     fn is_empty(&self) -> bool {
         self.offset == self.data.len()
@@ -120,8 +133,14 @@ fn token_amount(account: &AccountInfo) -> Result<u64, ProgramError> {
         return Err(ProgramError::IllegalOwner);
     }
     let data = account.try_borrow_data()?;
-    let bytes = data.get(AMOUNT_OFFSET..AMOUNT_END).ok_or(ProgramError::InvalidAccountData)?;
-    Ok(u64::from_le_bytes(bytes.try_into().map_err(|_| ProgramError::InvalidAccountData)?))
+    let bytes = data
+        .get(AMOUNT_OFFSET..AMOUNT_END)
+        .ok_or(ProgramError::InvalidAccountData)?;
+    Ok(u64::from_le_bytes(
+        bytes
+            .try_into()
+            .map_err(|_| ProgramError::InvalidAccountData)?,
+    ))
 }
 
 fn indexed_cpi<'a>(
@@ -248,11 +267,18 @@ pub fn process_instruction(
         )?;
     }
 
-    indexed_cpi(route_program, accounts, &intent.route_indices, intent.route_data.clone())?;
+    indexed_cpi(
+        route_program,
+        accounts,
+        &intent.route_indices,
+        intent.route_data.clone(),
+    )?;
 
     let source_after = token_amount(source)?;
     let destination_after = token_amount(destination)?;
-    let source_spent = source_before.checked_sub(source_after).ok_or_else(|| custom(BALANCE_DIRECTION))?;
+    let source_spent = source_before
+        .checked_sub(source_after)
+        .ok_or_else(|| custom(BALANCE_DIRECTION))?;
     let destination_received = destination_after
         .checked_sub(destination_before)
         .ok_or_else(|| custom(BALANCE_DIRECTION))?;
@@ -301,6 +327,8 @@ mod tests {
     };
     use std::sync::{Arc, Mutex};
 
+    static EXECUTION_TEST_LOCK: Mutex<()> = Mutex::new(());
+
     fn encoded() -> Vec<u8> {
         let mut data = Vec::new();
         data.extend_from_slice(MAGIC);
@@ -337,7 +365,10 @@ mod tests {
     fn rejects_invalid_encoding() {
         let mut trailing = encoded();
         trailing.push(1);
-        assert_eq!(ExecuteIntent::unpack(&trailing), Err(ProgramError::Custom(INVALID_DATA)));
+        assert_eq!(
+            ExecuteIntent::unpack(&trailing),
+            Err(ProgramError::Custom(INVALID_DATA))
+        );
         assert!(ExecuteIntent::unpack(&encoded()[..20]).is_err());
     }
 
@@ -381,7 +412,13 @@ mod tests {
         }
     }
 
-    fn execute_with_deltas(spend: u64, receive: u64, max_input: u64, min_output: u64) -> ProgramResult {
+    fn execute_with_deltas(
+        spend: u64,
+        receive: u64,
+        max_input: u64,
+        min_output: u64,
+    ) -> ProgramResult {
+        let _test_guard = EXECUTION_TEST_LOCK.lock().unwrap();
         let program_id = Pubkey::new_unique();
         let authority_key = Pubkey::new_unique();
         let source_key = Pubkey::new_unique();
@@ -403,11 +440,51 @@ mod tests {
         destination_data[AMOUNT_OFFSET..AMOUNT_END].copy_from_slice(&200u64.to_le_bytes());
 
         let accounts = vec![
-            AccountInfo::new(&authority_key, true, false, &mut authority_lamports, &mut authority_data, &owner, false),
-            AccountInfo::new(&source_key, false, true, &mut source_lamports, &mut source_data, &TOKEN_PROGRAM_ID, false),
-            AccountInfo::new(&destination_key, false, true, &mut destination_lamports, &mut destination_data, &TOKEN_PROGRAM_ID, false),
-            AccountInfo::new(&route_key, false, false, &mut route_lamports, &mut route_data, &owner, true),
-            AccountInfo::new(&hook_key, false, false, &mut hook_lamports, &mut hook_data, &owner, true),
+            AccountInfo::new(
+                &authority_key,
+                true,
+                false,
+                &mut authority_lamports,
+                &mut authority_data,
+                &owner,
+                false,
+            ),
+            AccountInfo::new(
+                &source_key,
+                false,
+                true,
+                &mut source_lamports,
+                &mut source_data,
+                &TOKEN_PROGRAM_ID,
+                false,
+            ),
+            AccountInfo::new(
+                &destination_key,
+                false,
+                true,
+                &mut destination_lamports,
+                &mut destination_data,
+                &TOKEN_PROGRAM_ID,
+                false,
+            ),
+            AccountInfo::new(
+                &route_key,
+                false,
+                false,
+                &mut route_lamports,
+                &mut route_data,
+                &owner,
+                true,
+            ),
+            AccountInfo::new(
+                &hook_key,
+                false,
+                false,
+                &mut hook_lamports,
+                &mut hook_data,
+                &owner,
+                true,
+            ),
         ];
 
         let state = Arc::new(Mutex::new(StubState {
@@ -433,8 +510,14 @@ mod tests {
             let state = state.lock().unwrap();
             assert_eq!(state.hook_phases, vec![0, 1]);
             assert_eq!(&state.receipt[..4], RECEIPT_MAGIC);
-            assert_eq!(u64::from_le_bytes(state.receipt[37..45].try_into().unwrap()), spend);
-            assert_eq!(u64::from_le_bytes(state.receipt[45..53].try_into().unwrap()), receive);
+            assert_eq!(
+                u64::from_le_bytes(state.receipt[37..45].try_into().unwrap()),
+                spend
+            );
+            assert_eq!(
+                u64::from_le_bytes(state.receipt[45..53].try_into().unwrap()),
+                receive
+            );
         }
         result
     }
@@ -446,11 +529,17 @@ mod tests {
 
     #[test]
     fn rejects_route_below_output_floor() {
-        assert_eq!(execute_with_deltas(100, 94, 100, 95), Err(custom(MIN_OUTPUT)));
+        assert_eq!(
+            execute_with_deltas(100, 94, 100, 95),
+            Err(custom(MIN_OUTPUT))
+        );
     }
 
     #[test]
     fn rejects_route_above_input_ceiling() {
-        assert_eq!(execute_with_deltas(101, 95, 100, 95), Err(custom(MAX_INPUT)));
+        assert_eq!(
+            execute_with_deltas(101, 95, 100, 95),
+            Err(custom(MAX_INPUT))
+        );
     }
 }
