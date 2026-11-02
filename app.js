@@ -68,6 +68,88 @@
             <div class="principle"><b>06 / EXTENSIBILITY</b><p>the evidence model accommodates SPL Token, Token-2022 and custom CPI paths.</p></div>
           </div>
         </section>
+        <section>
+          <h2>on receipt anatomy</h2>
+          <div class="body">
+            <p>a Joltwork receipt is both a human explanation and a machine-readable record. identity fields bind it to the network and transaction; execution fields preserve status, fee and compute consumption; accounting fields enumerate non-zero token deltas; attribution fields identify the programs that participated in settlement.</p>
+            <p>the browser exposes the exact JSON beside the visual summary so an analyst can move from a headline result to the underlying record without changing tools. exported receipts can be compared across routes, archived with treasury records or attached to an incident report.</p>
+          </div>
+          <pre class="schema-block">{
+  "product": "Joltwork Settlement Receipt",
+  "network": "solana-mainnet-beta",
+  "signature": "&lt;base58 signature&gt;",
+  "slot": 000000000,
+  "status": "confirmed",
+  "feeLamports": 5000,
+  "computeUnitsConsumed": 21498,
+  "tokenBalanceDeltas": [
+    { "owner": "...", "mint": "...", "delta": "-12.500000" }
+  ],
+  "invokedPrograms": ["..."],
+  "generatedAt": "ISO-8601"
+}</pre>
+        </section>
+        <section>
+          <h2>on economic attribution</h2>
+          <div class="body">
+            <p>one transaction may contain several economically different movements. Joltwork separates the amount delivered to the destination from network cost, program-mediated exchange, token-level mechanics and the remainder that cannot yet be assigned to a known rule.</p>
+            <p>this separation is essential on Solana because an apparently simple swap may cross a router, an automated market maker, one or more token programs and arbitrary CPI participants before the final balances are recorded.</p>
+          </div>
+          <figure class="paper-figure">
+            <div class="figure-frame">
+              <svg viewBox="0 0 680 340" role="img" aria-label="Economic attribution ledger">
+                <g fill="none" stroke="#565550"><rect x="30" y="34" width="620" height="42"/><rect x="30" y="92" width="500" height="42"/><rect x="30" y="150" width="410" height="42"/><rect x="30" y="208" width="300" height="42"/><rect x="30" y="266" width="188" height="42"/><path d="M30 320H650"/></g>
+                <g fill="#fff" font-family="JetBrains Mono,monospace" font-size="9"><text x="44" y="59">AUTHORIZED VALUE</text><text x="560" y="59">100%</text><text x="44" y="117">DESTINATION RECEIPT</text><text x="452" y="117">observed</text><text x="44" y="175">DECLARED COST</text><text x="362" y="175">interface</text><text x="44" y="233">PROGRAM EFFECT</text><text x="255" y="233">CPI path</text><text x="44" y="291">UNRESOLVED REMAINDER</text><text x="145" y="291">flag</text></g>
+                <g fill="#9b9a95"><rect x="530" y="92" width="120" height="42"/><rect x="440" y="150" width="210" height="42"/><rect x="330" y="208" width="320" height="42"/><rect x="218" y="266" width="432" height="42"/></g>
+              </svg>
+            </div>
+            <figcaption>figure 5. attribution is a reconciliation problem: every observed delta is assigned to a disclosed or program-derived cause, otherwise it remains explicit.</figcaption>
+          </figure>
+        </section>
+        <section>
+          <h2>on token mechanics</h2>
+          <div class="body">
+            <p>mint state changes the meaning of a transfer. the classic SPL Token program provides the baseline ownership and authority model; Token-2022 extends that surface with transfer fees, transfer hooks and additional account or mint extensions. Joltwork reads the mint owner first, then exposes parsed authorities, supply precision and available extensions before interpreting settlement.</p>
+          </div>
+          <div class="signal-stack">
+            <div class="signal-row"><span>MINT OWNER</span><span>distinguishes classic SPL Token from Token-2022 execution</span><span>IDENTITY</span></div>
+            <div class="signal-row"><span>DECIMALS</span><span>converts integer ledger amounts without floating-point accounting</span><span>QUANTITY</span></div>
+            <div class="signal-row"><span>AUTHORITY</span><span>shows mint and freeze control visible in parsed state</span><span>CONTROL</span></div>
+            <div class="signal-row"><span>SUPPLY</span><span>preserves raw amount and a human-readable decimal representation</span><span>STATE</span></div>
+            <div class="signal-row"><span>EXTENSIONS</span><span>surfaces parsed Token-2022 configuration when returned by RPC</span><span>BEHAVIOR</span></div>
+            <div class="signal-row"><span>BALANCE DELTA</span><span>compares confirmed pre- and post-token balances as integers</span><span>SETTLEMENT</span></div>
+          </div>
+        </section>
+        <section>
+          <h2>on integration paths</h2>
+          <div class="body">
+            <p>the same receipt model serves different product surfaces. the interface changes, but the evidence contract remains constant: signature, slot, execution metadata, value movement and participating programs.</p>
+          </div>
+          <div class="case-grid">
+            <div class="case-card"><b>WALLET / CONFIRMATION</b><h3>explain after execution</h3><p>place the settled amount and program path beside the wallet activity record so a user can verify what actually landed.</p></div>
+            <div class="case-card"><b>DEX / TRADE HISTORY</b><h3>itemize route outcome</h3><p>attach an evidence-backed receipt to a completed swap instead of presenting only the quoted and received totals.</p></div>
+            <div class="case-card"><b>EXPLORER / ANALYSIS</b><h3>compress raw metadata</h3><p>turn instruction trees and balance arrays into an accounting-oriented view without hiding the original signature.</p></div>
+            <div class="case-card"><b>TREASURY / OPERATIONS</b><h3>export a stable record</h3><p>download normalized JSON for reconciliation, review, support cases and transaction-level audit trails.</p></div>
+            <div class="case-card"><b>RISK / MONITORING</b><h3>track unknown deltas</h3><p>separate recognized program effects from unexplained movement and prioritize transactions requiring decoder coverage.</p></div>
+            <div class="case-card"><b>RESEARCH / DATA</b><h3>compare markets</h3><p>aggregate consistent receipts by mint, program, route or slot to study how disclosure and execution diverge over time.</p></div>
+          </div>
+        </section>
+        <section>
+          <h2>on confidence semantics</h2>
+          <div class="body">
+            <p>Joltwork avoids collapsing complex evidence into a single opaque safety score. confidence belongs to individual claims. a network fee is directly reported by transaction metadata; a token delta is calculated from ledger state; a program label depends on program identity; an economic explanation may require a version-specific decoder.</p>
+            <p>the product therefore distinguishes observed facts, deterministic derivations, attributed interpretations and unresolved remainder. this lets an integrator show strong facts immediately while keeping uncertainty visible.</p>
+          </div>
+          <table class="surface-table">
+            <thead><tr><th>class</th><th>meaning</th><th>example</th><th>handling</th></tr></thead>
+            <tbody>
+              <tr><td>OBSERVED</td><td>returned directly by confirmed RPC evidence</td><td>slot, fee, account owner</td><td>DISPLAY</td></tr>
+              <tr><td>DERIVED</td><td>deterministically calculated from observed values</td><td>integer token delta</td><td>REPRODUCE</td></tr>
+              <tr><td>ATTRIBUTED</td><td>mapped through a known program or token rule</td><td>recognized route effect</td><td>EXPLAIN</td></tr>
+              <tr><td>UNRESOLVED</td><td>movement without sufficient supported attribution</td><td>unknown CPI remainder</td><td>FLAG</td></tr>
+            </tbody>
+          </table>
+        </section>
       </div>`;
     document.querySelector(".overlay").before(main);
   }
