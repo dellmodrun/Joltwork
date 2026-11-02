@@ -415,6 +415,7 @@
     webPackage: "package.json",
     buildClient: "build-client.mjs",
     spec: "JOLT_GUARD.md",
+    deployment: "deployments/devnet.json",
     readme: "README.md",
     ci: ".github/workflows/protocol-ci.yml"
   };

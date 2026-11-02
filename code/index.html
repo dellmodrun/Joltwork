@@ -118,9 +118,9 @@
 </span>
 <span>TYPESCRIPT SDK<b>IMPLEMENTED</b>
 </span>
-<span>CODEC TESTS<b>3 TESTS</b>
+<span>RUST + SDK TESTS<b>10 PASSING</b>
 </span>
-<span>PROGRAM ID<b>PENDING DEPLOYMENT</b>
+<span>DEVNET PROGRAM<b>3gAqr1U9…K2knfVG</b>
 </span>
 </div>
 <div class="code-browser">
@@ -134,6 +134,7 @@
 <button data-code="webPackage">package.json</button>
 <button data-code="buildClient">build-client.mjs</button>
 <button data-code="spec">JOLT_GUARD.md</button>
+<button data-code="deployment">deployments/devnet.json</button>
 <button data-code="readme">README.md</button>
 <button data-code="ci">.github/workflows/protocol-ci.yml</button>
 </aside>
@@ -208,7 +209,7 @@
 <h2>What the repository proves—and what deployment must still prove.</h2>
 </div>
 </div>
-<div class="prose-block"><p>Source code can prove that a mechanism has been implemented and can show the assumptions its authors made. It cannot prove that the deployed binary matches the source, that every route adapter passes the right accounts or that no adversarial input was missed. Those claims require a published Program ID, reproducible build, deployment verification and external review.</p><p>This distinction matters to users. Until the deployment identity exists, the browser tools are honest compilers and inspection surfaces—not a mainnet settlement service. The release boundary below is therefore part of the product documentation, not a temporary disclaimer hidden in a footer.</p></div>
+<div class="prose-block"><p>Source code can prove that a mechanism has been implemented and can show the assumptions its authors made. The devnet manifest now also publishes the executable Program ID, source commit and reproducible SBF hash. It still cannot prove that every route adapter passes the right accounts or that no adversarial input was missed; those claims require integration coverage and external review.</p><p>This distinction matters to users. The public devnet binary is a real test deployment, while the browser Intent Composer remains an instruction and manifest surface until its router adapter is connected. Mainnet deployment, production monitoring and audit remain separate release gates.</p></div>
 <div class="split-panel">
 <article>
 <h3>Inspectable now</h3>
@@ -218,12 +219,13 @@
 <li>Pre-hook, route and post-hook CPI execution.</li>
 <li>Checked max-input and min-output arithmetic.</li>
 <li>SDK encoder and JRC1 receipt decoder.</li>
+<li>Verified, executable devnet Program ID and build manifest.</li>
 </ul>
 </article>
 <article>
 <h3>Required for public mainnet use</h3>
 <ul class="check-list warn">
-<li>Published, verified Program ID.</li>
+<li>Published, verified mainnet Program ID.</li>
 <li>Audited router and launchpad adapters.</li>
 <li>Independent security review.</li>
 <li>Production RPC and transaction monitoring.</li>
@@ -232,8 +234,8 @@
 </article>
 </div>
 <div class="callout">
-<b>NO HIDDEN DEMO CLAIM</b>
-<p>The code is real and inspectable. Until a verified deployment address is published, this site compiles reviewable manifests and instructions; it does not pretend to submit them to a production program.</p>
+<b>PUBLIC TEST DEPLOYMENT, CLEAR PRODUCTION GATE</b>
+<p>The devnet program is real and independently inspectable. The site does not label it as mainnet or imply that the current Intent Composer submits router transactions before that adapter exists.</p>
 </div>
 </section>
 <section class="cta-panel">

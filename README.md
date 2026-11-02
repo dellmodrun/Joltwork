@@ -42,3 +42,10 @@ Test the on-chain program with:
 
 GitHub Pages serves the repository root. The protocol CI compiles the Rust
 program and TypeScript SDK independently from the static-site deployment.
+
+Jolt Guard is deployed on Solana devnet at
+[`3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG`](https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet).
+The source commit, loader, program-data account and SBF SHA-256 are recorded in
+[`deployments/devnet.json`](deployments/devnet.json). This Kora-sponsored
+deployment is an integration target, not a mainnet production claim; Kora may
+reclaim devnet programs after seven days without on-chain activity.

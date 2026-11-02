@@ -1,0 +1,17 @@
+{
+  "name": "Jolt Guard",
+  "version": "1.0.0-devnet",
+  "cluster": "solana-devnet",
+  "programId": "3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG",
+  "programData": "8LEC8xo9nrTZfywWVxzBaB3krfNuKXpJNRtCiVsgru45",
+  "loader": "BPFLoaderUpgradeab1e11111111111111111111111",
+  "executable": true,
+  "upgradeOwner": "4SRYM9YpUJEsCNh83RyAfeuzUyddfUmxYrQSEncRRkSa",
+  "koraPaymaster": "FEvT5nka9qBSXryv65P8ScjvGtfLUE7LgPu1rzuJ38h8",
+  "deployedAt": "2026-11-02T10:25:22Z",
+  "sourceCommit": "d1f21ed424a880479d11417a5ccce27de47d7fc8",
+  "buildRun": "https://github.com/dellmodrun/Joltwork/actions/runs/41427926310",
+  "sha256": "469ab22293e3d5ca2814b78ac293b39a9f5dc8cb0d652b93f7ee9b501124ebdd",
+  "explorer": "https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet",
+  "lifecycle": "Kora-sponsored devnet deployments may be reclaimed after 7 days without on-chain activity."
+}
