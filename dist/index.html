@@ -295,29 +295,36 @@
 
   async function rpc(method, params) {
     var lastError;
-    for (var index = 0; index < RPC_URLS.length; index += 1) {
-      var controller = new AbortController();
-      var timer = setTimeout(function () { controller.abort(); }, 20000);
-      try {
-        var response = await fetch(RPC_URLS[index], {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: Date.now(),
-            method: method,
-            params: params
-          }),
-          signal: controller.signal
+    for (var attempt = 0; attempt < 3; attempt += 1) {
+      for (var index = 0; index < RPC_URLS.length; index += 1) {
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, 20000);
+        try {
+          var response = await fetch(RPC_URLS[index], {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: Date.now(),
+              method: method,
+              params: params
+            }),
+            signal: controller.signal
+          });
+          if (!response.ok) throw new Error("RPC HTTP " + response.status);
+          var payload = await response.json();
+          if (payload.error) throw new Error(payload.error.message || "RPC request failed");
+          return payload.result;
+        } catch (error) {
+          lastError = error.name === "AbortError" ? new Error("RPC request timed out") : error;
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+      if (attempt < 2) {
+        await new Promise(function (resolve) {
+          setTimeout(resolve, 450 * (attempt + 1));
         });
-        if (!response.ok) throw new Error("RPC HTTP " + response.status);
-        var payload = await response.json();
-        if (payload.error) throw new Error(payload.error.message || "RPC request failed");
-        return payload.result;
-      } catch (error) {
-        lastError = error.name === "AbortError" ? new Error("RPC request timed out") : error;
-      } finally {
-        clearTimeout(timer);
       }
     }
     throw lastError || new Error("all RPC providers unavailable");
