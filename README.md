@@ -18,6 +18,10 @@ reject a route based on its own payload and accounts. Successful execution
 returns a compact JRC1 receipt containing the intent id, realized input and
 realized output.
 
+The SDK includes a Jupiter v6 adapter that rejects unexpected route program
+ids, verifies that the selected settlement accounts are writable in the swap
+instruction, and wraps the exact route bytes in a canonical JOLT intent.
+
 ## Web product
 
 - index.html and app.js: public Joltwork interface.

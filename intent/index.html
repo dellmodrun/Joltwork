@@ -286,7 +286,7 @@
 <div class="faq">
 <details>
 <summary>Does Joltwork provide the swap quote?</summary>
-<p>No. A router or market supplies the executable accounts, data and quote. Joltwork canonicalizes the user’s accepted limits around that route. A production adapter must translate the router response into the ordered CPI account set; the current browser tool compiles the intent, not the final transaction.</p>
+<p>No. A router or market supplies the executable accounts, data and quote. Joltwork canonicalizes the user’s accepted limits around that route. The SDK now validates and wraps official Jupiter v6 swap-instruction payloads into the ordered CPI account set; the current browser tool still compiles the intent rather than fetching and submitting the final transaction.</p>
 </details>
 <details>
 <summary>Can one intent cross multiple programs?</summary>

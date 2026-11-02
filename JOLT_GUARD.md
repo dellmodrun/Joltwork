@@ -63,6 +63,8 @@ minimum output and protocol-specific disclosure rules.
 The v1 program enforces token-account postconditions and a direct route
 program. It verifies the selected source and destination balance deltas around
 that route; it does not yet attribute every inner CPI or constrain unrelated
-instructions outside the wrapper. Rich route attribution and router-specific
-account assembly require adapters and indexing that are not included in v1.
+instructions outside the wrapper. The SDK validates and wraps official Jupiter
+v6 swap-instruction payloads. Quote retrieval, Jupiter setup and cleanup
+instructions, final versioned-transaction assembly and rich attribution remain
+application responsibilities.
 
