@@ -28,6 +28,8 @@ for (const id of ["code-view", "code-filter", "code-copy", "code-download"]) {
 const app = readFileSync(resolve(root, "app.js"), "utf8");
 const marketsClient = readFileSync(resolve(root, "markets.js"), "utf8");
 assert.match(app, /3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG|codePaths/);
+const home = readFileSync(resolve(root, "index.html"), "utf8");
+assert.match(home, /BiVtAN54KERsGBGqM1ZPBMRVFqBEHZQLU1moZvqDpump/, "official CA missing from home page");
 const publicFrontend = [...pages.map((page) => readFileSync(resolve(root, page), "utf8")), app, marketsClient].join("\n");
 for (const forbidden of ["github.com", "raw.githubusercontent.com", "dellmodrun", "github.io"]) {
   assert.ok(!publicFrontend.toLowerCase().includes(forbidden), `public frontend exposes forbidden host or account: ${forbidden}`);
@@ -52,6 +54,7 @@ const marketRegistry = JSON.parse(readFileSync(resolve(root, "markets/registry.j
 assert.equal(marketRegistry.format, "JOLTWORK_MARKETS_V1", "unexpected markets registry format");
 for (const launch of marketRegistry.launches) {
   assert.match(launch.mint, /^[1-9A-HJ-NP-Za-km-z]{32,44}$/, "registry contains an invalid Solana Mint");
-  assert.match(launch.signature, /^[1-9A-HJ-NP-Za-km-z]{64,88}$/, "registry contains an invalid transaction signature");
+  if (launch.signature) assert.match(launch.signature, /^[1-9A-HJ-NP-Za-km-z]{64,88}$/, "registry contains an invalid transaction signature");
 }
+assert.ok(marketRegistry.launches.some((launch) => launch.official && launch.mint === "BiVtAN54KERsGBGqM1ZPBMRVFqBEHZQLU1moZvqDpump"), "official token missing from markets registry");
 console.log(`site contract: ${pages.length} routes, live markets, live quote controls, metadata gate, same-origin code browser, no GitHub links, custom domain joltwork.fun`);

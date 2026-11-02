@@ -46,7 +46,7 @@
 .integration-table{width:100%;border-collapse:collapse;font:9px/1.5 "JetBrains Mono",monospace}.integration-table th,.integration-table td{padding:14px;border:1px solid var(--line);text-align:left}.integration-table th{color:var(--muted);font-weight:400}.integration-table td:last-child{color:var(--good)}
 .callout{margin-top:20px;padding:20px;border:1px solid var(--line);border-left:3px solid var(--good);background:var(--panel-2)}.callout b{font:8px "JetBrains Mono",monospace}.callout p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
 h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
-.ca-box{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:16px;padding:18px 22px;border:1px solid var(--line);background:var(--panel)}.ca-box div{display:flex;align-items:center;gap:18px}.ca-box span{color:var(--muted);font:8px "JetBrains Mono",monospace}.ca-box strong{font:12px "JetBrains Mono",monospace;font-weight:400}.ca-box p{max-width:520px;margin:0;color:var(--muted);text-align:right;font:8px/1.6 "JetBrains Mono",monospace}
+.ca-box{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:16px;padding:18px 22px;border:1px solid var(--line);background:var(--panel)}.ca-box div{display:flex;align-items:center;gap:18px;min-width:0}.ca-box span{color:var(--muted);font:8px "JetBrains Mono",monospace}.ca-box strong{overflow-wrap:anywhere;font:10px/1.5 "JetBrains Mono",monospace;font-weight:400}.ca-box .text-button{flex:0 0 auto}.ca-box p{max-width:360px;margin:0;color:var(--muted);text-align:right;font:8px/1.6 "JetBrains Mono",monospace}
 .dev-letter{margin-top:20px;padding:46px 52px;border:1px solid var(--line);background:var(--panel)}.dev-letter h2{max-width:780px;margin:18px 0 28px;font:40px/1.08 "EB Garamond",serif;font-weight:400}.dev-letter>p{max-width:900px;margin:0 0 18px;color:#d6d2c9;font-size:18px;line-height:1.78}.dev-letter .dev-signature{margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:16px}.dev-signature span{color:var(--muted);font:8px "JetBrains Mono",monospace}
 .prose-block{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin:0 0 28px;padding:24px;border:1px solid var(--line-soft);background:var(--panel-2)}.prose-block p{margin:0;color:#d0ccc3;font-size:16px;line-height:1.75}.prose-block.compact{display:block}.prose-block.compact p{max-width:940px}.prose-block.after-grid{margin:24px 0 0}.source-links{display:grid;grid-template-columns:1fr 1fr;gap:12px}.source-links>a,.source-links>div{display:block;padding:22px;border:1px solid var(--line);background:var(--panel-2);text-decoration:none}.source-links>a:hover{background:#30302d}.source-links span,.source-links code{display:block;color:var(--muted);font:8px/1.5 "JetBrains Mono",monospace}.source-links strong{display:block;margin:14px 0 8px;font:22px "EB Garamond",serif;font-weight:400}.source-links code{overflow-wrap:anywhere;color:var(--good)}
 .rail-icon svg.fill-icon{fill:currentColor;stroke:none}
@@ -198,9 +198,10 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
     <section class="ca-box" aria-label="Official contract address">
 <div>
 <span>OFFICIAL CONTRACT ADDRESS</span>
-<strong>TBA</strong>
+<strong id="official-ca">BiVtAN54KERsGBGqM1ZPBMRVFqBEHZQLU1moZvqDpump</strong>
+<button class="text-button" type="button" data-copy="official-ca">copy</button>
 </div>
-<p>The official CA will be published here first. Verify this page before interacting with any token.</p>
+<p>Official Joltwork Coin on Solana. Verify every character before interacting.</p>
 </section>
 
     <section class="dev-letter">
@@ -431,8 +432,8 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 <p>The guard returns an error. Solana’s atomic transaction model rolls back the route, so the protected transaction does not settle partially.</p>
 </details>
 <details>
-<summary>Where will the official token address appear?</summary>
-<p>Only in the official contract-address box at the top of this page and through the linked Joltwork X account. Until then, the displayed value remains TBA.</p>
+<summary>Where is the official token address published?</summary>
+<p>In the official contract-address box at the top of this page, in the Markets directory and through the linked Joltwork X account. Always verify the complete Mint before interacting.</p>
 </details>
 </div>
 </section>
