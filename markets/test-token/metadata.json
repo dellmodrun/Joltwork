@@ -1,0 +1,13 @@
+{
+  "name": "Joltwork Test",
+  "symbol": "JOLTTEST",
+  "description": "An explicitly labelled Solana mainnet test token created to verify Joltwork's launch-to-market flow. This token has no promised value, utility or return.",
+  "image": "https://dellmodrun.github.io/Joltwork/joltwork.png",
+  "website": "https://dellmodrun.github.io/Joltwork/markets/",
+  "twitter": "https://x.com/Joltworkrunit",
+  "attributes": [
+    { "trait_type": "Environment", "value": "Mainnet Test" },
+    { "trait_type": "Launch Interface", "value": "Joltwork" },
+    { "trait_type": "Status", "value": "Testing Only" }
+  ]
+}

@@ -58,3 +58,8 @@ registry_source = ROOT / "markets" / "registry.json"
 registry_output = DIST / "markets" / "registry.json"
 registry_output.parent.mkdir(parents=True, exist_ok=True)
 registry_output.write_text(registry_source.read_text(encoding="utf-8"), encoding="utf-8")
+
+test_metadata_source = ROOT / "markets" / "test-token" / "metadata.json"
+test_metadata_output = DIST / "markets" / "test-token" / "metadata.json"
+test_metadata_output.parent.mkdir(parents=True, exist_ok=True)
+test_metadata_output.write_text(test_metadata_source.read_text(encoding="utf-8"), encoding="utf-8")
