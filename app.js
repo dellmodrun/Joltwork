@@ -151,7 +151,11 @@
           </table>
         </section>
       </div>`;
-    document.querySelector(".overlay").before(main);
+    var originalSections = document.querySelector("main.col .sections");
+    var addedSections = main.querySelector(".sections");
+    while (addedSections.firstElementChild) {
+      originalSections.appendChild(addedSections.firstElementChild);
+    }
   }
 
   mountProductDepth();
