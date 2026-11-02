@@ -1,0 +1,21 @@
+name: build kora deploy tool
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build the official Solana Kora deploy client
+        shell: pwsh
+        run: cargo install kora-deploy --version 0.2.0 --locked --root tool
+      - uses: actions/upload-artifact@v5
+        with:
+          name: kora-deploy-windows
+          path: tool/bin/kora-deploy.exe
+          if-no-files-found: error
