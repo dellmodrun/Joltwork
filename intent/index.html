@@ -111,6 +111,7 @@
 <section class="chapter">
 <div class="chapter-label">INTENT WORKBENCH</div>
 <h2>Specify the result before signing the route.</h2>
+<div class="prose-block"><p>In a normal swap interface, the user sees a quote and signs a transaction assembled by the application. The quote explains what should happen, but it is not itself an on-chain rule. A Joltwork intent converts the important part of that quote into instruction data: the route that may run, the most the user will spend, the least they must receive and the slot after which permission expires.</p><p>The numbers below use token base units because that is what the Solana program verifies without rounding ambiguity. A production wallet should also display the human-readable amount beside them. Joltwork’s job is to make sure the friendly display and the integer enforced by the program refer to the same signed intent.</p></div>
 <div class="wallet-context">
 <span>SIGNING AUTHORITY</span>
 <b data-wallet-state>not connected</b>
@@ -180,6 +181,7 @@
 <p>Reload balances, enforce deltas and return a JRC1 receipt—or revert.</p>
 </article>
 </div>
+<div class="prose-block after-grid"><p>“Pre” means the route has not executed yet. Jolt Guard first checks the signer, expiry, route identity and optional policy. It then calls the selected route inside the same Solana transaction. After the route returns, “post” means the program reloads the real token accounts and measures what left and what arrived.</p><p>If the result stays inside the user’s limits, the transaction may commit and JRC1 reports the realized deltas. If it falls outside those limits, Jolt Guard returns an error. Solana’s atomic execution then discards the route’s state changes rather than leaving the user with a partially accepted trade.</p></div>
 </section>
 <section class="section-block">
 <div class="section-head">
@@ -189,6 +191,7 @@
 </div>
 <p>The deterministic intent ID changes whenever any protected field changes.</p>
 </div>
+<div class="prose-block compact"><p>These fields answer six plain questions: who approved the trade, where it may execute, how much may leave, how much must arrive, how long the approval is valid and whether any extra rule must pass. The intent ID is a fingerprint of those answers. Changing even one protected answer creates a different fingerprint and requires a fresh signature.</p></div>
 <div class="fact-grid">
 <article>
 <b>AUTHORITY</b>
@@ -229,6 +232,7 @@
 <h2>Every rejection is explicit.</h2>
 </div>
 </div>
+<div class="prose-block"><p>Failures before execution are the cheapest and easiest to understand: a wrong signer, expired intent or substituted route means the liquidity route never runs. Failures after execution are equally important. They mean the route ran inside the transaction, but the measured result did not satisfy the signed promise.</p><p>This distinction is why the table names the checking phase. It gives wallets and support teams a precise reason to show the user instead of a generic “transaction failed” message. A production adapter should map each program error to clear interface language while preserving the underlying error code for developers.</p></div>
 <table class="integration-table">
 <thead>
 <tr>
@@ -306,6 +310,7 @@
 <span>© 2026 JOLTWORK</span>
 </footer>
 </main>
+<script src="./wallet-icons.js"></script>
 <script src="./app.js">
 </script>
 </body>

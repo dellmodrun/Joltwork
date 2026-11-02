@@ -1,0 +1,15 @@
+{
+  "name": "joltwork-web",
+  "private": true,
+  "scripts": {
+    "build:client": "node build-client.mjs"
+  },
+  "dependencies": {
+    "@pump-fun/pump-sdk": "4.1.0",
+    "@solana/web3.js": "1.98.2",
+    "buffer": "6.0.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.11"
+  }
+}

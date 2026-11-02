@@ -111,6 +111,7 @@
 <section class="chapter">
 <div class="chapter-label">LAUNCH WORKBENCH</div>
 <h2>One focused path: asset, market, policy, review.</h2>
+<div class="prose-block"><p>A token launch has two different layers. The first creates the asset and its market: the name, symbol, metadata and launch venue. The second tells future trading interfaces what protection the issuer recommends when people trade that asset. Joltwork keeps those layers visible instead of hiding them behind one “launch” button.</p><p>The form below does not take custody of a creator’s wallet and it does not silently broadcast a transaction. It creates a deterministic JLM1 plan that can be reviewed, copied and downloaded. That plan becomes the input for a production launch adapter, where the wallet will see the exact Solana instructions before approving them.</p></div>
 <div class="wallet-context">
 <span>SIGNING AUTHORITY</span>
 <b data-wallet-state>not connected</b>
@@ -152,9 +153,11 @@
 </label>
 <label>NETWORK<select id="coin-network"><option value="solana-mainnet-beta">SOLANA MAINNET</option></select></label>
 </div>
+<label>RPC ENDPOINT<input id="coin-rpc" type="url" value="https://solana-rpc.publicnode.com" required></label>
 <div class="form-actions">
 <button type="button" class="button" data-wallet-connect>connect wallet</button>
 <button type="submit" class="button button-solid">compile launch plan</button>
+<button type="button" id="launch-submit" class="button button-solid" disabled>create coin on mainnet</button>
 </div>
 </form>
 <div class="output-sheet">
@@ -170,8 +173,9 @@
 </div>
 <div class="callout">
 <b>SIGNING BOUNDARY</b>
-<p>This release compiles an inspectable JLM1 plan; it does not claim that a mint has been created. Mainnet submission will be enabled only with a published Jolt Guard Program ID and a tested Pump adapter. The connected wallet remains the sole signing authority.</p>
+<p>Compile first, then use the separate mainnet action. Joltwork assembles Pump’s official create_v2 instruction, generates the new Mint signer in this browser and asks the connected wallet to review and pay for the transaction. Nothing is submitted without the wallet’s explicit approval. The Intent Policy remains a JLM1 manifest until Jolt Guard has a published Program ID.</p>
 </div>
+<div class="callout"><b>RPC AND PRIVACY</b><p>The default browser-compatible RPC is operated by PublicNode, not Joltwork or Solana. It receives ordinary RPC requests and the signed transaction when submitted. Production operators should replace it with their own trusted Solana RPC endpoint before launch.</p></div>
 </section>
 <section class="home-panel">
 <div class="eyebrow">WHAT GETS CREATED</div>
@@ -190,6 +194,7 @@
 <p>A discoverable baseline that wallets may strengthen per transaction.</p>
 </article>
 </div>
+<div class="prose-block after-grid"><p>The mint is the token itself. The market route is where the first liquidity and trading path are created. The default intent policy is not another tax or transfer restriction: it is a public baseline describing how supported wallets should protect a trade, such as requiring a maximum total cost or restricting execution to an approved route.</p><p>A trader is still free to choose stricter terms for an individual transaction. An issuer might publish a 2% maximum-cost baseline, while a trader can sign a 1% limit for one purchase. The user-level intent wins because it is the condition attached to that specific transaction.</p></div>
 </section>
 <section class="section-block">
 <div class="section-head">
@@ -199,6 +204,7 @@
 </div>
 <p>Each stage produces explicit data so a creator can review authorities, route configuration and policy before signing.</p>
 </div>
+<div class="prose-block compact"><p>Imagine a creator launching a token through Pump with SOL as the quote asset. JLM1 records the token metadata, selected launch route and default policy as one inspectable document. The adapter then turns the asset and market portions into launch instructions, while Joltwork keeps the policy identity available for wallets and later trades. If any field changes, the compiled identity changes too, so an old review cannot be reused for a different launch.</p></div>
 <div class="step-grid">
 <article>
 <span>01 / ASSET</span>
@@ -229,6 +235,7 @@
 <h2>Launch readiness checklist.</h2>
 </div>
 </div>
+<div class="prose-block compact"><p>The checklist is deliberately split between facts the software can validate and decisions only the creator can make. A URI can be checked for format, but software cannot decide whether an authority should remain mutable or whether published social links are trustworthy. A commercial launch flow must make both categories explicit before asking for a signature.</p></div>
 <div class="split-panel">
 <article>
 <h3>Required inputs</h3>
@@ -250,6 +257,7 @@
 </article>
 </div>
 </section>
+<section class="section-block"><div class="section-head"><div><div class="eyebrow">VERIFIABLE DEPENDENCIES</div><h2>The launch path is tied to published Pump interfaces.</h2></div><p>Users should be able to verify which program and instruction the interface targets before approving a mainnet transaction.</p></div><div class="prose-block compact"><p>Joltwork uses Pump’s published <code>create_v2</code> interface and checks that the assembled instruction targets <code>6EF8r…F6P</code>, the Pump program address documented for mainnet and devnet. The new Token-2022 Mint keypair is generated only in the browser, partially signs the creation transaction, and is never transmitted as a reusable secret. The connected wallet remains the payer and final transaction signer.</p></div><div class="source-links"><a href="https://github.com/pump-fun/pump-public-docs/blob/main/docs/instructions/COIN_CREATION.md" target="_blank" rel="noreferrer"><span>PUMP OFFICIAL DOCUMENTATION</span><strong>create_v2 coin creation</strong><code>account order / instruction data</code></a><a href="https://github.com/pump-fun/pump-public-docs/blob/main/docs/PUMP_PROGRAM_README.md" target="_blank" rel="noreferrer"><span>PUMP OFFICIAL DOCUMENTATION</span><strong>Pump program</strong><code>6EF8r…F6P</code></a></div></section>
 <section class="section-block">
 <div class="section-head">
 <div>
@@ -285,6 +293,8 @@
 <span>© 2026 JOLTWORK</span>
 </footer>
 </main>
+<script src="./wallet-icons.js"></script>
+<script src="./launch-client.js"></script>
 <script src="./app.js">
 </script>
 </body>

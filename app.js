@@ -38,15 +38,14 @@
   var activeProvider = null;
   var boundProviders = [];
   var walletButton = byId("connect-wallet");
+  window.JoltworkWallet = {
+    getProvider: function () { return activeProvider; },
+    getAddress: function () { return walletAddress; }
+  };
 
   function walletLogo(name) {
-    var icons = {
-      Phantom: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#ab9ff2"/><path fill="#fff" d="M32.5 19.2c0 7.7-5.8 13.5-13.6 13.5-5.6 0-10.3-3-12.4-7.4-.3-.6.2-1.3.9-1.3h4.1c.6 0 1.1-.4 1.2-1l.5-2.2c.1-.6.7-1 1.3-1h.9c.7 0 1.2.6 1.1 1.3l-.4 2.1c-.1.5.3.9.8.9h1.4c.6 0 1.1-.4 1.2-1l.5-2.2c.1-.6.7-1 1.3-1h.9c.7 0 1.2.6 1.1 1.3l-.4 2.1c-.1.5.3.9.8.9 3.2-.1 5.8-2.7 5.8-5.9 0-5.1-4.2-9.3-9.4-9.3-4.9 0-9 3.7-9.4 8.5-.1.7-.6 1.2-1.3 1.2H7.6c-.7 0-1.2-.6-1.2-1.3C7 10.5 12.8 5 20.1 5c6.9 0 12.4 5.7 12.4 14.2Z"/></svg>',
-      Solflare: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#111"/><path fill="#fc9d18" d="m20 5 4 8 9-2-5 8 7 6-10 1-1 9-6-7-8 5 2-10-8-4 9-4-1-9 8 7Z"/><circle cx="20" cy="20" r="6" fill="#ffd36a"/></svg>',
-      Backpack: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#e33e2f"/><path fill="#fff" d="M14 11a6 6 0 0 1 12 0v2h2.5a3.5 3.5 0 0 1 3.5 3.5V31H8V16.5a3.5 3.5 0 0 1 3.5-3.5H14v-2Zm3 2h6v-2a3 3 0 0 0-6 0v2Zm-4 5v8h14v-8H13Z"/></svg>',
-      "Solana Wallet": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#111"/><path fill="#14f195" d="M11 10h22l-4 5H7l4-5Zm-4 9h22l4 5H11l-4-5Zm4 9h22l-4 5H7l4-5Z"/></svg>'
-    };
-    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(icons[name] || icons["Solana Wallet"]);
+    var icons = window.JOLT_OFFICIAL_WALLET_ICONS || {};
+    return icons[name] || "";
   }
 
   function shortAddress(address) {
@@ -81,6 +80,11 @@
     });
     var disconnect = byId("wallet-disconnect");
     if (disconnect) disconnect.hidden = !walletAddress;
+    var launchSubmit = byId("launch-submit");
+    var launchOutput = byId("launch-output");
+    if (launchSubmit && launchOutput && launchOutput.textContent.trim().startsWith("{")) {
+      launchSubmit.disabled = !walletAddress;
+    }
   }
 
   function detectedWallets() {
@@ -121,7 +125,7 @@
       '<p>Select an injected wallet. Joltwork never requests a seed phrase or private key.</p>' +
       '<div id="wallet-options" class="wallet-options"></div>' +
       '<button id="wallet-disconnect" class="button wallet-disconnect" type="button">disconnect current wallet</button>' +
-      '<small>Only install wallets from their official websites. Review every transaction before signing.</small>' +
+      '<small>Wallet marks are sourced from the official Solana Wallet Adapter packages. Only install wallets from their official websites and review every transaction before signing.</small>' +
       '</section>';
     document.body.appendChild(modal);
     modal.querySelectorAll("[data-wallet-close]").forEach(function (item) {
@@ -150,7 +154,7 @@
         item = document.createElement("button");
         item.type = "button";
         item.className = "wallet-option";
-        item.innerHTML = '<span class="wallet-badge"><img src="' + wallet.icon + '" alt=""></span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
+        item.innerHTML = '<span class="wallet-badge">' + (wallet.icon ? '<img src="' + wallet.icon + '" alt="' + wallet.name + ' official logo">' : '<span aria-hidden="true">◆</span>') + '</span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
         item.addEventListener("click", function () { connectWallet(wallet); });
       } else {
         item = document.createElement("a");
@@ -158,7 +162,7 @@
         item.href = wallet.install;
         item.target = "_blank";
         item.rel = "noreferrer";
-        item.innerHTML = '<span class="wallet-badge"><img src="' + wallet.icon + '" alt=""></span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
+        item.innerHTML = '<span class="wallet-badge">' + (wallet.icon ? '<img src="' + wallet.icon + '" alt="' + wallet.name + ' official logo">' : '<span aria-hidden="true">◆</span>') + '</span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
       }
       options.appendChild(item);
     });
@@ -263,7 +267,55 @@
       ],
       signingAuthority: walletAddress || "connect wallet before transaction assembly"
     }, null, 2);
+    var launchSubmit = byId("launch-submit");
+    if (launchSubmit) launchSubmit.disabled = !walletAddress;
     showToast("JLM1 launch manifest compiled", "success");
+  });
+
+  var launchSubmit = byId("launch-submit");
+  if (launchSubmit) launchSubmit.addEventListener("click", async function () {
+    var output = byId("launch-output");
+    var provider = window.JoltworkWallet && window.JoltworkWallet.getProvider();
+    var authority = window.JoltworkWallet && window.JoltworkWallet.getAddress();
+    if (!provider || !authority) {
+      openWalletModal();
+      showToast("Connect a wallet before creating the coin", "error");
+      return;
+    }
+    if (!window.JoltworkLaunch || typeof window.JoltworkLaunch.createPumpCoin !== "function") {
+      showToast("Pump transaction module is unavailable", "error");
+      return;
+    }
+    var accepted = window.confirm("Create this coin on Solana mainnet through the official Pump program? Your wallet will show the transaction and network cost before signing.");
+    if (!accepted) return;
+    launchSubmit.disabled = true;
+    launchSubmit.textContent = "waiting for wallet…";
+    try {
+      var result = await window.JoltworkLaunch.createPumpCoin({
+        provider: provider,
+        authority: authority,
+        name: byId("coin-name").value.trim(),
+        symbol: byId("coin-symbol").value.trim().toUpperCase(),
+        uri: metadataUri(byId("coin-uri").value.trim()),
+        rpcEndpoint: metadataUri(byId("coin-rpc").value.trim())
+      });
+      output.textContent = JSON.stringify({
+        status: "confirmed",
+        network: "solana-mainnet-beta",
+        mint: result.mint,
+        signature: result.signature,
+        solscan: result.explorer,
+        pump: result.pump,
+        note: "The Joltwork intent policy remains a manifest until the Jolt Guard Program ID is deployed."
+      }, null, 2);
+      showToast("Coin creation confirmed on Solana", "success");
+    } catch (error) {
+      output.textContent = "creation error · " + (error && error.message ? error.message : String(error));
+      showToast(error && error.message ? error.message : "Coin creation failed", "error");
+    } finally {
+      launchSubmit.disabled = false;
+      launchSubmit.textContent = "create coin on mainnet";
+    }
   });
 
   var intentForm = byId("intent-form");
@@ -335,6 +387,9 @@
     sdk: "sdk/src/index.ts",
     tests: "sdk/test/codec.test.js",
     package: "sdk/package.json",
+    launchClient: "launch-client.ts",
+    webPackage: "package.json",
+    buildClient: "build-client.mjs",
     spec: "JOLT_GUARD.md",
     readme: "README.md",
     ci: ".github/workflows/protocol-ci.yml"

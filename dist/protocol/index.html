@@ -165,7 +165,63 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 </div>
 <p>Joltwork is an intent-bound settlement protocol for Solana. Jolt Guard is its on-chain enforcement program; JLM1, JOLT V1, JHK1 and JRC1 are the interfaces that connect issuers, wallets, routes, policies and receipts.</p>
 </header>
-<section class="section-block"><div class="section-head"><div><div class="eyebrow">PROTOCOL AT A GLANCE</div><h2>From an issuer’s baseline to a trader’s realized result.</h2></div><p>The protocol does not replace a launchpad, wallet or liquidity router. It gives those systems one shared language for declaring and enforcing a transaction outcome.</p></div><div class="fact-grid"><article><b>JLM1 / LAUNCH</b><strong>Issuer baseline</strong><p>Describes token identity, launch route and the default policy interfaces should disclose.</p></article><article><b>JOLT V1 / INTENT</b><strong>User constraints</strong><p>Binds authority, route, input ceiling, output floor, expiry and optional policy data.</p></article><article><b>JOLT GUARD / PROGRAM</b><strong>Atomic enforcement</strong><p>Checks preconditions, invokes the route through CPI and verifies realized balance deltas.</p></article><article><b>JHK1 / POLICY</b><strong>Composable rules</strong><p>Allows an external program to accept or reject before and after route execution.</p></article><article><b>JRC1 / RECEIPT</b><strong>Settlement result</strong><p>Returns the intent identity and measured input/output for wallets and indexers.</p></article><article><b>SDK / INTEGRATION</b><strong>Instruction assembly</strong><p>Deduplicates accounts, encodes indexed routes and decodes successful receipts.</p></article></div><div class="status-band"><div><span>SPECIFICATION</span><b class="ready">PUBLISHED IN REPOSITORY</b></div><div><span>PROGRAM + SDK</span><b class="ready">IMPLEMENTED / TESTED</b></div><div><span>MAINNET PROGRAM ID</span><b class="pending">NOT YET PUBLISHED</b></div></div></section>
+<section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">PROTOCOL AT A GLANCE</div>
+<h2>From an issuer’s baseline to a trader’s realized result.</h2>
+</div>
+<p>The protocol does not replace a launchpad, wallet or liquidity router. It gives those systems one shared language for declaring and enforcing a transaction outcome.</p>
+</div>
+<div class="prose-block"><p>Joltwork separates declaration from enforcement. A creator can publish a baseline when a token launches; a trader can turn a specific quote into stricter transaction terms; a wallet can explain those terms; and Jolt Guard can enforce the final result around the selected route. No single interface has to be trusted to remember what the user accepted.</p><p>The six components below are not six separate products. They are stages of the same lifecycle. JLM1 starts with an asset, JOLT V1 describes one trade, Jolt Guard executes it, JHK1 adds optional policy logic, JRC1 reports what settled, and the SDK lets applications assemble and read those formats consistently.</p></div>
+<div class="fact-grid">
+<article>
+<b>JLM1 / LAUNCH</b>
+<strong>Issuer baseline</strong>
+<p>Describes token identity, launch route and the default policy interfaces should disclose.</p>
+</article>
+<article>
+<b>JOLT V1 / INTENT</b>
+<strong>User constraints</strong>
+<p>Binds authority, route, input ceiling, output floor, expiry and optional policy data.</p>
+</article>
+<article>
+<b>JOLT GUARD / PROGRAM</b>
+<strong>Atomic enforcement</strong>
+<p>Checks preconditions, invokes the route through CPI and verifies realized balance deltas.</p>
+</article>
+<article>
+<b>JHK1 / POLICY</b>
+<strong>Composable rules</strong>
+<p>Allows an external program to accept or reject before and after route execution.</p>
+</article>
+<article>
+<b>JRC1 / RECEIPT</b>
+<strong>Settlement result</strong>
+<p>Returns the intent identity and measured input/output for wallets and indexers.</p>
+</article>
+<article>
+<b>SDK / INTEGRATION</b>
+<strong>Instruction assembly</strong>
+<p>Deduplicates accounts, encodes indexed routes and decodes successful receipts.</p>
+</article>
+</div>
+<div class="status-band">
+<div>
+<span>SPECIFICATION</span>
+<b class="ready">PUBLISHED IN REPOSITORY</b>
+</div>
+<div>
+<span>PROGRAM + SDK</span>
+<b class="ready">IMPLEMENTED / TESTED</b>
+</div>
+<div>
+<span>MAINNET PROGRAM ID</span>
+<b class="pending">NOT YET PUBLISHED</b>
+</div>
+</div>
+</section>
+<section class="section-block"><div class="section-head"><div><div class="eyebrow">A TRANSACTION IN PLAIN LANGUAGE</div><h2>The router finds a path. Joltwork decides whether its result is acceptable.</h2></div></div><div class="prose-block"><p>Suppose a wallet finds a route that may spend up to 1 SOL to buy a token. The user accepts only if at least 950,000 token units reach the destination account before a chosen expiry slot. The wallet encodes those limits and the selected route program into JOLT V1, then asks the user to sign.</p><p>Jolt Guard records the source and destination balances, runs the router through CPI and reads the balances again. Spending 0.98 SOL and receiving 970,000 units passes. Spending 1.01 SOL or receiving 940,000 units fails. The program is not judging whether the quoted price was “good”; it is enforcing the exact boundary the user authorized.</p></div></section>
 <figure class="mechanism-figure">
 <div class="figure-frame">
 <svg viewBox="0 0 1100 250" role="img" aria-label="Jolt Guard execution sequence">
@@ -203,6 +259,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 <section class="chapter">
 <div class="chapter-label">CORE MECHANISM / JOLT GUARD</div>
 <h2>Mint policy and transaction intent are complementary.</h2>
+<div class="prose-block"><p>A Token-2022 Transfer Hook follows a mint. It is chosen by the issuer and runs whenever that token is transferred, regardless of which user initiated the transfer or why. That makes it useful for token-level behavior, but it cannot express the complete economic promise of a route involving several programs and assets.</p><p>A Jolt Intent Hook follows one user-approved transaction. It can protect a route that touches a router, multiple pools and either token program, because the final check looks at the complete realized input and output. The two mechanisms can coexist: a route may encounter a mint hook, while Jolt Guard still enforces the trader’s overall limit.</p></div>
 <div class="comparison">
 <article>
 <span class="index">MINT SCOPE</span>
@@ -243,6 +300,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 </dl>
 </article>
 </div>
+<div class="prose-block compact"><p>The phase table below describes where a failure occurs. PRE rejects an invalid authorization before liquidity moves. EXECUTE propagates an error from the selected route. RELOAD reads the post-route token state. POST compares the realized result with the signed limits and runs any final policy. RETURN produces a compact receipt only after every condition succeeds.</p></div>
 <table class="protocol-table">
 <thead>
 <tr>
@@ -283,6 +341,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 <section class="chapter">
 <div class="chapter-label">POLICY MODULES</div>
 <h2>Policies are composable programs.</h2>
+<div class="prose-block"><p>The base protocol always protects authority, expiry, route identity, maximum input and minimum output. A policy module is for rules that are important to a particular application but should not be permanently hard-coded into Jolt Guard—for example an approved-route registry or a ceiling on additional token-level fees.</p><p>A policy does not receive unlimited authority to rewrite the trade. It receives the declared phase and its assigned accounts and data, then either accepts or returns an error. This keeps the core settlement invariant small while allowing applications to add rules that can be independently inspected and upgraded.</p></div>
 <div class="module-grid">
 <article>
 <b>MAX COST</b>
@@ -318,6 +377,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 </div>
 <p>The wrapper measures realized state rather than trusting quoted or simulated output.</p>
 </div>
+<div class="prose-block compact"><p>Security starts by narrowing what Jolt Guard promises. It can prove that the authorized route stayed inside measurable token-account limits; it cannot make an illiquid market liquid, verify an issuer’s marketing claims or protect a compromised wallet key. Keeping those boundaries explicit prevents a settlement guard from being mistaken for a universal token-safety system.</p></div>
 <div class="split-panel">
 <article>
 <h3>Enforced by Jolt Guard</h3>
@@ -348,6 +408,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 <h2>Designed for wallets, launchers and routers.</h2>
 </div>
 </div>
+<div class="prose-block"><p>Each integrator sees a different part of the same transaction. The launcher publishes the asset baseline. The wallet turns a quote into terms the user can understand and sign. The router continues to search for liquidity. The policy program evaluates additional rules, and the indexer records the successful receipt.</p><p>The integration surface is intentionally format-driven. An application should be able to replace its router without changing how an intent is signed, or add a new policy without changing the receipt format. That separation is what allows the protocol to sit above individual pools instead of becoming another isolated exchange.</p></div>
 <table class="integration-table">
 <thead>
 <tr>
@@ -426,6 +487,17 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 <span>© 2026 JOLTWORK</span>
 </footer>
 </main>
+<script>/* Generated from the official Solana Wallet Adapter packages.
+ * Phantom: https://unpkg.com/@solana/wallet-adapter-phantom@0.9.30/lib/esm/adapter.js
+ * Solflare: https://unpkg.com/@solana/wallet-adapter-solflare@0.6.34/lib/esm/adapter.js
+ * Backpack: https://unpkg.com/@solana/wallet-adapter-backpack@0.1.14/lib/esm/adapter.js
+ */
+window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
+  "Phantom": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDgiIGhlaWdodD0iMTA4IiB2aWV3Qm94PSIwIDAgMTA4IDEwOCIgZmlsbD0ibm9uZSI+CjxyZWN0IHdpZHRoPSIxMDgiIGhlaWdodD0iMTA4IiByeD0iMjYiIGZpbGw9IiNBQjlGRjIiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00Ni41MjY3IDY5LjkyMjlDNDIuMDA1NCA3Ni44NTA5IDM0LjQyOTIgODUuNjE4MiAyNC4zNDggODUuNjE4MkMxOS41ODI0IDg1LjYxODIgMTUgODMuNjU2MyAxNSA3NS4xMzQyQzE1IDUzLjQzMDUgNDQuNjMyNiAxOS44MzI3IDcyLjEyNjggMTkuODMyN0M4Ny43NjggMTkuODMyNyA5NCAzMC42ODQ2IDk0IDQzLjAwNzlDOTQgNTguODI1OCA4My43MzU1IDc2LjkxMjIgNzMuNTMyMSA3Ni45MTIyQzcwLjI5MzkgNzYuOTEyMiA2OC43MDUzIDc1LjEzNDIgNjguNzA1MyA3Mi4zMTRDNjguNzA1MyA3MS41NzgzIDY4LjgyNzUgNzAuNzgxMiA2OS4wNzE5IDY5LjkyMjlDNjUuNTg5MyA3NS44Njk5IDU4Ljg2ODUgODEuMzg3OCA1Mi41NzU0IDgxLjM4NzhDNDcuOTkzIDgxLjM4NzggNDUuNjcxMyA3OC41MDYzIDQ1LjY3MTMgNzQuNDU5OEM0NS42NzEzIDcyLjk4ODQgNDUuOTc2OCA3MS40NTU2IDQ2LjUyNjcgNjkuOTIyOVpNODMuNjc2MSA0Mi41Nzk0QzgzLjY3NjEgNDYuMTcwNCA4MS41NTc1IDQ3Ljk2NTggNzkuMTg3NSA0Ny45NjU4Qzc2Ljc4MTYgNDcuOTY1OCA3NC42OTg5IDQ2LjE3MDQgNzQuNjk4OSA0Mi41Nzk0Qzc0LjY5ODkgMzguOTg4NSA3Ni43ODE2IDM3LjE5MzEgNzkuMTg3NSAzNy4xOTMxQzgxLjU1NzUgMzcuMTkzMSA4My42NzYxIDM4Ljk4ODUgODMuNjc2MSA0Mi41Nzk0Wk03MC4yMTAzIDQyLjU3OTVDNzAuMjEwMyA0Ni4xNzA0IDY4LjA5MTYgNDcuOTY1OCA2NS43MjE2IDQ3Ljk2NThDNjMuMzE1NyA0Ny45NjU4IDYxLjIzMyA0Ni4xNzA0IDYxLjIzMyA0Mi41Nzk1QzYxLjIzMyAzOC45ODg1IDYzLjMxNTcgMzcuMTkzMSA2NS43MjE2IDM3LjE5MzFDNjguMDkxNiAzNy4xOTMxIDcwLjIxMDMgMzguOTg4NSA3MC4yMTAzIDQyLjU3OTVaIiBmaWxsPSIjRkZGREY4Ii8+Cjwvc3ZnPg==",
+  "Solflare": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIGlkPSJTIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MCA1MCI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiMwMjA1MGE7c3Ryb2tlOiNmZmVmNDY7c3Ryb2tlLW1pdGVybGltaXQ6MTA7c3Ryb2tlLXdpZHRoOi41cHg7fS5jbHMtMntmaWxsOiNmZmVmNDY7fTwvc3R5bGU+PC9kZWZzPjxyZWN0IGNsYXNzPSJjbHMtMiIgeD0iMCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiByeD0iMTIiIHJ5PSIxMiIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTI0LjIzLDI2LjQybDIuNDYtMi4zOCw0LjU5LDEuNWMzLjAxLDEsNC41MSwyLjg0LDQuNTEsNS40MywwLDEuOTYtLjc1LDMuMjYtMi4yNSw0LjkzbC0uNDYuNS4xNy0xLjE3Yy42Ny00LjI2LS41OC02LjA5LTQuNzItNy40M2wtNC4zLTEuMzhoMFpNMTguMDUsMTEuODVsMTIuNTIsNC4xNy0yLjcxLDIuNTktNi41MS0yLjE3Yy0yLjI1LS43NS0zLjAxLTEuOTYtMy4zLTQuNTF2LS4wOGgwWk0xNy4zLDMzLjA2bDIuODQtMi43MSw1LjM0LDEuNzVjMi44LjkyLDMuNzYsMi4xMywzLjQ2LDUuMThsLTExLjY1LTQuMjJoMFpNMTMuNzEsMjAuOTVjMC0uNzkuNDItMS41NCwxLjEzLTIuMTcuNzUsMS4wOSwyLjA1LDIuMDUsNC4wOSwyLjcxbDQuNDIsMS40Ni0yLjQ2LDIuMzgtNC4zNC0xLjQyYy0yLS42Ny0yLjg0LTEuNjctMi44NC0yLjk2TTI2LjgyLDQyLjg3YzkuMTgtNi4wOSwxNC4xMS0xMC4yMywxNC4xMS0xNS4zMiwwLTMuMzgtMi01LjI2LTYuNDMtNi43MmwtMy4zNC0xLjEzLDkuMTQtOC43Ny0xLjg0LTEuOTYtMi43MSwyLjM4LTEyLjgxLTQuMjJjLTMuOTcsMS4yOS04Ljk3LDUuMDktOC45Nyw4Ljg5LDAsLjQyLjA0LjgzLjE3LDEuMjktMy4zLDEuODgtNC42MywzLjYzLTQuNjMsNS44LDAsMi4wNSwxLjA5LDQuMDksNC41NSw1LjIybDIuNzUuOTItOS41Miw5LjE0LDEuODQsMS45NiwyLjk2LTIuNzEsMTQuNzMsNS4yMmgwWiIvPjwvc3ZnPg==",
+  "Backpack": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAbvSURBVHgB7Z1dUtxGEMf/LZH3fU0V4PUJQg4QVj5BnBOAT2BzAsMJAicwPoHJCRDrAxifgLVxVV73ObDqdEtsjKn4C8+0NDv9e7AxprRC85uvnp4RYYW5qKpxCVTcYKsgfiDfGjMwIsZIvh7d/lkmzAiYy5fzhultyZhdlagf1vU5VhjCiiGFXq01zYSJdqWgx/hB5AHN5I/6iuilyFBjxVgZAdqCZ34ORoVIqAzSOhxsvq6PsSIkL4A281LwL2IW/F1UhLKgRz/X9QyJUyBhuuae31gWviLjiPF1wxeX29vPkTjJtgAftrd3GHSMnmHw4eZ0uodESVKAoRT+kpQlSE6Ats/XZv/ONK5vZHC49+B1fYjESG4MUDKfYmCFr0ic4fmHqtpCYiQlgA66QsztIzFi5j+RGMl0AXebfgn0aOTuvGG8owIarZsXOj3ronlRuEYnn84CJLo4Lgi/QL/H/LHmy/RwI6GA0RoS4acFHi8kGieFXS/QhmijFfQXmH3uPy5lSkoLbIkYlfyzhuM4juM4juM4juMMj6TzATQ4JH9tlRqFk8BM2aV9RWHB9K5kzK/KLui0KqliSQmgBa4BIS54cpMD0OeawFye3jk19JdKkWq62OAFkEIfrTXNUxBV1okf38Ot3MGjlFqHwQrQZvQ22Cfw7xjg6t8XkZaBGzpKIXdwcAJojZeCP5SC30HipJBEOigBZLn3qdzSPlKr8V9hyEmkgxCgj8zefuD9jen0AAOidwE0i6ZhfjXgRI+gDK016DUjqE3ubPhNLoWvaDLJouHToaSP9SbA0DJ7LekyiviNPgP0TC9dQM6FfxeZ7eyuT6cv0RPmAmjTx11uXx/MiegEDd425cfcwWV+H4O3+uiO+pTAVIA2uMN8av6QiWr5TQ++JVlTc/tEiF3jOMScZGC43kME0VSA95PJhWXhM+Gt1Phn98nStZa1r9mB2SDQPqefjhayfnDfFG2J5882z84eynVM5u3thlONhRhj0gLc5PRfwAw62JjW+wjE5Xa1L0VkshO4kXt/EPDev4ZJCyBRvlcwggjHG4EfYHc9OoIBBWy3mEUX4H1V7Ur7ZvILaT8qy7FRduleF9jXc4RggOUWs/gtANs0nYquvMXaMaTXlQHlE1ggayLvf5OKY0DUMYDWfmpsBjZa+9enOmiLy+VkcmqxaNW2ZgX9GnsLXNQWoGj4KYzQ2g8LyG5WUDR4hshEE6CN+AFmg5lFiRMYcI0uKRQGyIAwegWKJkBjYO8tzq12C7efQ7CK2I00MomIxOsCiCcwQhaW3sEQ6W7sPi/yIDqKAHp8m2nIF7COoc9ghQw4NU8SkYgiQCmLKXCCUSziPc84XYBh83/DSiWR3qUo2tT4ONdGYDTub73cSzD/PNt0rojdQHAByoXxw0E7XfoFhsjnRduD+DnWIkkXXACJl1cwRoMmf3cbRaOjLRzDXnKZVj9GBIILUJBtbVzyj9HAU19AgR6I9VzDtwCgMXpAo2Yxp0v/Ybi49ennJtIFEPMY/TCKHTvv+aTSUQzBgwrQ92YHbQVi3UN3GAVZhrf/jzECE1SAq/7n4yOJ074KPSBcJoii598vxgwrqAByg70HZJZbr0JJ0G5XZz5Z1e1rYccA5TAicqEk0O5ECl/3LvYys7mLTLHHCEzS7wz6Esv3+nyYTF58rwha63XAl8PG1aCnhesWq6EdOcKM3WvmXRHh+Gvv/tNVTJlJPC4a3RVEK72+sCSZ4+J/FBVhTUS43J7gJqFjrnl33A3sxtCa3nAWhX6bbAT4hJugCsNZ2TGA8224AJnjAmSOC5A5LkDmuACZ4wJkjguQOS5A5rgAmeMCZI4LkDkuQOa4AJnjAmSOC5A5LkDmuACZ4wJkjguQOWEFYJvz85xwBBWgKM1P68oKKsI/36ACdC9nsDlWPTsIJ5t1Hfw01OBjgI1p/YwLegIibw0CwESz9gUYZ2d/wHEcx3Ecx3Ecx3Ecx3HuS5QjfdrXxTHv3JzEkd2xKwHR9xPNuKGjzdf1MSIQXAA9XUsuuw8nKPpK3PWzs+AvrgwqgP1LojOjoEf3fRv6Zy+JgBSLOGfaOx1NE/6o+rCrgeT9fWp4SljmuACZ4wJkjguQOS5A5rgAmeMCZI4LkDkuQOa4AJnjAmSOC5A5LkDmuACZ4wJkjguQOS5A5rgAmeMCZI4LkDkuQOa4AJnj5wRmTlABqHQBohKhggUVYAEEP8fO+UiMgziDCvCwrnU3aw0nOATMQu8LVIIPAq+JdAerdwWBaQ/fjEBwAaQVmMnN7sEJCB3EqP3tlRGJy6qqmPkFMcZw7sucmfZiHQ6hRBNgSXdaCHbA7KeFfBvz9pxlxtl1gcN2XBWRfwHK959XFRG6AgAAAABJRU5ErkJggg=="
+});
+</script>
 <script>(function () {
   "use strict";
 
@@ -466,15 +538,14 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
   var activeProvider = null;
   var boundProviders = [];
   var walletButton = byId("connect-wallet");
+  window.JoltworkWallet = {
+    getProvider: function () { return activeProvider; },
+    getAddress: function () { return walletAddress; }
+  };
 
   function walletLogo(name) {
-    var icons = {
-      Phantom: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#ab9ff2"/><path fill="#fff" d="M32.5 19.2c0 7.7-5.8 13.5-13.6 13.5-5.6 0-10.3-3-12.4-7.4-.3-.6.2-1.3.9-1.3h4.1c.6 0 1.1-.4 1.2-1l.5-2.2c.1-.6.7-1 1.3-1h.9c.7 0 1.2.6 1.1 1.3l-.4 2.1c-.1.5.3.9.8.9h1.4c.6 0 1.1-.4 1.2-1l.5-2.2c.1-.6.7-1 1.3-1h.9c.7 0 1.2.6 1.1 1.3l-.4 2.1c-.1.5.3.9.8.9 3.2-.1 5.8-2.7 5.8-5.9 0-5.1-4.2-9.3-9.4-9.3-4.9 0-9 3.7-9.4 8.5-.1.7-.6 1.2-1.3 1.2H7.6c-.7 0-1.2-.6-1.2-1.3C7 10.5 12.8 5 20.1 5c6.9 0 12.4 5.7 12.4 14.2Z"/></svg>',
-      Solflare: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#111"/><path fill="#fc9d18" d="m20 5 4 8 9-2-5 8 7 6-10 1-1 9-6-7-8 5 2-10-8-4 9-4-1-9 8 7Z"/><circle cx="20" cy="20" r="6" fill="#ffd36a"/></svg>',
-      Backpack: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#e33e2f"/><path fill="#fff" d="M14 11a6 6 0 0 1 12 0v2h2.5a3.5 3.5 0 0 1 3.5 3.5V31H8V16.5a3.5 3.5 0 0 1 3.5-3.5H14v-2Zm3 2h6v-2a3 3 0 0 0-6 0v2Zm-4 5v8h14v-8H13Z"/></svg>',
-      "Solana Wallet": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#111"/><path fill="#14f195" d="M11 10h22l-4 5H7l4-5Zm-4 9h22l4 5H11l-4-5Zm4 9h22l-4 5H7l4-5Z"/></svg>'
-    };
-    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(icons[name] || icons["Solana Wallet"]);
+    var icons = window.JOLT_OFFICIAL_WALLET_ICONS || {};
+    return icons[name] || "";
   }
 
   function shortAddress(address) {
@@ -509,6 +580,11 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
     });
     var disconnect = byId("wallet-disconnect");
     if (disconnect) disconnect.hidden = !walletAddress;
+    var launchSubmit = byId("launch-submit");
+    var launchOutput = byId("launch-output");
+    if (launchSubmit && launchOutput && launchOutput.textContent.trim().startsWith("{")) {
+      launchSubmit.disabled = !walletAddress;
+    }
   }
 
   function detectedWallets() {
@@ -549,7 +625,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
       '<p>Select an injected wallet. Joltwork never requests a seed phrase or private key.</p>' +
       '<div id="wallet-options" class="wallet-options"></div>' +
       '<button id="wallet-disconnect" class="button wallet-disconnect" type="button">disconnect current wallet</button>' +
-      '<small>Only install wallets from their official websites. Review every transaction before signing.</small>' +
+      '<small>Wallet marks are sourced from the official Solana Wallet Adapter packages. Only install wallets from their official websites and review every transaction before signing.</small>' +
       '</section>';
     document.body.appendChild(modal);
     modal.querySelectorAll("[data-wallet-close]").forEach(function (item) {
@@ -578,7 +654,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
         item = document.createElement("button");
         item.type = "button";
         item.className = "wallet-option";
-        item.innerHTML = '<span class="wallet-badge"><img src="' + wallet.icon + '" alt=""></span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
+        item.innerHTML = '<span class="wallet-badge">' + (wallet.icon ? '<img src="' + wallet.icon + '" alt="' + wallet.name + ' official logo">' : '<span aria-hidden="true">◆</span>') + '</span><span><b>' + wallet.name + '</b><small>detected in this browser</small></span><em>connect</em>';
         item.addEventListener("click", function () { connectWallet(wallet); });
       } else {
         item = document.createElement("a");
@@ -586,7 +662,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
         item.href = wallet.install;
         item.target = "_blank";
         item.rel = "noreferrer";
-        item.innerHTML = '<span class="wallet-badge"><img src="' + wallet.icon + '" alt=""></span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
+        item.innerHTML = '<span class="wallet-badge">' + (wallet.icon ? '<img src="' + wallet.icon + '" alt="' + wallet.name + ' official logo">' : '<span aria-hidden="true">◆</span>') + '</span><span><b>' + wallet.name + '</b><small>not detected</small></span><em>install ↗</em>';
       }
       options.appendChild(item);
     });
@@ -691,7 +767,55 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
       ],
       signingAuthority: walletAddress || "connect wallet before transaction assembly"
     }, null, 2);
+    var launchSubmit = byId("launch-submit");
+    if (launchSubmit) launchSubmit.disabled = !walletAddress;
     showToast("JLM1 launch manifest compiled", "success");
+  });
+
+  var launchSubmit = byId("launch-submit");
+  if (launchSubmit) launchSubmit.addEventListener("click", async function () {
+    var output = byId("launch-output");
+    var provider = window.JoltworkWallet && window.JoltworkWallet.getProvider();
+    var authority = window.JoltworkWallet && window.JoltworkWallet.getAddress();
+    if (!provider || !authority) {
+      openWalletModal();
+      showToast("Connect a wallet before creating the coin", "error");
+      return;
+    }
+    if (!window.JoltworkLaunch || typeof window.JoltworkLaunch.createPumpCoin !== "function") {
+      showToast("Pump transaction module is unavailable", "error");
+      return;
+    }
+    var accepted = window.confirm("Create this coin on Solana mainnet through the official Pump program? Your wallet will show the transaction and network cost before signing.");
+    if (!accepted) return;
+    launchSubmit.disabled = true;
+    launchSubmit.textContent = "waiting for wallet…";
+    try {
+      var result = await window.JoltworkLaunch.createPumpCoin({
+        provider: provider,
+        authority: authority,
+        name: byId("coin-name").value.trim(),
+        symbol: byId("coin-symbol").value.trim().toUpperCase(),
+        uri: metadataUri(byId("coin-uri").value.trim()),
+        rpcEndpoint: metadataUri(byId("coin-rpc").value.trim())
+      });
+      output.textContent = JSON.stringify({
+        status: "confirmed",
+        network: "solana-mainnet-beta",
+        mint: result.mint,
+        signature: result.signature,
+        solscan: result.explorer,
+        pump: result.pump,
+        note: "The Joltwork intent policy remains a manifest until the Jolt Guard Program ID is deployed."
+      }, null, 2);
+      showToast("Coin creation confirmed on Solana", "success");
+    } catch (error) {
+      output.textContent = "creation error · " + (error && error.message ? error.message : String(error));
+      showToast(error && error.message ? error.message : "Coin creation failed", "error");
+    } finally {
+      launchSubmit.disabled = false;
+      launchSubmit.textContent = "create coin on mainnet";
+    }
   });
 
   var intentForm = byId("intent-form");
@@ -763,6 +887,9 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
     sdk: "sdk/src/index.ts",
     tests: "sdk/test/codec.test.js",
     package: "sdk/package.json",
+    launchClient: "launch-client.ts",
+    webPackage: "package.json",
+    buildClient: "build-client.mjs",
     spec: "JOLT_GUARD.md",
     readme: "README.md",
     ci: ".github/workflows/protocol-ci.yml"

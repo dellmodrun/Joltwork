@@ -9,6 +9,9 @@ attractor.svg
 .playwright-mcp/
 *-test.png
 top-*.png
+*-qa.png
+test-results/
+qa-local.mjs
 
 # local snapshot backup
 v1/
@@ -16,3 +19,4 @@ v1/
 # editor / harness scratch
 .claude/
 *.tmp
+node_modules/

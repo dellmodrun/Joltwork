@@ -130,6 +130,8 @@
 </p>
 </section>
 
+    <section class="section-block"><div class="section-head"><div><div class="eyebrow">IN PLAIN LANGUAGE</div><h2>Joltwork turns “I expect this trade” into “only settle if this is true.”</h2></div></div><div class="prose-block"><p>Today, a trading interface usually shows an estimate, slippage setting and route before the wallet opens. The user signs the assembled transaction, but the promise they understood still lives mainly in interface text. If several programs, pools or token extensions affect the route, explaining the quote and enforcing the final result become two different jobs.</p><p>Joltwork joins those jobs. The wallet encodes the user’s maximum spend, minimum receive amount, permitted route and expiry into one intent. Jolt Guard runs the route and measures the real balance changes before Solana commits the transaction. The user is not asking Joltwork to find liquidity; they are asking it to reject any result outside the boundary they signed.</p></div><div class="callout"><b>A SIMPLE EXAMPLE</b><p>A user authorizes spending no more than 1 SOL and receiving no fewer than 950,000 token units. Receiving 970,000 after spending 0.98 SOL passes. Receiving 940,000—or spending 1.01 SOL—fails the signed condition and the transaction reverts.</p></div></section>
+
     <section class="section-block evidence-block">
 <div class="section-head">
 <div>
@@ -366,6 +368,7 @@
 <span>© 2026 JOLTWORK</span>
 </footer>
   </main>
+<script src="./wallet-icons.js"></script>
 <script src="./app.js">
 </script>
 </body>

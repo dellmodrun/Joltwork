@@ -108,7 +108,63 @@
 </div>
 <p>Joltwork is an intent-bound settlement protocol for Solana. Jolt Guard is its on-chain enforcement program; JLM1, JOLT V1, JHK1 and JRC1 are the interfaces that connect issuers, wallets, routes, policies and receipts.</p>
 </header>
-<section class="section-block"><div class="section-head"><div><div class="eyebrow">PROTOCOL AT A GLANCE</div><h2>From an issuer’s baseline to a trader’s realized result.</h2></div><p>The protocol does not replace a launchpad, wallet or liquidity router. It gives those systems one shared language for declaring and enforcing a transaction outcome.</p></div><div class="fact-grid"><article><b>JLM1 / LAUNCH</b><strong>Issuer baseline</strong><p>Describes token identity, launch route and the default policy interfaces should disclose.</p></article><article><b>JOLT V1 / INTENT</b><strong>User constraints</strong><p>Binds authority, route, input ceiling, output floor, expiry and optional policy data.</p></article><article><b>JOLT GUARD / PROGRAM</b><strong>Atomic enforcement</strong><p>Checks preconditions, invokes the route through CPI and verifies realized balance deltas.</p></article><article><b>JHK1 / POLICY</b><strong>Composable rules</strong><p>Allows an external program to accept or reject before and after route execution.</p></article><article><b>JRC1 / RECEIPT</b><strong>Settlement result</strong><p>Returns the intent identity and measured input/output for wallets and indexers.</p></article><article><b>SDK / INTEGRATION</b><strong>Instruction assembly</strong><p>Deduplicates accounts, encodes indexed routes and decodes successful receipts.</p></article></div><div class="status-band"><div><span>SPECIFICATION</span><b class="ready">PUBLISHED IN REPOSITORY</b></div><div><span>PROGRAM + SDK</span><b class="ready">IMPLEMENTED / TESTED</b></div><div><span>MAINNET PROGRAM ID</span><b class="pending">NOT YET PUBLISHED</b></div></div></section>
+<section class="section-block">
+<div class="section-head">
+<div>
+<div class="eyebrow">PROTOCOL AT A GLANCE</div>
+<h2>From an issuer’s baseline to a trader’s realized result.</h2>
+</div>
+<p>The protocol does not replace a launchpad, wallet or liquidity router. It gives those systems one shared language for declaring and enforcing a transaction outcome.</p>
+</div>
+<div class="prose-block"><p>Joltwork separates declaration from enforcement. A creator can publish a baseline when a token launches; a trader can turn a specific quote into stricter transaction terms; a wallet can explain those terms; and Jolt Guard can enforce the final result around the selected route. No single interface has to be trusted to remember what the user accepted.</p><p>The six components below are not six separate products. They are stages of the same lifecycle. JLM1 starts with an asset, JOLT V1 describes one trade, Jolt Guard executes it, JHK1 adds optional policy logic, JRC1 reports what settled, and the SDK lets applications assemble and read those formats consistently.</p></div>
+<div class="fact-grid">
+<article>
+<b>JLM1 / LAUNCH</b>
+<strong>Issuer baseline</strong>
+<p>Describes token identity, launch route and the default policy interfaces should disclose.</p>
+</article>
+<article>
+<b>JOLT V1 / INTENT</b>
+<strong>User constraints</strong>
+<p>Binds authority, route, input ceiling, output floor, expiry and optional policy data.</p>
+</article>
+<article>
+<b>JOLT GUARD / PROGRAM</b>
+<strong>Atomic enforcement</strong>
+<p>Checks preconditions, invokes the route through CPI and verifies realized balance deltas.</p>
+</article>
+<article>
+<b>JHK1 / POLICY</b>
+<strong>Composable rules</strong>
+<p>Allows an external program to accept or reject before and after route execution.</p>
+</article>
+<article>
+<b>JRC1 / RECEIPT</b>
+<strong>Settlement result</strong>
+<p>Returns the intent identity and measured input/output for wallets and indexers.</p>
+</article>
+<article>
+<b>SDK / INTEGRATION</b>
+<strong>Instruction assembly</strong>
+<p>Deduplicates accounts, encodes indexed routes and decodes successful receipts.</p>
+</article>
+</div>
+<div class="status-band">
+<div>
+<span>SPECIFICATION</span>
+<b class="ready">PUBLISHED IN REPOSITORY</b>
+</div>
+<div>
+<span>PROGRAM + SDK</span>
+<b class="ready">IMPLEMENTED / TESTED</b>
+</div>
+<div>
+<span>MAINNET PROGRAM ID</span>
+<b class="pending">NOT YET PUBLISHED</b>
+</div>
+</div>
+</section>
+<section class="section-block"><div class="section-head"><div><div class="eyebrow">A TRANSACTION IN PLAIN LANGUAGE</div><h2>The router finds a path. Joltwork decides whether its result is acceptable.</h2></div></div><div class="prose-block"><p>Suppose a wallet finds a route that may spend up to 1 SOL to buy a token. The user accepts only if at least 950,000 token units reach the destination account before a chosen expiry slot. The wallet encodes those limits and the selected route program into JOLT V1, then asks the user to sign.</p><p>Jolt Guard records the source and destination balances, runs the router through CPI and reads the balances again. Spending 0.98 SOL and receiving 970,000 units passes. Spending 1.01 SOL or receiving 940,000 units fails. The program is not judging whether the quoted price was “good”; it is enforcing the exact boundary the user authorized.</p></div></section>
 <figure class="mechanism-figure">
 <div class="figure-frame">
 <svg viewBox="0 0 1100 250" role="img" aria-label="Jolt Guard execution sequence">
@@ -146,6 +202,7 @@
 <section class="chapter">
 <div class="chapter-label">CORE MECHANISM / JOLT GUARD</div>
 <h2>Mint policy and transaction intent are complementary.</h2>
+<div class="prose-block"><p>A Token-2022 Transfer Hook follows a mint. It is chosen by the issuer and runs whenever that token is transferred, regardless of which user initiated the transfer or why. That makes it useful for token-level behavior, but it cannot express the complete economic promise of a route involving several programs and assets.</p><p>A Jolt Intent Hook follows one user-approved transaction. It can protect a route that touches a router, multiple pools and either token program, because the final check looks at the complete realized input and output. The two mechanisms can coexist: a route may encounter a mint hook, while Jolt Guard still enforces the trader’s overall limit.</p></div>
 <div class="comparison">
 <article>
 <span class="index">MINT SCOPE</span>
@@ -186,6 +243,7 @@
 </dl>
 </article>
 </div>
+<div class="prose-block compact"><p>The phase table below describes where a failure occurs. PRE rejects an invalid authorization before liquidity moves. EXECUTE propagates an error from the selected route. RELOAD reads the post-route token state. POST compares the realized result with the signed limits and runs any final policy. RETURN produces a compact receipt only after every condition succeeds.</p></div>
 <table class="protocol-table">
 <thead>
 <tr>
@@ -226,6 +284,7 @@
 <section class="chapter">
 <div class="chapter-label">POLICY MODULES</div>
 <h2>Policies are composable programs.</h2>
+<div class="prose-block"><p>The base protocol always protects authority, expiry, route identity, maximum input and minimum output. A policy module is for rules that are important to a particular application but should not be permanently hard-coded into Jolt Guard—for example an approved-route registry or a ceiling on additional token-level fees.</p><p>A policy does not receive unlimited authority to rewrite the trade. It receives the declared phase and its assigned accounts and data, then either accepts or returns an error. This keeps the core settlement invariant small while allowing applications to add rules that can be independently inspected and upgraded.</p></div>
 <div class="module-grid">
 <article>
 <b>MAX COST</b>
@@ -261,6 +320,7 @@
 </div>
 <p>The wrapper measures realized state rather than trusting quoted or simulated output.</p>
 </div>
+<div class="prose-block compact"><p>Security starts by narrowing what Jolt Guard promises. It can prove that the authorized route stayed inside measurable token-account limits; it cannot make an illiquid market liquid, verify an issuer’s marketing claims or protect a compromised wallet key. Keeping those boundaries explicit prevents a settlement guard from being mistaken for a universal token-safety system.</p></div>
 <div class="split-panel">
 <article>
 <h3>Enforced by Jolt Guard</h3>
@@ -291,6 +351,7 @@
 <h2>Designed for wallets, launchers and routers.</h2>
 </div>
 </div>
+<div class="prose-block"><p>Each integrator sees a different part of the same transaction. The launcher publishes the asset baseline. The wallet turns a quote into terms the user can understand and sign. The router continues to search for liquidity. The policy program evaluates additional rules, and the indexer records the successful receipt.</p><p>The integration surface is intentionally format-driven. An application should be able to replace its router without changing how an intent is signed, or add a new policy without changing the receipt format. That separation is what allows the protocol to sit above individual pools instead of becoming another isolated exchange.</p></div>
 <table class="integration-table">
 <thead>
 <tr>
@@ -369,6 +430,7 @@
 <span>© 2026 JOLTWORK</span>
 </footer>
 </main>
+<script src="./wallet-icons.js"></script>
 <script src="./app.js">
 </script>
 </body>
