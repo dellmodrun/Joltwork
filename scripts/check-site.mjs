@@ -5,7 +5,7 @@ import { dirname, resolve } from "node:path";
 const root = resolve(import.meta.dirname, "..");
 const pages = ["index.html", "launch/index.html", "markets/index.html", "intent/index.html", "protocol/index.html", "code/index.html", "research/index.html"];
 for (const page of pages) assert.ok(existsSync(resolve(root, page)), `missing route: ${page}`);
-assert.ok(!existsSync(resolve(root, "CNAME")), "custom-domain CNAME must not be present");
+assert.equal(readFileSync(resolve(root, "CNAME"), "utf8").trim(), "joltwork.fun", "unexpected custom domain");
 
 for (const page of pages) {
   const html = readFileSync(resolve(root, page), "utf8");
@@ -54,4 +54,4 @@ for (const launch of marketRegistry.launches) {
   assert.match(launch.mint, /^[1-9A-HJ-NP-Za-km-z]{32,44}$/, "registry contains an invalid Solana Mint");
   assert.match(launch.signature, /^[1-9A-HJ-NP-Za-km-z]{64,88}$/, "registry contains an invalid transaction signature");
 }
-console.log(`site contract: ${pages.length} routes, live markets, live quote controls, metadata gate, same-origin code browser, no GitHub links, no custom domain`);
+console.log(`site contract: ${pages.length} routes, live markets, live quote controls, metadata gate, same-origin code browser, no GitHub links, custom domain joltwork.fun`);
