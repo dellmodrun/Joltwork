@@ -13,6 +13,8 @@ OUT = DIST / "index.html"
 html = SRC.read_text(encoding="utf-8")
 app = (ROOT / "app.js").read_text(encoding="utf-8")
 html = html.replace('<script src="./app.js"></script>', "<script>" + app + "</script>")
+styles = (ROOT / "styles.css").read_text(encoding="utf-8")
+html = html.replace('<link rel="stylesheet" href="./styles.css">', "<style>" + styles + "</style>")
 
 def b64(path: pathlib.Path) -> str:
     return base64.b64encode(path.read_bytes()).decode("ascii")

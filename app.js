@@ -1,294 +1,187 @@
 (function () {
   "use strict";
 
-  var RPC_URLS = [
-    "https://solana-rpc.publicnode.com",
-    "https://api.mainnet.solana.com"
-  ];
-  var NL = String.fromCharCode(10);
-  var latestReceipt = null;
+  var walletAddress = null;
 
-  function mountProductDepth() {
-    var main = document.createElement("main");
-    main.className = "col";
-    main.innerHTML = `
-      <div class="sections">
-        <section>
-          <h2>on the live protocol</h2>
-          <div class="body">
-            <p>Joltwork now begins before settlement. Jolt Guard binds a user-signed economic policy to the route instruction, executes that route through CPI and permits state to commit only when the realized token-account deltas satisfy the policy.</p>
-            <p>the protocol is split into a minimal on-chain enforcement program, an ordered account-index adapter, composable policy hooks and a Solana Kit SDK. the public interface compiles the same canonical intent identity used by integrations.</p>
-          </div>
-          <table class="surface-table">
-            <thead><tr><th>surface</th><th>input</th><th>evidence returned</th><th>state</th></tr></thead>
-            <tbody>
-              <tr><td>Jolt Guard</td><td>signed route intent</td><td>atomic max-input, min-output and expiry enforcement</td><td>COMPILED</td></tr>
-              <tr><td>policy hooks</td><td>PRE / POST payload</td><td>composable program-defined acceptance or rejection</td><td>COMPILED</td></tr>
-              <tr><td>Solana Kit SDK</td><td>route instruction</td><td>account deduplication, codec and receipt decoder</td><td>TESTED</td></tr>
-              <tr><td>protocol CI</td><td>every source change</td><td>Rust tests, TypeScript tests and dependency audit</td><td>PASSING</td></tr>
-            </tbody>
-          </table>
-        </section>
-        <section>
-          <h2>on the execution lifecycle</h2>
-          <div class="body"><p>commercial settlement intelligence preserves the sequence from user intent to finalized evidence. Joltwork separates the interface promise, the path executed by Solana programs and the balances that ultimately settled.</p></div>
-          <figure class="paper-figure">
-            <div class="figure-frame">
-              <svg viewBox="0 0 680 330" role="img" aria-label="Joltwork execution lifecycle">
-                <defs><marker id="life-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#9b9a95"/></marker></defs>
-                <g fill="none" stroke="#565550">
-                  <rect x="20" y="40" width="112" height="74"/><rect x="152" y="40" width="112" height="74"/><rect x="284" y="40" width="112" height="74"/><rect x="416" y="40" width="112" height="74"/><rect x="548" y="40" width="112" height="74"/>
-                  <path d="M132 77H142M264 77H274M396 77H406M528 77H538" marker-end="url(#life-arrow)"/>
-                  <path d="M76 114V176H604V124" stroke-dasharray="3 4"/><rect x="76" y="176" width="528" height="92"/><path d="M340 268V300" marker-end="url(#life-arrow)"/>
-                </g>
-                <g fill="#fff" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle">
-                  <text x="76" y="70">INTENT</text><text x="76" y="91" fill="#9b9a95">wallet request</text>
-                  <text x="208" y="70">MESSAGE</text><text x="208" y="91" fill="#9b9a95">accounts + ix</text>
-                  <text x="340" y="70">CPI GRAPH</text><text x="340" y="91" fill="#9b9a95">program path</text>
-                  <text x="472" y="70">SETTLEMENT</text><text x="472" y="91" fill="#9b9a95">balance ledger</text>
-                  <text x="604" y="70">RECEIPT</text><text x="604" y="91" fill="#9b9a95">portable proof</text>
-                  <text x="340" y="208" font-size="13" font-family="EB Garamond,serif">reconciliation boundary</text>
-                  <text x="340" y="232" fill="#9b9a95">declared cost + attributed movement + unresolved remainder</text>
-                  <text x="340" y="320">REPRODUCIBLE FROM SIGNATURE + SLOT</text>
-                </g>
-              </svg>
-            </div>
-            <figcaption>figure 4. the receipt is derived at the boundary between declared intent and confirmed balance evidence.</figcaption>
-          </figure>
-        </section>
-        <section>
-          <h2>on commercial discipline</h2>
-          <div class="body"><p>Joltwork treats explainability as an accounting property. a result is useful only when it can be reproduced, exported and inspected without trusting a hidden score. the live interface asks for no wallet connection, signing authority or private key.</p></div>
-          <div class="principles">
-            <div class="principle"><b>01 / PROVENANCE</b><p>each result remains anchored to a signature, slot, account state and RPC response.</p></div>
-            <div class="principle"><b>02 / DETERMINISM</b><p>raw token quantities are reconciled as integers before decimal presentation.</p></div>
-            <div class="principle"><b>03 / PORTABILITY</b><p>receipts can be copied or downloaded as machine-readable JSON.</p></div>
-            <div class="principle"><b>04 / PRIVACY</b><p>analysis requires no wallet connection, login, cookie or private key.</p></div>
-            <div class="principle"><b>05 / FAILURE VISIBILITY</b><p>timeouts, missing transactions and RPC errors surface directly in context.</p></div>
-            <div class="principle"><b>06 / EXTENSIBILITY</b><p>the evidence model accommodates SPL Token, Token-2022 and custom CPI paths.</p></div>
-          </div>
-        </section>
-        <section>
-          <h2>on receipt anatomy</h2>
-          <div class="body">
-            <p>a Joltwork receipt is both a human explanation and a machine-readable record. identity fields bind it to the network and transaction; execution fields preserve status, fee and compute consumption; accounting fields enumerate non-zero token deltas; attribution fields identify the programs that participated in settlement.</p>
-            <p>the browser exposes the exact JSON beside the visual summary so an analyst can move from a headline result to the underlying record without changing tools. exported receipts can be compared across routes, archived with treasury records or attached to an incident report.</p>
-          </div>
-          <pre class="schema-block">{
-  "product": "Joltwork Settlement Receipt",
-  "network": "solana-mainnet-beta",
-  "signature": "&lt;base58 signature&gt;",
-  "slot": 000000000,
-  "status": "confirmed",
-  "feeLamports": 5000,
-  "computeUnitsConsumed": 21498,
-  "tokenBalanceDeltas": [
-    { "owner": "...", "mint": "...", "delta": "-12.500000" }
-  ],
-  "invokedPrograms": ["..."],
-  "generatedAt": "ISO-8601"
-}</pre>
-        </section>
-        <section>
-          <h2>on economic attribution</h2>
-          <div class="body">
-            <p>one transaction may contain several economically different movements. Joltwork separates the amount delivered to the destination from network cost, program-mediated exchange, token-level mechanics and the remainder that cannot yet be assigned to a known rule.</p>
-            <p>this separation is essential on Solana because an apparently simple swap may cross a router, an automated market maker, one or more token programs and arbitrary CPI participants before the final balances are recorded.</p>
-          </div>
-          <figure class="paper-figure">
-            <div class="figure-frame">
-              <svg viewBox="0 0 680 340" role="img" aria-label="Economic attribution ledger">
-                <g fill="none" stroke="#565550"><rect x="30" y="34" width="620" height="42"/><rect x="30" y="92" width="500" height="42"/><rect x="30" y="150" width="410" height="42"/><rect x="30" y="208" width="300" height="42"/><rect x="30" y="266" width="188" height="42"/><path d="M30 320H650"/></g>
-                <g fill="#fff" font-family="JetBrains Mono,monospace" font-size="9"><text x="44" y="59">AUTHORIZED VALUE</text><text x="560" y="59">100%</text><text x="44" y="117">DESTINATION RECEIPT</text><text x="452" y="117">observed</text><text x="44" y="175">DECLARED COST</text><text x="362" y="175">interface</text><text x="44" y="233">PROGRAM EFFECT</text><text x="255" y="233">CPI path</text><text x="44" y="291">UNRESOLVED REMAINDER</text><text x="145" y="291">flag</text></g>
-                <g fill="#9b9a95"><rect x="530" y="92" width="120" height="42"/><rect x="440" y="150" width="210" height="42"/><rect x="330" y="208" width="320" height="42"/><rect x="218" y="266" width="432" height="42"/></g>
-              </svg>
-            </div>
-            <figcaption>figure 5. attribution is a reconciliation problem: every observed delta is assigned to a disclosed or program-derived cause, otherwise it remains explicit.</figcaption>
-          </figure>
-        </section>
-        <section>
-          <h2>on token mechanics</h2>
-          <div class="body">
-            <p>mint state changes the meaning of a transfer. the classic SPL Token program provides the baseline ownership and authority model; Token-2022 extends that surface with transfer fees, transfer hooks and additional account or mint extensions. Joltwork reads the mint owner first, then exposes parsed authorities, supply precision and available extensions before interpreting settlement.</p>
-          </div>
-          <div class="signal-stack">
-            <div class="signal-row"><span>MINT OWNER</span><span>distinguishes classic SPL Token from Token-2022 execution</span><span>IDENTITY</span></div>
-            <div class="signal-row"><span>DECIMALS</span><span>converts integer ledger amounts without floating-point accounting</span><span>QUANTITY</span></div>
-            <div class="signal-row"><span>AUTHORITY</span><span>shows mint and freeze control visible in parsed state</span><span>CONTROL</span></div>
-            <div class="signal-row"><span>SUPPLY</span><span>preserves raw amount and a human-readable decimal representation</span><span>STATE</span></div>
-            <div class="signal-row"><span>EXTENSIONS</span><span>surfaces parsed Token-2022 configuration when returned by RPC</span><span>BEHAVIOR</span></div>
-            <div class="signal-row"><span>BALANCE DELTA</span><span>compares confirmed pre- and post-token balances as integers</span><span>SETTLEMENT</span></div>
-          </div>
-        </section>
-        <section>
-          <h2>on integration paths</h2>
-          <div class="body">
-            <p>the same receipt model serves different product surfaces. the interface changes, but the evidence contract remains constant: signature, slot, execution metadata, value movement and participating programs.</p>
-          </div>
-          <div class="case-grid">
-            <div class="case-card"><b>WALLET / CONFIRMATION</b><h3>explain after execution</h3><p>place the settled amount and program path beside the wallet activity record so a user can verify what actually landed.</p></div>
-            <div class="case-card"><b>DEX / TRADE HISTORY</b><h3>itemize route outcome</h3><p>attach an evidence-backed receipt to a completed swap instead of presenting only the quoted and received totals.</p></div>
-            <div class="case-card"><b>EXPLORER / ANALYSIS</b><h3>compress raw metadata</h3><p>turn instruction trees and balance arrays into an accounting-oriented view without hiding the original signature.</p></div>
-            <div class="case-card"><b>TREASURY / OPERATIONS</b><h3>export a stable record</h3><p>download normalized JSON for reconciliation, review, support cases and transaction-level audit trails.</p></div>
-            <div class="case-card"><b>RISK / MONITORING</b><h3>track unknown deltas</h3><p>separate recognized program effects from unexplained movement and prioritize transactions requiring decoder coverage.</p></div>
-            <div class="case-card"><b>RESEARCH / DATA</b><h3>compare markets</h3><p>aggregate consistent receipts by mint, program, route or slot to study how disclosure and execution diverge over time.</p></div>
-          </div>
-        </section>
-        <section>
-          <h2>on confidence semantics</h2>
-          <div class="body">
-            <p>Joltwork avoids collapsing complex evidence into a single opaque safety score. confidence belongs to individual claims. a network fee is directly reported by transaction metadata; a token delta is calculated from ledger state; a program label depends on program identity; an economic explanation may require a version-specific decoder.</p>
-            <p>the product therefore distinguishes observed facts, deterministic derivations, attributed interpretations and unresolved remainder. this lets an integrator show strong facts immediately while keeping uncertainty visible.</p>
-          </div>
-          <table class="surface-table">
-            <thead><tr><th>class</th><th>meaning</th><th>example</th><th>handling</th></tr></thead>
-            <tbody>
-              <tr><td>OBSERVED</td><td>returned directly by confirmed RPC evidence</td><td>slot, fee, account owner</td><td>DISPLAY</td></tr>
-              <tr><td>DERIVED</td><td>deterministically calculated from observed values</td><td>integer token delta</td><td>REPRODUCE</td></tr>
-              <tr><td>ATTRIBUTED</td><td>mapped through a known program or token rule</td><td>recognized route effect</td><td>EXPLAIN</td></tr>
-              <tr><td>UNRESOLVED</td><td>movement without sufficient supported attribution</td><td>unknown CPI remainder</td><td>FLAG</td></tr>
-            </tbody>
-          </table>
-        </section>
-      </div>`;
-    var originalSections = document.querySelector("main.col .sections");
-    var addedSections = main.querySelector(".sections");
-    while (addedSections.firstElementChild) {
-      originalSections.appendChild(addedSections.firstElementChild);
-    }
+  function byId(id) {
+    return document.getElementById(id);
   }
 
-  mountProductDepth();
-
-  function bytesToHex(bytes) {
+  function hex(bytes) {
     return Array.from(bytes).map(function (value) {
       return value.toString(16).padStart(2, "0");
     }).join("");
   }
 
-  function mountGuardProtocol() {
-    var section = document.createElement("section");
-    section.className = "guard-protocol";
-    section.innerHTML = `
-      <div class="guard-kicker">JOLTWORK / ON-CHAIN PROTOCOL 01</div>
-      <div class="guard-title-row">
-        <div>
-          <h2>Jolt Guard</h2>
-          <p>intent-level hooks and atomic settlement constraints for any Solana route.</p>
-        </div>
-        <span class="guard-state">PROTOCOL SOURCE LIVE</span>
-      </div>
-      <div class="guard-flow">
-        <div><b>01</b><span>SIGNED INTENT</span><small>max input · min output · expiry</small></div>
-        <i>→</i>
-        <div><b>02</b><span>PRE HOOK</span><small>policy program may reject</small></div>
-        <i>→</i>
-        <div><b>03</b><span>ROUTE CPI</span><small>arbitrary Solana router</small></div>
-        <i>→</i>
-        <div><b>04</b><span>POSTCONDITION</span><small>reload real token balances</small></div>
-        <i>→</i>
-        <div><b>05</b><span>COMMIT / REVERT</span><small>JRC1 settlement proof</small></div>
-      </div>
-      <div class="guard-body">
-        <div class="guard-copy">
-          <h3>the hook belongs to the trade, not the pool.</h3>
-          <p>Jolt Guard records source and destination token balances, invokes the selected route through CPI, then enforces the user-signed economic outcome. if realized input exceeds the ceiling, output falls below the floor, the intent expires, or a policy hook rejects the route, Solana rolls the entire transaction back.</p>
-          <div class="guard-facts">
-            <span><b>ATOMIC</b> route and validation share one transaction</span>
-            <span><b>COMPOSABLE</b> PRE and POST policy programs</span>
-            <span><b>ROUTE-AGNOSTIC</b> ordered account-index adapter</span>
-            <span><b>VERIFIABLE</b> compact JRC1 return receipt</span>
-          </div>
-          <a class="guard-spec-link" href="https://github.com/dellmodrun/Joltwork/blob/main/JOLT_GUARD.md" target="_blank" rel="noreferrer">read protocol specification ↗</a>
-        </div>
-        <div class="intent-composer">
-          <div class="composer-head"><span>INTENT POLICY COMPOSER</span><em>SHA-256</em></div>
-          <label>MAXIMUM INPUT / RAW UNITS<input id="guard-max-input" inputmode="numeric" value="100000000"></label>
-          <label>MINIMUM OUTPUT / RAW UNITS<input id="guard-min-output" inputmode="numeric" value="95000000"></label>
-          <label>EXPIRY SLOT<input id="guard-expiry" inputmode="numeric" value="500000000"></label>
-          <label>ROUTE PROGRAM<input id="guard-route" spellcheck="false" value="JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"></label>
-          <label>POLICY HOOK<select id="guard-policy"><option value="max-cost">maximum total cost</option><option value="allow-route">allowed route registry</option><option value="token-2022">token-2022 fee ceiling</option><option value="counterparty">counterparty policy</option></select></label>
-          <button id="guard-compile">compile signed intent</button>
-          <pre id="guard-output">configure a policy, then compile its canonical intent id.</pre>
-        </div>
-      </div>`;
-    var legacyAnalyzer = document.querySelector("#analyzer");
-    legacyAnalyzer.before(section);
-    legacyAnalyzer.remove();
-
-    section.querySelector("#guard-compile").addEventListener("click", async function () {
-      var manifest = {
-        protocol: "jolt-guard-v1",
-        maxInput: section.querySelector("#guard-max-input").value.trim(),
-        minOutput: section.querySelector("#guard-min-output").value.trim(),
-        expiresAtSlot: section.querySelector("#guard-expiry").value.trim(),
-        routeProgram: section.querySelector("#guard-route").value.trim(),
-        policy: section.querySelector("#guard-policy").value
-      };
-      var output = section.querySelector("#guard-output");
-      if (!/^\d+$/.test(manifest.maxInput) || !/^\d+$/.test(manifest.minOutput) || !/^\d+$/.test(manifest.expiresAtSlot)) {
-        output.textContent = "error - constraints must be unsigned integer raw units";
-        return;
-      }
-      var canonical = JSON.stringify(manifest);
-      var digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
-      output.textContent = JSON.stringify({
-        intentId: bytesToHex(new Uint8Array(digest)),
-        constraints: manifest,
-        enforcement: "atomic CPI postcondition",
-        result: "JRC1 receipt or full transaction revert"
-      }, null, 2);
-    });
+  async function sha256(value) {
+    var encoded = new TextEncoder().encode(value);
+    return hex(new Uint8Array(await crypto.subtle.digest("SHA-256", encoded)));
   }
 
-  mountGuardProtocol();
+  function unsignedInteger(value, field) {
+    if (!/^\d+$/.test(value)) throw new Error(field + " must be an unsigned integer");
+    return value;
+  }
 
-  var sourceFiles = {
-    readme: [
-      "# Joltwork",
-      "",
-      "Intent-level hooks and verifiable settlement for Solana.",
-      "",
-      "Jolt Guard changes whether a route is allowed to settle.",
-      "A user signs maximum-input, minimum-output and expiry constraints.",
-      "The program executes the route through CPI and atomically rejects",
-      "settlement if realized token deltas violate the signed intent."
-    ].join(NL),
-    sdk: [
-      "export function buildExecuteIntentInstruction(args) {",
-      "  const { shared, routeIndices, hookIndices } =",
-      "    dedupeSharedAccounts(args.routeAccounts, args.hookAccounts);",
-      "  return {",
-      "    programAddress: args.programAddress,",
-      "    accounts: fixedAccounts.concat(shared),",
-      "    data: encodeExecuteIntent({ routeIndices, hookIndices, ...args })",
-      "  };",
-      "}"
-    ].join(NL),
-    indexer: [
-      "JOLT GUARD / EXECUTION",
-      "",
-      "1. verify authority, expiry and program accounts",
-      "2. read source and destination token balances",
-      "3. invoke PRE policy hook",
-      "4. invoke route program through CPI",
-      "5. reload token balances and enforce constraints",
-      "6. invoke POST policy hook",
-      "7. return JRC1 settlement receipt"
-    ].join(NL),
+  function provider() {
+    return (window.phantom && window.phantom.solana) || window.solana || null;
+  }
+
+  byId("connect-wallet").addEventListener("click", async function () {
+    var button = this;
+    var wallet = provider();
+    if (!wallet || typeof wallet.connect !== "function") {
+      button.textContent = "wallet not detected";
+      return;
+    }
+    try {
+      var connection = await wallet.connect();
+      walletAddress = String(connection.publicKey || wallet.publicKey);
+      button.textContent = walletAddress.slice(0, 5) + "…" + walletAddress.slice(-5);
+    } catch (error) {
+      button.textContent = "connection declined";
+    }
+  });
+
+  byId("launch-form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    var output = byId("launch-output");
+    var manifest = {
+      format: "JLM1",
+      network: "solana-mainnet-beta",
+      creator: walletAddress || "wallet-not-connected",
+      coin: {
+        name: byId("coin-name").value.trim(),
+        symbol: byId("coin-symbol").value.trim().toUpperCase(),
+        metadataUri: byId("coin-uri").value.trim(),
+        tokenProgram: "Token-2022",
+        decimals: 6
+      },
+      launch: {
+        route: byId("coin-route").value,
+        quoteAsset: byId("coin-quote").value,
+        holderRewards: byId("coin-rewards").value === "true"
+      },
+      defaultIntentPolicy: {
+        type: byId("coin-policy").value,
+        enforcement: "jolt-guard-route-wrapper"
+      }
+    };
+    if (!manifest.coin.name || !manifest.coin.symbol || !manifest.coin.metadataUri) {
+      output.textContent = "error · name, symbol and metadata uri are required";
+      return;
+    }
+    var canonical = JSON.stringify(manifest);
+    output.textContent = JSON.stringify({
+      launchManifestId: await sha256(canonical),
+      manifest: manifest,
+      transactionPlan: [
+        "create Token-2022 mint and metadata",
+        "create bonding curve or native market",
+        "publish default Jolt intent policy",
+        "bind trading interface to Jolt Guard"
+      ],
+      signingAuthority: walletAddress || "connect wallet before transaction assembly"
+    }, null, 2);
+  });
+
+  byId("intent-form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    var output = byId("intent-output");
+    try {
+      var manifest = {
+        protocol: "jolt-guard-v1",
+        authority: walletAddress || "wallet-not-connected",
+        routeProgram: byId("intent-route").value.trim(),
+        maxInput: unsignedInteger(byId("intent-input").value.trim(), "maximum input"),
+        minOutput: unsignedInteger(byId("intent-output-min").value.trim(), "minimum output"),
+        expiresAtSlot: unsignedInteger(byId("intent-expiry").value.trim(), "expiry slot"),
+        policy: byId("intent-policy").value
+      };
+      output.textContent = JSON.stringify({
+        intentId: await sha256(JSON.stringify(manifest)),
+        constraints: manifest,
+        execution: [
+          "snapshot source and destination token accounts",
+          "invoke PRE policy hook",
+          "invoke route through CPI",
+          "reload balances and enforce postconditions",
+          "return JRC1 receipt or revert transaction"
+        ]
+      }, null, 2);
+    } catch (error) {
+      output.textContent = "error · " + error.message;
+    }
+  });
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    button.addEventListener("click", async function () {
+      var text = byId(button.dataset.copy).textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        var previous = button.textContent;
+        button.textContent = "copied";
+        setTimeout(function () { button.textContent = previous; }, 1200);
+      } catch (error) {
+        button.textContent = "select text";
+      }
+    });
+  });
+
+  var codeFiles = {
     program: [
       "let source_before = token_amount(source)?;",
       "let destination_before = token_amount(destination)?;",
       "",
-      "indexed_cpi(route_program, accounts,",
-      "  &intent.route_indices, intent.route_data.clone())?;",
+      "indexed_cpi(",
+      "    route_program,",
+      "    accounts,",
+      "    &intent.route_indices,",
+      "    intent.route_data.clone(),",
+      ")?;",
       "",
-      "let source_spent = source_before.checked_sub(token_amount(source)?)?;",
-      "let output = token_amount(destination)?.checked_sub(destination_before)?;",
-      "if source_spent > intent.max_input { return Err(MAX_INPUT); }",
-      "if output < intent.min_output { return Err(MIN_OUTPUT); }"
-    ].join(NL),
-    schema: [
+      "let source_spent = source_before",
+      "    .checked_sub(token_amount(source)?)?;",
+      "let destination_received = token_amount(destination)?",
+      "    .checked_sub(destination_before)?;",
+      "",
+      "if source_spent > intent.max_input {",
+      "    return Err(custom(MAX_INPUT));",
+      "}",
+      "if destination_received < intent.min_output {",
+      "    return Err(custom(MIN_OUTPUT));",
+      "}"
+    ].join("\n"),
+    sdk: [
+      "export function buildExecuteIntentInstruction(args) {",
+      "  const { shared, routeIndices, hookIndices } =",
+      "    dedupeSharedAccounts(args.routeAccounts, args.hookAccounts);",
+      "",
+      "  return {",
+      "    programAddress: args.programAddress,",
+      "    accounts: fixedAccounts.concat(shared),",
+      "    data: encodeExecuteIntent({",
+      "      constraints: args.constraints,",
+      "      routeIndices,",
+      "      hookIndices,",
+      "      routeData: args.routeData",
+      "    })",
+      "  };",
+      "}"
+    ].join("\n"),
+    spec: [
+      "JOLT GUARD / EXECUTION",
+      "",
+      "1. verify authority, expiry and program accounts",
+      "2. read source and destination token balances",
+      "3. invoke policy hook with phase PRE",
+      "4. invoke the selected route through CPI",
+      "5. reload balances and calculate integer deltas",
+      "6. reject max-input or min-output violations",
+      "7. invoke policy hook with phase POST",
+      "8. return JRC1 settlement proof"
+    ].join("\n"),
+    ci: [
       "protocol-ci",
       "",
       "rust:",
@@ -298,363 +191,29 @@
       "  npm ci",
       "  npm test",
       "",
-      "checks: Rust parser + TypeScript codec + dependency audit"
-    ].join(NL)
+      "latest result: PASS"
+    ].join("\n")
   };
 
-  function byId(id) {
-    return document.getElementById(id);
-  }
+  var codePaths = {
+    program: "programs/jolt-guard/src/lib.rs",
+    sdk: "sdk/src/index.ts",
+    spec: "JOLT_GUARD.md",
+    ci: ".github/workflows/protocol-ci.yml"
+  };
 
-  function setSource(key, button) {
-    byId("repo-view").textContent = sourceFiles[key];
-    byId("repo-path").textContent = button.textContent;
-    document.querySelectorAll("[data-file]").forEach(function (item) {
+  function showCode(key, button) {
+    byId("code-view").textContent = codeFiles[key];
+    byId("code-path").textContent = codePaths[key];
+    document.querySelectorAll("[data-code]").forEach(function (item) {
       item.classList.toggle("active", item === button);
     });
   }
 
-  function openOverlay(id) {
-    var overlay = byId(id);
-    if (!overlay) return;
-    overlay.classList.add("open");
-    byId("backdrop").classList.add("open");
-    document.body.classList.add("locked");
-  }
-
-  function closeOverlays() {
-    document.querySelectorAll(".overlay.open").forEach(function (item) {
-      item.classList.remove("open");
-    });
-    byId("backdrop").classList.remove("open");
-    document.body.classList.remove("locked");
-  }
-
-  async function rpc(method, params) {
-    var lastError;
-    for (var attempt = 0; attempt < 3; attempt += 1) {
-      for (var index = 0; index < RPC_URLS.length; index += 1) {
-        var controller = new AbortController();
-        var timer = setTimeout(function () { controller.abort(); }, 20000);
-        try {
-          var response = await fetch(RPC_URLS[index], {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-              jsonrpc: "2.0",
-              id: Date.now(),
-              method: method,
-              params: params
-            }),
-            signal: controller.signal
-          });
-          if (!response.ok) throw new Error("RPC HTTP " + response.status);
-          var payload = await response.json();
-          if (payload.error) throw new Error(payload.error.message || "RPC request failed");
-          return payload.result;
-        } catch (error) {
-          lastError = error.name === "AbortError" ? new Error("RPC request timed out") : error;
-        } finally {
-          clearTimeout(timer);
-        }
-      }
-      if (attempt < 2) {
-        await new Promise(function (resolve) {
-          setTimeout(resolve, 450 * (attempt + 1));
-        });
-      }
-    }
-    throw lastError || new Error("all RPC providers unavailable");
-  }
-
-  function tokenKey(item) {
-    return [item.accountIndex, item.mint, item.owner || ""].join(":");
-  }
-
-  function formatRawDelta(raw, decimals) {
-    var negative = raw < 0n;
-    var value = negative ? -raw : raw;
-    var digits = value.toString().padStart(decimals + 1, "0");
-    var whole = decimals ? digits.slice(0, -decimals) : digits;
-    var fraction = decimals ? digits.slice(-decimals).replace(/0+$/, "") : "";
-    return (negative ? "-" : "+") + whole + (fraction ? "." + fraction : "");
-  }
-
-  function formatTokenAmount(raw, decimals) {
-    var digits = String(raw || "0").padStart(decimals + 1, "0");
-    var whole = decimals ? digits.slice(0, -decimals) : digits;
-    var fraction = decimals ? digits.slice(-decimals).replace(/0+$/, "") : "";
-    return whole + (fraction ? "." + fraction : "");
-  }
-
-  function reconstructDeltas(meta) {
-    var balances = new Map();
-    (meta.preTokenBalances || []).forEach(function (item) {
-      balances.set(tokenKey(item), {
-        accountIndex: item.accountIndex,
-        mint: item.mint,
-        owner: item.owner || "unresolved",
-        decimals: item.uiTokenAmount.decimals,
-        pre: BigInt(item.uiTokenAmount.amount),
-        post: 0n
-      });
-    });
-    (meta.postTokenBalances || []).forEach(function (item) {
-      var key = tokenKey(item);
-      var row = balances.get(key) || {
-        accountIndex: item.accountIndex,
-        mint: item.mint,
-        owner: item.owner || "unresolved",
-        decimals: item.uiTokenAmount.decimals,
-        pre: 0n,
-        post: 0n
-      };
-      row.post = BigInt(item.uiTokenAmount.amount);
-      balances.set(key, row);
-    });
-    return Array.from(balances.values()).map(function (row) {
-      return {
-        accountIndex: row.accountIndex,
-        owner: row.owner,
-        mint: row.mint,
-        delta: formatRawDelta(row.post - row.pre, row.decimals),
-        decimals: row.decimals
-      };
-    }).filter(function (row) {
-      return !/^[-+]0(?:\.0+)?$/.test(row.delta);
-    });
-  }
-
-  function collectPrograms(transaction) {
-    var programs = new Set();
-    var message = transaction.transaction.message;
-    (message.instructions || []).forEach(function (instruction) {
-      if (instruction.programId) programs.add(String(instruction.programId));
-      if (instruction.program) programs.add(String(instruction.program));
-    });
-    ((transaction.meta && transaction.meta.innerInstructions) || []).forEach(function (group) {
-      (group.instructions || []).forEach(function (instruction) {
-        if (instruction.programId) programs.add(String(instruction.programId));
-        if (instruction.program) programs.add(String(instruction.program));
-      });
-    });
-    return Array.from(programs);
-  }
-
-  function buildReceipt(signature, transaction) {
-    var meta = transaction.meta || {};
-    return {
-      product: "Joltwork Settlement Receipt",
-      network: "solana-mainnet-beta",
-      signature: signature,
-      slot: transaction.slot,
-      blockTime: transaction.blockTime,
-      status: meta.err ? "failed" : "confirmed",
-      feeLamports: meta.fee || 0,
-      computeUnitsConsumed: meta.computeUnitsConsumed || null,
-      tokenBalanceDeltas: reconstructDeltas(meta),
-      invokedPrograms: collectPrograms(transaction),
-      generatedAt: new Date().toISOString()
-    };
-  }
-
-  function renderReceipt(receipt) {
-    latestReceipt = receipt;
-    byId("out-slot").textContent = String(receipt.slot);
-    byId("out-status").textContent = receipt.status;
-    byId("out-fee").textContent = (receipt.feeLamports / 1000000000).toFixed(9) + " SOL";
-    byId("out-compute").textContent = receipt.computeUnitsConsumed == null ? "not reported" : Number(receipt.computeUnitsConsumed).toLocaleString();
-
-    var body = byId("delta-body");
-    body.innerHTML = "";
-    if (!receipt.tokenBalanceDeltas.length) {
-      var emptyRow = document.createElement("tr");
-      emptyRow.innerHTML = "<td colspan=\"3\">no non-zero token deltas reported</td>";
-      body.appendChild(emptyRow);
-    } else {
-      receipt.tokenBalanceDeltas.forEach(function (delta) {
-        var row = document.createElement("tr");
-        [delta.owner, delta.mint, delta.delta].forEach(function (value) {
-          var cell = document.createElement("td");
-          cell.textContent = value;
-          row.appendChild(cell);
-        });
-        body.appendChild(row);
-      });
-    }
-
-    var programList = byId("program-list");
-    programList.innerHTML = "";
-    receipt.invokedPrograms.forEach(function (program) {
-      var code = document.createElement("code");
-      code.textContent = program;
-      programList.appendChild(code);
-    });
-    byId("receipt-json").textContent = JSON.stringify(receipt, null, 2);
-    byId("receipt").classList.add("open");
-    saveHistory(receipt.signature);
-  }
-
-  async function analyze(signature) {
-    var status = byId("analyzer-status");
-    status.textContent = "reading confirmed mainnet evidence...";
-    byId("receipt").classList.remove("open");
-    var transaction = await rpc("getTransaction", [
-      signature,
-      { encoding: "jsonParsed", commitment: "confirmed", maxSupportedTransactionVersion: 1 }
-    ]);
-    if (!transaction) throw new Error("transaction not found or not yet confirmed");
-    var receipt = buildReceipt(signature, transaction);
-    renderReceipt(receipt);
-    status.textContent = "complete - reconstructed from Solana mainnet RPC";
-    return receipt;
-  }
-
-  async function loadRecentSample() {
-    var status = byId("analyzer-status");
-    status.textContent = "finding a recent mainnet transaction...";
-    var rows = await rpc("getSignaturesForAddress", [
-      "11111111111111111111111111111111",
-      { limit: 10, commitment: "confirmed" }
-    ]);
-    var row = rows.find(function (item) { return !item.err; });
-    if (!row) throw new Error("no recent sample available");
-    byId("sig-input").value = row.signature;
-    return analyze(row.signature);
-  }
-
-  async function scanAddress(address) {
-    var output = byId("address-output");
-    output.classList.add("open");
-    output.textContent = "loading recent activity...";
-    var rows = await rpc("getSignaturesForAddress", [address, { limit: 20, commitment: "confirmed" }]);
-    var successful = rows.filter(function (item) { return !item.err; }).length;
-    var failed = rows.length - successful;
-    var first = rows.length ? rows[rows.length - 1].slot : "n/a";
-    var last = rows.length ? rows[0].slot : "n/a";
-    output.textContent = [
-      "transactions  " + rows.length,
-      "successful    " + successful,
-      "failed        " + failed,
-      "slot range    " + first + " -> " + last,
-      "",
-      "latest signatures"
-    ].concat(rows.slice(0, 5).map(function (item) {
-      return (item.err ? "failed  " : "ok      ") + item.signature;
-    })).join(NL);
-  }
-
-  async function inspectMint(mint) {
-    var output = byId("mint-output");
-    output.classList.add("open");
-    output.textContent = "loading mint state...";
-    var account = await rpc("getAccountInfo", [
-      mint,
-      { encoding: "jsonParsed", commitment: "confirmed" }
-    ]);
-    if (!account || !account.value) throw new Error("mint account not found");
-    var value = account.value;
-    var data = value.data;
-    var info = data && data.parsed ? data.parsed.info : {};
-    var decimals = Number(info.decimals || 0);
-    output.textContent = JSON.stringify({
-      mint: mint,
-      ownerProgram: value.owner,
-      lamports: value.lamports,
-      executable: value.executable,
-      decimals: decimals,
-      rawSupply: info.supply || null,
-      uiSupply: formatTokenAmount(info.supply, decimals),
-      mintAuthority: info.mintAuthority || null,
-      freezeAuthority: info.freezeAuthority || null,
-      extensions: info.extensions || []
-    }, null, 2);
-  }
-
-  function saveHistory(signature) {
-    try {
-      var history = JSON.parse(localStorage.getItem("joltwork.history") || "[]");
-      history = [signature].concat(history.filter(function (item) {
-        return item !== signature;
-      })).slice(0, 8);
-      localStorage.setItem("joltwork.history", JSON.stringify(history));
-      renderHistory();
-    } catch (error) {
-      return;
-    }
-  }
-
-  function renderHistory() {
-    var box = byId("history-list");
-    var history = [];
-    box.innerHTML = "";
-    try {
-      history = JSON.parse(localStorage.getItem("joltwork.history") || "[]");
-    } catch (error) {
-      history = [];
-    }
-    if (!history.length) {
-      box.textContent = "no local history yet";
-      return;
-    }
-    history.forEach(function (signature) {
-      var button = document.createElement("button");
-      button.textContent = signature.slice(0, 8) + "..." + signature.slice(-6);
-      button.title = signature;
-      button.addEventListener("click", function () {
-        byId("sig-input").value = signature;
-        runAnalysis(signature);
-      });
-      box.appendChild(button);
-    });
-  }
-
-  async function runAnalysis(signature) {
-    if (!signature) {
-      byId("analyzer-status").textContent = "enter a transaction signature";
-      return;
-    }
-    try {
-      await analyze(signature);
-    } catch (error) {
-      byId("analyzer-status").textContent = "error - " + error.message;
-    }
-  }
-
-  var sourceLabels = {
-    readme: "README.md",
-    sdk: "sdk/src/index.ts",
-    indexer: "JOLT_GUARD.md",
-    program: "programs/jolt-guard/src/lib.rs",
-    schema: ".github/workflows/protocol-ci.yml"
-  };
-  document.querySelectorAll("[data-file]").forEach(function (button) {
-    button.textContent = sourceLabels[button.dataset.file];
+  document.querySelectorAll("[data-code]").forEach(function (button) {
     button.addEventListener("click", function () {
-      setSource(button.dataset.file, button);
+      showCode(button.dataset.code, button);
     });
   });
-  setSource("readme", document.querySelector('[data-file="readme"]'));
-  var repositoryLink = document.createElement("a");
-  repositoryLink.className = "repo-external";
-  repositoryLink.href = "https://github.com/dellmodrun/Joltwork";
-  repositoryLink.target = "_blank";
-  repositoryLink.rel = "noreferrer";
-  repositoryLink.textContent = "open complete repository on GitHub";
-  byId("overlay-source").querySelector("section").appendChild(repositoryLink);
-
-  document.querySelectorAll("[data-overlay]").forEach(function (link) {
-    link.addEventListener("click", function (event) {
-      event.preventDefault();
-      openOverlay(link.dataset.overlay);
-    });
-  });
-  document.querySelectorAll(".overlay-close").forEach(function (button) {
-    button.addEventListener("click", closeOverlays);
-  });
-  byId("backdrop").addEventListener("click", closeOverlays);
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") closeOverlays();
-  });
-
+  showCode("program", document.querySelector('[data-code="program"]'));
 }());
