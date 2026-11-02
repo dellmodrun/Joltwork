@@ -565,8 +565,7 @@
     });
   });
 
-  var sourceBase = "https://raw.githubusercontent.com/dellmodrun/Joltwork/main/";
-  var githubBase = "https://github.com/dellmodrun/Joltwork/blob/main/";
+  var sourceBase = new URL("./", document.baseURI);
   var codeFiles = {};
   var codePaths = {
     program: "programs/jolt-guard/src/lib.rs",
@@ -592,9 +591,6 @@
     mainnetDeployment: "deployments/mainnet.json",
     verifyDeployment: "scripts/verify-deployment.mjs",
     checkSite: "scripts/check-site.mjs",
-    protocolCi: ".github/workflows/protocol-ci.yml",
-    sbfCi: ".github/workflows/sbf-build.yml",
-    koraCi: ".github/workflows/kora-deploy-tool.yml",
     readme: "README.md",
     architecture: "docs/ARCHITECTURE.md",
     integration: "docs/INTEGRATION.md",
@@ -620,24 +616,18 @@
     view.appendChild(list);
   }
 
-  function setCodeLinks(path) {
-    if (byId("code-raw")) byId("code-raw").href = sourceBase + path;
-    if (byId("code-github")) byId("code-github").href = githubBase + path;
-  }
-
   async function showCode(key, button) {
     if (!byId("code-view") || !byId("code-path")) return;
     var path = codePaths[key];
     byId("code-path").textContent = path;
     byId("code-view").textContent = "loading complete source…";
     if (byId("code-meta")) byId("code-meta").textContent = "loading source…";
-    setCodeLinks(path);
     document.querySelectorAll("[data-code]").forEach(function (item) {
       item.classList.toggle("active", item === button);
     });
     try {
       if (!codeFiles[key]) {
-        var response = await fetch(sourceBase + path, { cache: "no-store" });
+        var response = await fetch(new URL(path, sourceBase), { cache: "no-store" });
         if (!response.ok) throw new Error("source request failed");
         codeFiles[key] = await response.text();
       }
@@ -645,10 +635,10 @@
       renderSource(text);
       var lines = text.replace(/\r\n/g, "\n").split("\n").length;
       var bytes = new Blob([text]).size;
-      if (byId("code-meta")) byId("code-meta").textContent = lines + " lines · " + bytes.toLocaleString() + " bytes · main";
+      if (byId("code-meta")) byId("code-meta").textContent = lines + " lines · " + bytes.toLocaleString() + " bytes · published source";
     } catch (error) {
-      byId("code-view").textContent = "The live source could not be loaded in this browser.\n\nOpen the same file in GitHub:\nhttps://github.com/dellmodrun/Joltwork/blob/main/" + path;
-      if (byId("code-meta")) byId("code-meta").textContent = "source unavailable · open GitHub";
+      byId("code-view").textContent = "This published source file could not be loaded. Reload the page and try again.\n\nRequested path: " + path;
+      if (byId("code-meta")) byId("code-meta").textContent = "published source unavailable";
     }
   }
 
@@ -685,6 +675,20 @@
     } catch (error) {
       showToast("Clipboard access was blocked", "warn");
     }
+  });
+
+  if (byId("code-download")) byId("code-download").addEventListener("click", function () {
+    var active = document.querySelector("[data-code].active");
+    var text = active ? codeFiles[active.dataset.code] : "";
+    var path = active ? codePaths[active.dataset.code] : "";
+    if (!text || !path) return showToast("Wait for the source file to load", "warn");
+    var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = path.split("/").pop() || "joltwork-source.txt";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showToast("Source file downloaded", "success");
   });
 
   var menuButton = byId("menu-toggle");

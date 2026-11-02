@@ -106,13 +106,13 @@
 </div>
 <span class="page-code">RUST / TYPESCRIPT / TESTS</span>
 </div>
-<p>The implementation behind Jolt Guard: an on-chain program, instruction-building SDK, codec tests, protocol specification and continuous integration.</p>
+<p>The published implementation behind Jolt Guard: an on-chain program, instruction-building SDK, codec tests, protocol specification and deployment records.</p>
 </header>
 <section class="chapter">
-<div class="chapter-label">LIVE REPOSITORY BROWSER</div>
+<div class="chapter-label">PUBLISHED SOURCE BROWSER</div>
 <h2>Read the complete files, not decorative excerpts.</h2>
-<p class="source-summary">This browser loads each full file directly from the public <code>main</code> branch. The Rust program parses the signed intent, validates accounts, invokes policy and route programs through CPI, reloads token balances, enforces postconditions and returns a settlement receipt. The SDK builds the matching instruction format; the tests exercise its codec.</p>
-<div class="prose-block"><p>You do not need to read Rust to understand what is being proven. Start with <code>JOLT_GUARD.md</code> for the execution contract, then open <code>sdk/src/index.ts</code> to see how an application builds the instruction. The Rust file is the final authority: it shows which accounts are trusted, which values are checked and which errors stop settlement.</p><p>The browser deliberately displays the repository’s current files rather than copied snippets maintained separately for marketing. That means a reader can compare the explanation on this site with the implementation on GitHub and see when the two diverge. Tests demonstrate deterministic encoding and account assembly, but they are not a substitute for an independent security review.</p></div>
+<p class="source-summary">This browser loads each complete published file from Joltwork’s own site. The Rust program parses the signed intent, validates accounts, invokes policy and route programs through CPI, reloads token balances, enforces postconditions and returns a settlement receipt. The SDK builds the matching instruction format; the tests exercise its codec.</p>
+<div class="prose-block"><p>You do not need to read Rust to understand what is being proven. Start with <code>JOLT_GUARD.md</code> for the execution contract, then open <code>sdk/src/index.ts</code> to see how an application builds the instruction. The Rust file is the final authority: it shows which accounts are trusted, which values are checked and which errors stop settlement.</p><p>The browser displays the same source snapshot published with this site rather than decorative snippets maintained separately for marketing. Readers can inspect complete files without being redirected to a third-party code host. Tests demonstrate deterministic encoding and account assembly, but they are not a substitute for an independent security review.</p></div>
 <div class="build-strip">
 <span>RUST PROGRAM<b>IMPLEMENTED</b>
 </span>
@@ -128,7 +128,7 @@
 <span><b>06</b>SDK MODULES</span>
 <span><b>04</b>TEST SUITES</span>
 <span><b>05</b>ENGINEERING DOCS</span>
-<span><b>03</b>CI WORKFLOWS</span>
+<span><b>02</b>DEPLOYMENT RECORDS</span>
 </div>
 <div class="code-browser">
 <aside class="code-sidebar">
@@ -162,10 +162,7 @@
 <button data-code="deployment">deployments/devnet.json</button>
 <button data-code="mainnetDeployment">deployments/mainnet.json</button>
 <button data-code="verifyDeployment">scripts/verify-deployment.mjs</button>
-<button data-code="checkSite">scripts/check-site.mjs</button>
-<button data-code="protocolCi">.github/workflows/protocol-ci.yml</button>
-<button data-code="sbfCi">.github/workflows/sbf-build.yml</button>
-<button data-code="koraCi">.github/workflows/kora-deploy-tool.yml</button></div>
+<button data-code="checkSite">scripts/check-site.mjs</button></div>
 <div class="code-group"><b>DOCUMENTATION</b>
 <button data-code="readme">README.md</button>
 <button data-code="architecture">docs/ARCHITECTURE.md</button>
@@ -175,20 +172,20 @@
 <button data-code="spec">JOLT_GUARD.md</button>
 <button data-code="contributing">CONTRIBUTING.md</button></div>
 </div>
-<div class="code-tree-foot"><span id="code-file-count">33 FILES</span><a href="https://github.com/dellmodrun/Joltwork" target="_blank" rel="noreferrer">FULL TREE ↗</a></div>
+<div class="code-tree-foot"><span id="code-file-count">30 FILES</span><span>PUBLISHED SOURCE</span></div>
 </aside>
 <div class="code-panel">
 <div class="code-toolbar">
 <div><span id="code-path" class="code-path">programs/jolt-guard/src/lib.rs</span><small id="code-meta">loading source…</small></div>
-<div class="code-tools"><button id="code-copy" type="button">COPY</button><a id="code-raw" target="_blank" rel="noreferrer">RAW ↗</a><a id="code-github" target="_blank" rel="noreferrer">GITHUB ↗</a></div>
+<div class="code-tools"><button id="code-copy" type="button">COPY</button><button id="code-download" type="button">DOWNLOAD</button></div>
 </div>
 <div id="code-view" class="code-view" aria-live="polite"><div class="code-loading">loading complete source…</div></div>
 </div>
 </div>
 <div class="developer-links">
-<a href="https://github.com/dellmodrun/Joltwork" target="_blank" rel="noreferrer">open repository ↗</a>
-<a href="https://github.com/dellmodrun/Joltwork/actions" target="_blank" rel="noreferrer">view protocol ci ↗</a>
-<a href="https://github.com/dellmodrun/Joltwork/issues" target="_blank" rel="noreferrer">issues & review ↗</a>
+<a href="./protocol/">read protocol →</a>
+<a href="./intent/">open intent workbench →</a>
+<a href="./research/">research foundation →</a>
 </div>
 </section>
 <section class="section-block">
@@ -236,7 +233,7 @@
 <td>specified</td>
 </tr>
 <tr>
-<td>.github/workflows</td>
+<td>automation workflows</td>
 <td>repeatable Rust and SDK checks</td>
 <td>contributors</td>
 <td>active</td>

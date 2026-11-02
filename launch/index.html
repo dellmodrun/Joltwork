@@ -132,7 +132,7 @@
 <label>DESCRIPTION<textarea id="coin-description" maxlength="500" placeholder="What the token represents and why it exists" required></textarea></label>
 <div class="field-pair">
 <label>IMAGE URL<input id="coin-image" type="url" placeholder="https://…/coin.png" required></label>
-<label>WEBSITE<input id="coin-website" type="url" value="https://dellmodrun.github.io/Joltwork/"></label>
+<label>WEBSITE<input id="coin-website" type="url" placeholder="https://your-project.example"></label>
 </div>
 <div class="field-pair">
 <label>X / TWITTER<input id="coin-twitter" type="url" value="https://x.com/Joltworkrunit"></label>
@@ -266,7 +266,7 @@
 </article>
 </div>
 </section>
-<section class="section-block"><div class="section-head"><div><div class="eyebrow">VERIFIABLE DEPENDENCIES</div><h2>The launch path is tied to published Pump interfaces.</h2></div><p>Users should be able to verify which program and instruction the interface targets before approving a mainnet transaction.</p></div><div class="prose-block compact"><p>Joltwork uses Pump’s published <code>create_v2</code> interface and checks that the assembled instruction targets <code>6EF8r…F6P</code>, the Pump program address documented for mainnet and devnet. The new Token-2022 Mint keypair is generated only in the browser, partially signs the creation transaction, and is never transmitted as a reusable secret. The connected wallet remains the payer and final transaction signer.</p></div><div class="source-links"><a href="https://github.com/pump-fun/pump-public-docs/blob/main/docs/instructions/COIN_CREATION.md" target="_blank" rel="noreferrer"><span>PUMP OFFICIAL DOCUMENTATION</span><strong>create_v2 coin creation</strong><code>account order / instruction data</code></a><a href="https://github.com/pump-fun/pump-public-docs/blob/main/docs/PUMP_PROGRAM_README.md" target="_blank" rel="noreferrer"><span>PUMP OFFICIAL DOCUMENTATION</span><strong>Pump program</strong><code>6EF8r…F6P</code></a></div></section>
+<section class="section-block"><div class="section-head"><div><div class="eyebrow">VERIFIABLE DEPENDENCIES</div><h2>The launch path is tied to Pump’s published interface.</h2></div><p>Users can review the exact program, route and instruction name inside the compiled launch plan before approving a mainnet transaction.</p></div><div class="prose-block compact"><p>Joltwork uses Pump’s published <code>create_v2</code> interface and checks that the assembled instruction targets <code>6EF8r…F6P</code>, the Pump program address used on mainnet and devnet. The new Token-2022 Mint keypair is generated only in the browser, partially signs the creation transaction, and is never transmitted as a reusable secret. The connected wallet remains the payer and final transaction signer.</p><p>The compiler exposes the instruction discriminator, ordered accounts, selected quote asset, metadata URI and target program before signing. This keeps the dependency review inside the product instead of sending creators to an external code-hosting account.</p></div><div class="source-links"><div><span>LAUNCH INSTRUCTION</span><strong>create_v2 coin creation</strong><code>account order / instruction data</code></div><div><span>TARGET PROGRAM</span><strong>Pump program</strong><code>6EF8r…F6P</code></div></div></section>
 <section class="section-block">
 <div class="section-head">
 <div>

@@ -49,7 +49,7 @@
 h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 .ca-box{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:16px;padding:18px 22px;border:1px solid var(--line);background:var(--panel)}.ca-box div{display:flex;align-items:center;gap:18px}.ca-box span{color:var(--muted);font:8px "JetBrains Mono",monospace}.ca-box strong{font:12px "JetBrains Mono",monospace;font-weight:400}.ca-box p{max-width:520px;margin:0;color:var(--muted);text-align:right;font:8px/1.6 "JetBrains Mono",monospace}
 .dev-letter{margin-top:20px;padding:46px 52px;border:1px solid var(--line);background:var(--panel)}.dev-letter h2{max-width:780px;margin:18px 0 28px;font:40px/1.08 "EB Garamond",serif;font-weight:400}.dev-letter>p{max-width:900px;margin:0 0 18px;color:#d6d2c9;font-size:18px;line-height:1.78}.dev-letter .dev-signature{margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:16px}.dev-signature span{color:var(--muted);font:8px "JetBrains Mono",monospace}
-.prose-block{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin:0 0 28px;padding:24px;border:1px solid var(--line-soft);background:var(--panel-2)}.prose-block p{margin:0;color:#d0ccc3;font-size:16px;line-height:1.75}.prose-block.compact{display:block}.prose-block.compact p{max-width:940px}.prose-block.after-grid{margin:24px 0 0}.source-links{display:grid;grid-template-columns:1fr 1fr;gap:12px}.source-links a{display:block;padding:22px;border:1px solid var(--line);background:var(--panel-2);text-decoration:none}.source-links a:hover{background:#30302d}.source-links span,.source-links code{display:block;color:var(--muted);font:8px/1.5 "JetBrains Mono",monospace}.source-links strong{display:block;margin:14px 0 8px;font:22px "EB Garamond",serif;font-weight:400}.source-links code{overflow-wrap:anywhere;color:var(--good)}
+.prose-block{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin:0 0 28px;padding:24px;border:1px solid var(--line-soft);background:var(--panel-2)}.prose-block p{margin:0;color:#d0ccc3;font-size:16px;line-height:1.75}.prose-block.compact{display:block}.prose-block.compact p{max-width:940px}.prose-block.after-grid{margin:24px 0 0}.source-links{display:grid;grid-template-columns:1fr 1fr;gap:12px}.source-links>a,.source-links>div{display:block;padding:22px;border:1px solid var(--line);background:var(--panel-2);text-decoration:none}.source-links>a:hover{background:#30302d}.source-links span,.source-links code{display:block;color:var(--muted);font:8px/1.5 "JetBrains Mono",monospace}.source-links strong{display:block;margin:14px 0 8px;font:22px "EB Garamond",serif;font-weight:400}.source-links code{overflow-wrap:anywhere;color:var(--good)}
 .rail-icon svg.fill-icon{fill:currentColor;stroke:none}
 .rail-action{padding:0}
 :where(a,button,input,select,summary):focus-visible{outline:1px solid var(--text);outline-offset:3px}
@@ -202,7 +202,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 <label>DESCRIPTION<textarea id="coin-description" maxlength="500" placeholder="What the token represents and why it exists" required></textarea></label>
 <div class="field-pair">
 <label>IMAGE URL<input id="coin-image" type="url" placeholder="https://…/coin.png" required></label>
-<label>WEBSITE<input id="coin-website" type="url" value="https://dellmodrun.github.io/Joltwork/"></label>
+<label>WEBSITE<input id="coin-website" type="url" placeholder="https://your-project.example"></label>
 </div>
 <div class="field-pair">
 <label>X / TWITTER<input id="coin-twitter" type="url" value="https://x.com/Joltworkrunit"></label>
@@ -336,7 +336,7 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 </article>
 </div>
 </section>
-<section class="section-block"><div class="section-head"><div><div class="eyebrow">VERIFIABLE DEPENDENCIES</div><h2>The launch path is tied to published Pump interfaces.</h2></div><p>Users should be able to verify which program and instruction the interface targets before approving a mainnet transaction.</p></div><div class="prose-block compact"><p>Joltwork uses Pump’s published <code>create_v2</code> interface and checks that the assembled instruction targets <code>6EF8r…F6P</code>, the Pump program address documented for mainnet and devnet. The new Token-2022 Mint keypair is generated only in the browser, partially signs the creation transaction, and is never transmitted as a reusable secret. The connected wallet remains the payer and final transaction signer.</p></div><div class="source-links"><a href="https://github.com/pump-fun/pump-public-docs/blob/main/docs/instructions/COIN_CREATION.md" target="_blank" rel="noreferrer"><span>PUMP OFFICIAL DOCUMENTATION</span><strong>create_v2 coin creation</strong><code>account order / instruction data</code></a><a href="https://github.com/pump-fun/pump-public-docs/blob/main/docs/PUMP_PROGRAM_README.md" target="_blank" rel="noreferrer"><span>PUMP OFFICIAL DOCUMENTATION</span><strong>Pump program</strong><code>6EF8r…F6P</code></a></div></section>
+<section class="section-block"><div class="section-head"><div><div class="eyebrow">VERIFIABLE DEPENDENCIES</div><h2>The launch path is tied to Pump’s published interface.</h2></div><p>Users can review the exact program, route and instruction name inside the compiled launch plan before approving a mainnet transaction.</p></div><div class="prose-block compact"><p>Joltwork uses Pump’s published <code>create_v2</code> interface and checks that the assembled instruction targets <code>6EF8r…F6P</code>, the Pump program address used on mainnet and devnet. The new Token-2022 Mint keypair is generated only in the browser, partially signs the creation transaction, and is never transmitted as a reusable secret. The connected wallet remains the payer and final transaction signer.</p><p>The compiler exposes the instruction discriminator, ordered accounts, selected quote asset, metadata URI and target program before signing. This keeps the dependency review inside the product instead of sending creators to an external code-hosting account.</p></div><div class="source-links"><div><span>LAUNCH INSTRUCTION</span><strong>create_v2 coin creation</strong><code>account order / instruction data</code></div><div><span>TARGET PROGRAM</span><strong>Pump program</strong><code>6EF8r…F6P</code></div></div></section>
 <section class="section-block">
 <div class="section-head">
 <div>
@@ -1233,8 +1233,7 @@ pako/dist/pako.esm.mjs:
     });
   });
 
-  var sourceBase = "https://raw.githubusercontent.com/dellmodrun/Joltwork/main/";
-  var githubBase = "https://github.com/dellmodrun/Joltwork/blob/main/";
+  var sourceBase = new URL("./", document.baseURI);
   var codeFiles = {};
   var codePaths = {
     program: "programs/jolt-guard/src/lib.rs",
@@ -1260,9 +1259,6 @@ pako/dist/pako.esm.mjs:
     mainnetDeployment: "deployments/mainnet.json",
     verifyDeployment: "scripts/verify-deployment.mjs",
     checkSite: "scripts/check-site.mjs",
-    protocolCi: ".github/workflows/protocol-ci.yml",
-    sbfCi: ".github/workflows/sbf-build.yml",
-    koraCi: ".github/workflows/kora-deploy-tool.yml",
     readme: "README.md",
     architecture: "docs/ARCHITECTURE.md",
     integration: "docs/INTEGRATION.md",
@@ -1288,24 +1284,18 @@ pako/dist/pako.esm.mjs:
     view.appendChild(list);
   }
 
-  function setCodeLinks(path) {
-    if (byId("code-raw")) byId("code-raw").href = sourceBase + path;
-    if (byId("code-github")) byId("code-github").href = githubBase + path;
-  }
-
   async function showCode(key, button) {
     if (!byId("code-view") || !byId("code-path")) return;
     var path = codePaths[key];
     byId("code-path").textContent = path;
     byId("code-view").textContent = "loading complete source…";
     if (byId("code-meta")) byId("code-meta").textContent = "loading source…";
-    setCodeLinks(path);
     document.querySelectorAll("[data-code]").forEach(function (item) {
       item.classList.toggle("active", item === button);
     });
     try {
       if (!codeFiles[key]) {
-        var response = await fetch(sourceBase + path, { cache: "no-store" });
+        var response = await fetch(new URL(path, sourceBase), { cache: "no-store" });
         if (!response.ok) throw new Error("source request failed");
         codeFiles[key] = await response.text();
       }
@@ -1313,10 +1303,10 @@ pako/dist/pako.esm.mjs:
       renderSource(text);
       var lines = text.replace(/\r\n/g, "\n").split("\n").length;
       var bytes = new Blob([text]).size;
-      if (byId("code-meta")) byId("code-meta").textContent = lines + " lines · " + bytes.toLocaleString() + " bytes · main";
+      if (byId("code-meta")) byId("code-meta").textContent = lines + " lines · " + bytes.toLocaleString() + " bytes · published source";
     } catch (error) {
-      byId("code-view").textContent = "The live source could not be loaded in this browser.\n\nOpen the same file in GitHub:\nhttps://github.com/dellmodrun/Joltwork/blob/main/" + path;
-      if (byId("code-meta")) byId("code-meta").textContent = "source unavailable · open GitHub";
+      byId("code-view").textContent = "This published source file could not be loaded. Reload the page and try again.\n\nRequested path: " + path;
+      if (byId("code-meta")) byId("code-meta").textContent = "published source unavailable";
     }
   }
 
@@ -1353,6 +1343,20 @@ pako/dist/pako.esm.mjs:
     } catch (error) {
       showToast("Clipboard access was blocked", "warn");
     }
+  });
+
+  if (byId("code-download")) byId("code-download").addEventListener("click", function () {
+    var active = document.querySelector("[data-code].active");
+    var text = active ? codeFiles[active.dataset.code] : "";
+    var path = active ? codePaths[active.dataset.code] : "";
+    if (!text || !path) return showToast("Wait for the source file to load", "warn");
+    var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = path.split("/").pop() || "joltwork-source.txt";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showToast("Source file downloaded", "success");
   });
 
   var menuButton = byId("menu-toggle");
