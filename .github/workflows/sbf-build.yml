@@ -1,0 +1,33 @@
+name: build jolt guard sbf
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "programs/jolt-guard/**"
+      - ".github/workflows/sbf-build.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-sbf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Agave toolchain
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v4.4.0/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+      - name: Build Jolt Guard SBF
+        run: |
+          mkdir -p artifacts
+          cargo build-sbf \
+            --manifest-path programs/jolt-guard/Cargo.toml \
+            --sbf-out-dir artifacts
+          sha256sum artifacts/jolt_guard.so | tee artifacts/jolt_guard.so.sha256
+      - uses: actions/upload-artifact@v5
+        with:
+          name: jolt-guard-sbf
+          path: artifacts/
+          if-no-files-found: error

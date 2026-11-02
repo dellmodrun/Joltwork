@@ -20,3 +20,5 @@ v1/
 .claude/
 *.tmp
 node_modules/
+target/
+.local-deploy/
