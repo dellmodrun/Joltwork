@@ -4,6 +4,7 @@ import {
   Address,
   Instruction,
   address,
+  getAddressEncoder,
   mergeRoles,
 } from "@solana/kit";
 import { createHash } from "node:crypto";
@@ -16,8 +17,10 @@ export type IntentConstraints = {
   expiresAtSlot: bigint;
   maxInput: bigint;
   minOutput: bigint;
-  intentId: Uint8Array;
+  intentId?: Uint8Array;
 };
+
+type EncodedIntentConstraints = IntentConstraints & { intentId: Uint8Array };
 
 export type BuildIntentHookInstruction = {
   programAddress: Address;
@@ -59,6 +62,47 @@ function normalizeIntentId(value: Uint8Array): Buffer {
   return Buffer.from(value);
 }
 
+export function computeIntentId(args: {
+  constraints: Omit<IntentConstraints, "intentId">;
+  accounts: AccountMeta[];
+  routeIndices: number[];
+  hookIndices?: number[];
+  routeData: Uint8Array;
+  hookPayload?: Uint8Array;
+}): Uint8Array {
+  const hookIndices = args.hookIndices ?? [];
+  const hookPayload = args.hookPayload ?? new Uint8Array();
+  if (args.accounts.length > 0xffff) throw new RangeError("too many instruction accounts");
+  const header = Buffer.concat([
+    Buffer.from([VERSION]),
+    u64(args.constraints.expiresAtSlot),
+    u64(args.constraints.maxInput),
+    u64(args.constraints.minOutput),
+    u16(args.routeIndices.length),
+    u16(hookIndices.length),
+    u32(args.routeData.length),
+    u32(hookPayload.length),
+  ]);
+  const addressEncoder = getAddressEncoder();
+  const accountBindings = Buffer.alloc(2 + args.accounts.length * 34);
+  accountBindings.writeUInt16LE(args.accounts.length, 0);
+  args.accounts.forEach((account, index) => {
+    const offset = 2 + index * 34;
+    accountBindings.set(addressEncoder.encode(account.address), offset);
+    accountBindings[offset + 32] = account.role >= AccountRole.READONLY_SIGNER ? 1 : 0;
+    accountBindings[offset + 33] = account.role === AccountRole.WRITABLE || account.role === AccountRole.WRITABLE_SIGNER ? 1 : 0;
+  });
+  return createHash("sha256")
+    .update("JOLT_INTENT_V1")
+    .update(header)
+    .update(Buffer.from(args.routeIndices))
+    .update(Buffer.from(hookIndices))
+    .update(args.routeData)
+    .update(hookPayload)
+    .update(accountBindings)
+    .digest();
+}
+
 function dedupeSharedAccounts(
   routeAccounts: AccountMeta[],
   hookAccounts: AccountMeta[],
@@ -89,12 +133,34 @@ function dedupeSharedAccounts(
   };
 }
 
+export function canonicalIntentJson(value: unknown): string {
+  if (value === null || typeof value === "boolean" || typeof value === "string") {
+    return JSON.stringify(value);
+  }
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new TypeError("intent manifest numbers must be finite");
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+    return "[" + value.map(canonicalIntentJson).join(",") + "]";
+  }
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    const entries = Object.keys(record).sort().map((key) => {
+      if (record[key] === undefined) throw new TypeError("intent manifest cannot contain undefined");
+      return JSON.stringify(key) + ":" + canonicalIntentJson(record[key]);
+    });
+    return "{" + entries.join(",") + "}";
+  }
+  throw new TypeError("intent manifest contains an unsupported value");
+}
+
 export function hashIntentManifest(manifest: unknown): Uint8Array {
-  return createHash("sha256").update(JSON.stringify(manifest)).digest();
+  return createHash("sha256").update(canonicalIntentJson(manifest)).digest();
 }
 
 export function encodeExecuteIntent(args: {
-  constraints: IntentConstraints;
+  constraints: EncodedIntentConstraints;
   routeIndices: number[];
   hookIndices?: number[];
   routeData: Uint8Array;
@@ -137,18 +203,30 @@ export function buildExecuteIntentInstruction(
     args.routeAccounts,
     hookAccounts,
   );
+  const accounts: AccountMeta[] = [
+    { address: args.authority, role: AccountRole.READONLY_SIGNER },
+    { address: args.sourceTokenAccount, role: AccountRole.WRITABLE },
+    { address: args.destinationTokenAccount, role: AccountRole.WRITABLE },
+    { address: args.routeProgram, role: AccountRole.READONLY },
+    { address: hookProgram, role: AccountRole.READONLY },
+    ...shared,
+  ];
+  const computedIntentId = computeIntentId({
+    constraints: args.constraints,
+    accounts,
+    routeIndices,
+    hookIndices,
+    routeData: args.routeData,
+    hookPayload: args.hookPayload,
+  });
+  if (args.constraints.intentId && !Buffer.from(args.constraints.intentId).equals(Buffer.from(computedIntentId))) {
+    throw new Error("intentId does not match the protected instruction fields");
+  }
   return {
     programAddress: args.programAddress,
-    accounts: [
-      { address: args.authority, role: AccountRole.READONLY_SIGNER },
-      { address: args.sourceTokenAccount, role: AccountRole.WRITABLE },
-      { address: args.destinationTokenAccount, role: AccountRole.WRITABLE },
-      { address: args.routeProgram, role: AccountRole.READONLY },
-      { address: hookProgram, role: AccountRole.READONLY },
-      ...shared,
-    ],
+    accounts,
     data: encodeExecuteIntent({
-      constraints: args.constraints,
+      constraints: { ...args.constraints, intentId: computedIntentId },
       routeIndices,
       hookIndices,
       routeData: args.routeData,

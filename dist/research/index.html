@@ -276,7 +276,8 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
 <script>(function () {
   "use strict";
 
-  var walletAddress = sessionStorage.getItem("joltwork-wallet") || null;
+  var cachedWalletAddress = sessionStorage.getItem("joltwork-wallet") || null;
+  var walletAddress = null;
 
   function byId(id) {
     return document.getElementById(id);
@@ -480,11 +481,34 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     showToast("Wallet disconnected");
   }
 
+  async function restoreTrustedWallet() {
+    if (!cachedWalletAddress) return;
+    var wallets = detectedWallets().filter(function (wallet) { return wallet.detected; });
+    for (var index = 0; index < wallets.length; index += 1) {
+      var wallet = wallets[index];
+      try {
+        var publicKey = wallet.provider.publicKey;
+        if (!publicKey) {
+          var connection = await wallet.provider.connect({ onlyIfTrusted: true });
+          publicKey = connection && connection.publicKey || wallet.provider.publicKey;
+        }
+        if (publicKey && String(publicKey) === cachedWalletAddress) {
+          bindWalletEvents(wallet.provider);
+          setWalletAddress(publicKey, wallet.provider);
+          return;
+        }
+      } catch (error) { /* not previously approved in this wallet */ }
+    }
+    sessionStorage.removeItem("joltwork-wallet");
+    cachedWalletAddress = null;
+  }
+
   if (walletButton) walletButton.addEventListener("click", openWalletModal);
   document.querySelectorAll("[data-wallet-connect]").forEach(function (button) {
     button.addEventListener("click", openWalletModal);
   });
-  setWalletAddress(walletAddress, null);
+  setWalletAddress(null, null);
+  restoreTrustedWallet();
 
   var launchForm = byId("launch-form");
   if (launchForm) launchForm.addEventListener("submit", async function (event) {

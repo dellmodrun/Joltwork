@@ -6,6 +6,7 @@ use solana_program::{
     account_info::AccountInfo,
     entrypoint,
     entrypoint::ProgramResult,
+    hash::hashv,
     instruction::{AccountMeta, Instruction},
     msg,
     program::{invoke, set_return_data},
@@ -32,6 +33,7 @@ const MIN_OUTPUT: u32 = 4;
 const BALANCE_DIRECTION: u32 = 5;
 const INVALID_INDEX: u32 = 6;
 const INVALID_PROGRAM: u32 = 7;
+const INVALID_INTENT_ID: u32 = 8;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ExecuteIntent {
@@ -214,6 +216,37 @@ fn receipt_data(intent: &ExecuteIntent, source_spent: u64, destination_received:
     data
 }
 
+fn canonical_intent_id(accounts: &[AccountInfo], intent: &ExecuteIntent) -> [u8; 32] {
+    let mut header = Vec::with_capacity(37);
+    header.push(VERSION);
+    header.extend_from_slice(&intent.expires_at_slot.to_le_bytes());
+    header.extend_from_slice(&intent.max_input.to_le_bytes());
+    header.extend_from_slice(&intent.min_output.to_le_bytes());
+    header.extend_from_slice(&(intent.route_indices.len() as u16).to_le_bytes());
+    header.extend_from_slice(&(intent.hook_indices.len() as u16).to_le_bytes());
+    header.extend_from_slice(&(intent.route_data.len() as u32).to_le_bytes());
+    header.extend_from_slice(&(intent.hook_payload.len() as u32).to_le_bytes());
+
+    let mut account_bindings = Vec::with_capacity(2 + accounts.len() * 34);
+    account_bindings.extend_from_slice(&(accounts.len() as u16).to_le_bytes());
+    for account in accounts {
+        account_bindings.extend_from_slice(account.key.as_ref());
+        account_bindings.push(u8::from(account.is_signer));
+        account_bindings.push(u8::from(account.is_writable));
+    }
+
+    hashv(&[
+        b"JOLT_INTENT_V1",
+        &header,
+        &intent.route_indices,
+        &intent.hook_indices,
+        &intent.route_data,
+        &intent.hook_payload,
+        &account_bindings,
+    ])
+    .to_bytes()
+}
+
 #[cfg(not(test))]
 fn current_slot() -> Result<u64, ProgramError> {
     Ok(Clock::get()?.slot)
@@ -248,6 +281,9 @@ pub fn process_instruction(
     }
 
     let intent = ExecuteIntent::unpack(instruction_data)?;
+    if canonical_intent_id(accounts, &intent) != intent.intent_id {
+        return Err(custom(INVALID_INTENT_ID));
+    }
     let current_slot = current_slot()?;
     if intent.expires_at_slot != 0 && current_slot > intent.expires_at_slot {
         return Err(custom(EXPIRED));
@@ -503,6 +539,8 @@ mod tests {
         data[63..65].copy_from_slice(&1u16.to_le_bytes());
         data[73..75].copy_from_slice(&[1, 2]);
         data[75] = 1;
+        let parsed = ExecuteIntent::unpack(&data).unwrap();
+        data[29..61].copy_from_slice(&canonical_intent_id(&accounts, &parsed));
         let result = process_instruction(&program_id, &accounts, &data);
         set_syscall_stubs(previous);
 

@@ -34,14 +34,15 @@ duplicating transaction accounts.
 
 ## Execution
 
-1. Verify authority, expiry and executable program accounts.
-2. Read source and destination token balances.
-3. Invoke the policy hook with phase PRE, if configured.
-4. Invoke the route program with the exact route data.
-5. Reload balances and calculate integer input/output deltas.
-6. Reject if input exceeds max_input or output is below min_output.
-7. Invoke the policy hook with phase POST, if configured.
-8. Return JRC1, version, intent_id, source_spent and destination_received.
+1. Recompute the intent id from every account, privilege, constraint and payload.
+2. Verify authority, expiry and executable program accounts.
+3. Read source and destination token balances.
+4. Invoke the policy hook with phase PRE, if configured.
+5. Invoke the route program with the exact route data.
+6. Reload balances and calculate integer input/output deltas.
+7. Reject if input exceeds max_input or output is below min_output.
+8. Invoke the policy hook with phase POST, if configured.
+9. Return JRC1, version, intent_id, source_spent and destination_received.
 
 Any error from the route, policy hook or postcondition aborts the Solana
 transaction atomically.
@@ -60,6 +61,8 @@ minimum output and protocol-specific disclosure rules.
 ## Current boundary
 
 The v1 program enforces token-account postconditions and a direct route
-program. Full inner-CPI economic attribution is produced off-chain by the
-Joltwork receipt engine from confirmed transaction metadata.
+program. It verifies the selected source and destination balance deltas around
+that route; it does not yet attribute every inner CPI or constrain unrelated
+instructions outside the wrapper. Rich route attribution and router-specific
+account assembly require adapters and indexing that are not included in v1.
 
