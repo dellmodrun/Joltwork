@@ -14,18 +14,18 @@
     main.innerHTML = `
       <div class="sections">
         <section>
-          <h2>on the live surface</h2>
+          <h2>on the live protocol</h2>
           <div class="body">
-            <p>the public Joltwork interface turns a Solana signature into a portable settlement record. it reconstructs token deltas from confirmed pre- and post-balances, exposes every invoked program visible to RPC, records execution status, network fee and compute consumption, and keeps the evidence beside the interpretation.</p>
-            <p>two adjacent instruments widen the investigation. address activity summarizes recent execution history for a wallet or program; mint inspector resolves program ownership, supply precision, authorities and parsed extensions. together they form a working path from market identity to transaction-level settlement.</p>
+            <p>Joltwork now begins before settlement. Jolt Guard binds a user-signed economic policy to the route instruction, executes that route through CPI and permits state to commit only when the realized token-account deltas satisfy the policy.</p>
+            <p>the protocol is split into a minimal on-chain enforcement program, an ordered account-index adapter, composable policy hooks and a Solana Kit SDK. the public interface compiles the same canonical intent identity used by integrations.</p>
           </div>
           <table class="surface-table">
             <thead><tr><th>surface</th><th>input</th><th>evidence returned</th><th>state</th></tr></thead>
             <tbody>
-              <tr><td>settlement analyzer</td><td>transaction signature</td><td>slot, status, fee, compute, token deltas, programs, JSON receipt</td><td>LIVE</td></tr>
-              <tr><td>address activity</td><td>wallet or program</td><td>20 recent signatures, success ratio and observed slot range</td><td>LIVE</td></tr>
-              <tr><td>mint inspector</td><td>SPL mint</td><td>owner program, decimals, supply, authorities and extensions</td><td>LIVE</td></tr>
-              <tr><td>receipt archive</td><td>completed analysis</td><td>local history, clipboard copy and downloadable JSON</td><td>LIVE</td></tr>
+              <tr><td>Jolt Guard</td><td>signed route intent</td><td>atomic max-input, min-output and expiry enforcement</td><td>COMPILED</td></tr>
+              <tr><td>policy hooks</td><td>PRE / POST payload</td><td>composable program-defined acceptance or rejection</td><td>COMPILED</td></tr>
+              <tr><td>Solana Kit SDK</td><td>route instruction</td><td>account deduplication, codec and receipt decoder</td><td>TESTED</td></tr>
+              <tr><td>protocol CI</td><td>every source change</td><td>Rust tests, TypeScript tests and dependency audit</td><td>PASSING</td></tr>
             </tbody>
           </table>
         </section>
@@ -212,8 +212,9 @@
           <pre id="guard-output">configure a policy, then compile its canonical intent id.</pre>
         </div>
       </div>`;
-    document.querySelector("#analyzer").before(section);
-    document.querySelector("#analyzer .mono").textContent = "JOLTWORK / RECEIPT ENGINE";
+    var legacyAnalyzer = document.querySelector("#analyzer");
+    legacyAnalyzer.before(section);
+    legacyAnalyzer.remove();
 
     section.querySelector("#guard-compile").addEventListener("click", async function () {
       var manifest = {
@@ -656,51 +657,4 @@
     if (event.key === "Escape") closeOverlays();
   });
 
-  byId("analyze-btn").addEventListener("click", function () {
-    runAnalysis(byId("sig-input").value.trim());
-  });
-  byId("sig-input").addEventListener("keydown", function (event) {
-    if (event.key === "Enter") runAnalysis(event.currentTarget.value.trim());
-  });
-  byId("sample-btn").addEventListener("click", function () {
-    loadRecentSample().catch(function (error) {
-      byId("analyzer-status").textContent = "error - " + error.message;
-    });
-  });
-  byId("address-btn").addEventListener("click", function () {
-    var value = byId("address-input").value.trim();
-    if (!value) return;
-    scanAddress(value).catch(function (error) {
-      byId("address-output").classList.add("open");
-      byId("address-output").textContent = "error - " + error.message;
-    });
-  });
-  byId("mint-btn").addEventListener("click", function () {
-    var value = byId("mint-input").value.trim();
-    if (!value) return;
-    inspectMint(value).catch(function (error) {
-      byId("mint-output").classList.add("open");
-      byId("mint-output").textContent = "error - " + error.message;
-    });
-  });
-  byId("copy-receipt").addEventListener("click", function () {
-    if (!latestReceipt) return;
-    navigator.clipboard.writeText(JSON.stringify(latestReceipt, null, 2)).then(function () {
-      byId("analyzer-status").textContent = "receipt copied to clipboard";
-    }).catch(function () {
-      byId("analyzer-status").textContent = "copy unavailable - use the JSON panel";
-    });
-  });
-  byId("download-receipt").addEventListener("click", function () {
-    if (!latestReceipt) return;
-    var blob = new Blob([JSON.stringify(latestReceipt, null, 2)], { type: "application/json" });
-    var url = URL.createObjectURL(blob);
-    var link = document.createElement("a");
-    link.href = url;
-    link.download = "joltwork-" + latestReceipt.signature.slice(0, 12) + ".json";
-    link.click();
-    URL.revokeObjectURL(url);
-  });
-
-  renderHistory();
 }());
