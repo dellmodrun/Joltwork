@@ -1,0 +1,21 @@
+name: build devnet pow tool
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build official faucet PoW client
+        shell: pwsh
+        run: cargo install devnet-pow --root tool
+      - uses: actions/upload-artifact@v5
+        with:
+          name: devnet-pow-windows
+          path: tool/bin/devnet-pow.exe
+          if-no-files-found: error
