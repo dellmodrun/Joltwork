@@ -129,8 +129,17 @@
 <label>SYMBOL<input id="coin-symbol" maxlength="13" value="JOLT" required>
 </label>
 </div>
-<label>METADATA URI<input id="coin-uri" type="url" value="https://example.com/jolt.json" required>
-</label>
+<label>DESCRIPTION<textarea id="coin-description" maxlength="500" placeholder="What the token represents and why it exists" required></textarea></label>
+<div class="field-pair">
+<label>IMAGE URL<input id="coin-image" type="url" placeholder="https://…/coin.png" required></label>
+<label>WEBSITE<input id="coin-website" type="url" value="https://dellmodrun.github.io/Joltwork/"></label>
+</div>
+<div class="field-pair">
+<label>X / TWITTER<input id="coin-twitter" type="url" value="https://x.com/Joltworkrunit"></label>
+<label>TELEGRAM<input id="coin-telegram" type="url" placeholder="https://t.me/…"></label>
+</div>
+<label>METADATA JSON URI<input id="coin-uri" type="url" placeholder="https://ipfs.io/ipfs/…" required></label>
+<div class="metadata-review"><img id="coin-image-preview" alt="Coin artwork preview" hidden><div><b id="metadata-state">METADATA NOT VERIFIED</b><p>The JSON must contain matching name, symbol, description and a public image URL.</p></div><button type="button" id="metadata-check" class="button">verify metadata</button></div>
 <div class="field-pair">
 <label>QUOTE ASSET<select id="coin-quote">
 <option value="SOL">SOL</option>
@@ -173,7 +182,7 @@
 </div>
 <div class="callout">
 <b>SIGNING BOUNDARY</b>
-<p>Compile first, then use the separate mainnet action. Joltwork assembles Pump’s official create_v2 instruction, generates the new Mint signer in this browser and asks the connected wallet to review and pay for the transaction. Nothing is submitted without the wallet’s explicit approval. The Intent Policy remains a JLM1 manifest until Jolt Guard has a published Program ID.</p>
+<p>Verify the public metadata JSON, compile the manifest, then use the separate mainnet action. Joltwork assembles Pump’s official create_v2 instruction, generates the new Mint signer in this browser and asks the connected wallet to review and pay for the transaction. Nothing is submitted without the wallet’s explicit approval. The Jolt Guard Program ID is currently published on devnet; mainnet enforcement remains a separate deployment gate.</p>
 </div>
 <div class="callout"><b>RPC AND PRIVACY</b><p>The default browser-compatible RPC is operated by PublicNode, not Joltwork or Solana. It receives ordinary RPC requests and the signed transaction when submitted. Production operators should replace it with their own trusted Solana RPC endpoint before launch.</p></div>
 </section>

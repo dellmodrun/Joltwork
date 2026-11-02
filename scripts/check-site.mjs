@@ -13,4 +13,13 @@ for (const id of ["code-view", "code-filter", "code-copy", "code-github"]) {
 }
 const app = readFileSync(resolve(root, "app.js"), "utf8");
 assert.match(app, /3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG|codePaths/);
-console.log(`site contract: ${pages.length} routes, code browser controls, no custom domain`);
+const intent = readFileSync(resolve(root, "intent/index.html"), "utf8");
+for (const id of ["intent-input-mint", "intent-output-mint", "intent-slippage", "intent-quote"]) {
+  assert.match(intent, new RegExp(`id=["']${id}["']`), `intent workbench missing ${id}`);
+}
+assert.match(app, /api\.jup\.ag\/swap\/v2\/order/, "intent workbench must use Jupiter Swap API V2");
+const launch = readFileSync(resolve(root, "launch/index.html"), "utf8");
+for (const id of ["coin-description", "coin-image", "coin-uri", "metadata-check", "launch-submit"]) {
+  assert.match(launch, new RegExp(`id=["']${id}["']`), `launch workbench missing ${id}`);
+}
+console.log(`site contract: ${pages.length} routes, live quote controls, metadata gate, code browser, no custom domain`);

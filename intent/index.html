@@ -123,17 +123,20 @@
 <span>INTENT CONSTRAINTS</span>
 <span>JOLT V1</span>
 </div>
-<label>ROUTE PROGRAM<input id="intent-route" value="JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4" required>
-</label>
 <div class="field-pair">
-<label>MAXIMUM INPUT<input id="intent-input" inputmode="numeric" value="100000000" required>
-</label>
-<label>MINIMUM OUTPUT<input id="intent-output-min" inputmode="numeric" value="95000000" required>
-</label>
+<label>INPUT MINT<input id="intent-input-mint" value="So11111111111111111111111111111111111111112" required></label>
+<label>OUTPUT MINT<input id="intent-output-mint" value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" required></label>
 </div>
 <div class="field-pair">
-<label>EXPIRY SLOT<input id="intent-expiry" inputmode="numeric" value="500000000" required>
-</label>
+<label>INPUT AMOUNT / BASE UNITS<input id="intent-input" inputmode="numeric" value="100000000" required></label>
+<label>SLIPPAGE / BPS<input id="intent-slippage" inputmode="numeric" value="100" min="1" max="5000" required></label>
+</div>
+<div class="field-pair">
+<label>MINIMUM OUTPUT<input id="intent-output-min" inputmode="numeric" placeholder="filled by live quote" required></label>
+<label>EXPIRY SLOT<input id="intent-expiry" inputmode="numeric" placeholder="filled from Solana" required></label>
+</div>
+<div class="field-pair">
+<label>ROUTE PROGRAM<input id="intent-route" value="JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4" required></label>
 <label>POLICY HOOK<select id="intent-policy">
 <option value="max-cost">MAXIMUM TOTAL COST</option>
 <option value="allowed-route">ALLOWED ROUTE</option>
@@ -144,6 +147,7 @@
 </div>
 <div class="form-actions">
 <button type="button" class="button" data-wallet-connect>connect wallet</button>
+<button type="button" id="intent-quote" class="button">get live quote</button>
 <button type="submit" class="button button-solid">compile intent manifest</button>
 </div>
 </form>
@@ -158,8 +162,8 @@
 <pre id="intent-output">The canonical manifest and Jolt Guard constraints will appear here.</pre>
 </div>
 </div>
-<div class="status-band"><div><span>OUTPUT</span><b class="ready">CANONICAL JOLT V1 JSON</b></div><div><span>DEVNET PROGRAM</span><b class="ready">3gAqr1U9…K2knfVG</b></div><div><span>ROUTER SUBMISSION</span><b class="pending">ADAPTER INTEGRATION NEXT</b></div></div>
-<div class="callout"><b>ON-CHAIN STATUS</b><p>The enforcement program is now <a href="https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet" target="_blank" rel="noreferrer">live and executable on devnet ↗</a>. This page currently compiles the protected intent; it does not yet request a router quote or ask the wallet to submit that route.</p></div>
+<div class="status-band"><div><span>QUOTE</span><b class="ready">JUPITER SWAP API V2</b></div><div><span>DEVNET PROGRAM</span><b class="ready">3gAqr1U9…K2knfVG</b></div><div><span>MAINNET GUARD</span><b class="pending">DEPLOYMENT REQUIRED</b></div></div>
+<div class="callout"><b>ON-CHAIN STATUS</b><p>This workbench now requests a real mainnet quote from Jupiter V2 and converts its threshold into JOLT constraints. Protected submission remains locked until the same audited Jolt Guard binary is deployed on mainnet; the current executable <a href="https://explorer.solana.com/address/3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG?cluster=devnet" target="_blank" rel="noreferrer">devnet program ↗</a> cannot safely be presented as a mainnet endpoint.</p></div>
 <div class="callout">
 <b>ATOMICITY</b>
 <p>If the route spends above the ceiling, receives below the floor, expires, or fails a selected hook, the entire Solana transaction returns an error and does not settle partially.</p>

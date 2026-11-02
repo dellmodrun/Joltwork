@@ -65,6 +65,8 @@ h1,h2,h3,strong,.statement,.equation i{font-style:normal!important}
 .code-browser>aside{max-height:650px;overflow:auto}.code-browser pre{min-height:650px;max-height:650px;overflow:auto;white-space:pre;tab-size:2}.source-summary{max-width:900px;color:#d0ccc3;font-size:16px;line-height:1.75}.paper-origin{padding:34px;border:1px solid var(--line);border-left:3px solid var(--good);background:var(--panel)}.paper-origin h2{margin:14px 0 18px;font:34px/1.1 "EB Garamond",serif;font-weight:400}.paper-origin p{max-width:920px;color:#d0ccc3;font-size:16px;line-height:1.75}.paper-meta{display:grid;grid-template-columns:repeat(4,1fr);margin-top:20px;border:1px solid var(--line)}.paper-meta div{padding:16px;border-right:1px solid var(--line)}.paper-meta div:last-child{border-right:0}.paper-meta span,.paper-meta b{display:block;font:8px/1.5 "JetBrains Mono",monospace}.paper-meta span{color:var(--muted)}.paper-meta b{margin-top:7px;font-weight:400}.paper-reader{margin-top:20px;border:1px solid var(--line);background:#fff}.paper-reader-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel);font:8px "JetBrains Mono",monospace}.paper-reader-head div{display:flex;gap:16px}.paper-reader-head a{color:var(--good)}.paper-reader iframe{display:block;width:100%;height:78vh;min-height:720px;border:0;background:#fff}.research-figure{margin:20px 0 0;padding:24px;border:1px solid var(--line);background:var(--panel)}.research-figure img{display:block;width:100%;max-height:640px;object-fit:contain;background:#f4f2ed}.research-figure figcaption{margin-top:14px;color:var(--muted);font:8px/1.6 "JetBrains Mono",monospace}
 @media(max-width:680px){.status-band,.paper-meta{grid-template-columns:1fr}.status-band div,.paper-meta div{border-right:0;border-bottom:1px solid var(--line)}.status-band div:last-child,.paper-meta div:last-child{border-bottom:0}.paper-reader iframe{height:70vh;min-height:560px}.paper-reader-head{display:block}.paper-reader-head div{margin-top:10px}.code-browser pre{min-height:500px;max-height:500px}}
 .wallet-badge{border:0}.wallet-badge img{display:block;width:34px;height:34px;border-radius:9px}
+.form-sheet textarea{display:block;width:100%;min-height:92px;margin-top:6px;padding:10px;border:1px solid var(--line);border-radius:0;outline:0;resize:vertical;background:var(--panel-2);color:var(--text);font:9px/1.6 "JetBrains Mono",monospace}.form-sheet textarea:focus{border-color:#898780}.metadata-review{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:14px;margin-top:14px;padding:12px;border:1px solid var(--line);background:var(--panel-2)}.metadata-review img{width:64px;height:64px;object-fit:cover;border:1px solid var(--line)}.metadata-review img[hidden]{display:block;visibility:hidden}.metadata-review b{display:block;color:var(--muted);font:8px "JetBrains Mono",monospace;font-weight:400}.metadata-review b.ready{color:var(--good)}.metadata-review p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+@media(max-width:680px){.metadata-review{grid-template-columns:54px 1fr}.metadata-review img{width:54px;height:54px}.metadata-review .button{grid-column:1/-1}}
 
 /* Repository browser */
 .repo-health{display:grid;grid-template-columns:repeat(5,1fr);margin-top:18px;border:1px solid var(--line);background:var(--panel-2)}
@@ -289,6 +291,9 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
 
   var cachedWalletAddress = sessionStorage.getItem("joltwork-wallet") || null;
   var walletAddress = null;
+  var verifiedMetadataUri = null;
+  var verifiedMetadata = null;
+  var launchManifestReady = false;
 
   function byId(id) {
     return document.getElementById(id);
@@ -368,10 +373,7 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     var disconnect = byId("wallet-disconnect");
     if (disconnect) disconnect.hidden = !walletAddress;
     var launchSubmit = byId("launch-submit");
-    var launchOutput = byId("launch-output");
-    if (launchSubmit && launchOutput && launchOutput.textContent.trim().startsWith("{")) {
-      launchSubmit.disabled = !walletAddress;
-    }
+    if (launchSubmit) launchSubmit.disabled = !walletAddress || !launchManifestReady || verifiedMetadataUri !== (byId("coin-uri") && byId("coin-uri").value.trim());
   }
 
   function detectedWallets() {
@@ -522,6 +524,59 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
   restoreTrustedWallet();
 
   var launchForm = byId("launch-form");
+  var metadataCheck = byId("metadata-check");
+  if (metadataCheck) metadataCheck.addEventListener("click", async function () {
+    var state = byId("metadata-state");
+    var preview = byId("coin-image-preview");
+    metadataCheck.disabled = true;
+    metadataCheck.textContent = "verifying…";
+    verifiedMetadataUri = null;
+    verifiedMetadata = null;
+    launchManifestReady = false;
+    try {
+      var uri = metadataUri(byId("coin-uri").value.trim());
+      if (uri.length > 200) throw new Error("Pump metadata URI must not exceed 200 characters");
+      var response = await fetch(uri, { cache: "no-store" });
+      if (!response.ok) throw new Error("metadata returned HTTP " + response.status);
+      var metadata = await response.json();
+      var name = byId("coin-name").value.trim();
+      var symbol = byId("coin-symbol").value.trim().toUpperCase();
+      if (metadata.name !== name || String(metadata.symbol || "").toUpperCase() !== symbol) throw new Error("metadata name and symbol must match the form");
+      if (!metadata.description || !metadata.image) throw new Error("metadata must include description and image");
+      var image = metadataUri(metadata.image);
+      byId("coin-description").value = metadata.description;
+      byId("coin-image").value = image;
+      if (metadata.website) byId("coin-website").value = metadata.website;
+      if (metadata.twitter) byId("coin-twitter").value = metadata.twitter;
+      if (metadata.telegram) byId("coin-telegram").value = metadata.telegram;
+      preview.src = image;
+      preview.hidden = false;
+      verifiedMetadataUri = uri;
+      verifiedMetadata = metadata;
+      state.textContent = "METADATA VERIFIED";
+      state.classList.add("ready");
+      showToast("Public metadata verified", "success");
+    } catch (error) {
+      state.textContent = "METADATA INVALID";
+      state.classList.remove("ready");
+      preview.hidden = true;
+      showToast(error.message + " · the host must allow browser access", "error");
+    } finally {
+      metadataCheck.disabled = false;
+      metadataCheck.textContent = "verify metadata";
+      setWalletAddress(walletAddress, activeProvider);
+    }
+  });
+  function invalidateMetadata() {
+    verifiedMetadataUri = null;
+    verifiedMetadata = null;
+    launchManifestReady = false;
+    if (byId("metadata-state")) { byId("metadata-state").textContent = "METADATA NOT VERIFIED"; byId("metadata-state").classList.remove("ready"); }
+    setWalletAddress(walletAddress, activeProvider);
+  }
+  ["coin-uri", "coin-name", "coin-symbol"].forEach(function (id) {
+    if (byId(id)) byId(id).addEventListener("input", invalidateMetadata);
+  });
   if (launchForm) launchForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     var output = byId("launch-output");
@@ -544,6 +599,11 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
       showToast(error.message, "error");
       return;
     }
+    if (uri !== verifiedMetadataUri || !verifiedMetadata || verifiedMetadata.name !== name || String(verifiedMetadata.symbol || "").toUpperCase() !== symbol) {
+      output.textContent = "error · verify the public metadata JSON before compiling";
+      showToast("Verify metadata first", "error");
+      return;
+    }
     var manifest = {
       format: "JLM1",
       network: "solana-mainnet-beta",
@@ -552,6 +612,11 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
         name: name,
         symbol: symbol,
         metadataUri: uri,
+        description: String(verifiedMetadata.description),
+        image: metadataUri(verifiedMetadata.image),
+        website: verifiedMetadata.website || "",
+        twitter: verifiedMetadata.twitter || "",
+        telegram: verifiedMetadata.telegram || "",
         tokenProgram: "Token-2022",
         decimals: 6
       },
@@ -577,6 +642,7 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
       ],
       signingAuthority: walletAddress || "connect wallet before transaction assembly"
     }, null, 2);
+    launchManifestReady = true;
     var launchSubmit = byId("launch-submit");
     if (launchSubmit) launchSubmit.disabled = !walletAddress;
     showToast("JLM1 launch manifest compiled", "success");
@@ -590,6 +656,10 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     if (!provider || !authority) {
       openWalletModal();
       showToast("Connect a wallet before creating the coin", "error");
+      return;
+    }
+    if (!launchManifestReady || verifiedMetadataUri !== byId("coin-uri").value.trim()) {
+      showToast("Verify metadata and compile the launch plan first", "error");
       return;
     }
     if (!window.JoltworkLaunch || typeof window.JoltworkLaunch.createPumpCoin !== "function") {
@@ -616,7 +686,7 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
         signature: result.signature,
         solscan: result.explorer,
         pump: result.pump,
-        note: "The Joltwork intent policy remains a manifest until the Jolt Guard Program ID is deployed."
+        note: "The token is live on mainnet. Its Joltwork policy remains a manifest until Jolt Guard is separately deployed on mainnet."
       }, null, 2);
       showToast("Coin creation confirmed on Solana", "success");
     } catch (error) {
@@ -628,6 +698,55 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     }
   });
 
+  var latestIntentQuote = null;
+  var intentQuoteButton = byId("intent-quote");
+  if (intentQuoteButton) intentQuoteButton.addEventListener("click", async function () {
+    var output = byId("intent-output");
+    intentQuoteButton.disabled = true;
+    intentQuoteButton.textContent = "requesting quote…";
+    try {
+      var inputMint = solanaAddress(byId("intent-input-mint").value.trim(), "input mint");
+      var outputMint = solanaAddress(byId("intent-output-mint").value.trim(), "output mint");
+      if (inputMint === outputMint) throw new Error("input and output mint must be different");
+      var amount = unsignedInteger(byId("intent-input").value.trim(), "input amount");
+      if (amount === "0") throw new Error("input amount must be greater than zero");
+      var slippage = Number(unsignedInteger(byId("intent-slippage").value.trim(), "slippage"));
+      if (slippage < 1 || slippage > 5000) throw new Error("slippage must be between 1 and 5000 bps");
+      var params = new URLSearchParams({
+        inputMint: inputMint, outputMint: outputMint, amount: amount,
+        slippageBps: String(slippage), swapMode: "ExactIn"
+      });
+      var quoteResponse = await fetch("https://api.jup.ag/swap/v2/order?" + params.toString(), { cache: "no-store" });
+      if (!quoteResponse.ok) throw new Error("Jupiter quote failed with HTTP " + quoteResponse.status);
+      var quote = await quoteResponse.json();
+      if (!quote.outAmount || quote.errorCode) throw new Error(quote.errorMessage || quote.errorCode || "Jupiter could not build a quote");
+      var minOutput = quote.otherAmountThreshold || (BigInt(quote.outAmount) * BigInt(10000 - slippage) / 10000n).toString();
+      byId("intent-output-min").value = minOutput;
+      var slotResponse = await fetch("https://solana-rpc.publicnode.com", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getSlot", params: [{ commitment: "confirmed" }] })
+      });
+      var slotJson = await slotResponse.json();
+      if (slotJson.result) byId("intent-expiry").value = String(Number(slotJson.result) + 150);
+      latestIntentQuote = {
+        requestId: quote.requestId || null, router: quote.router || "metis",
+        inputMint: inputMint, outputMint: outputMint, inAmount: quote.inAmount,
+        outAmount: quote.outAmount, minimumOutput: minOutput, slippageBps: slippage,
+        priceImpactPct: quote.priceImpactPct || quote.priceImpact || null,
+        route: (quote.routePlan || []).map(function (step) { return step.swapInfo && step.swapInfo.label || "unknown"; })
+      };
+      output.textContent = JSON.stringify({ status: "live quote received", quote: latestIntentQuote, next: "review constraints, then compile intent" }, null, 2);
+      showToast("Live Jupiter quote received", "success");
+    } catch (error) {
+      latestIntentQuote = null;
+      output.textContent = "quote error · " + error.message;
+      showToast(error.message, "error");
+    } finally {
+      intentQuoteButton.disabled = false;
+      intentQuoteButton.textContent = "get live quote";
+    }
+  });
+
   var intentForm = byId("intent-form");
   if (intentForm) intentForm.addEventListener("submit", async function (event) {
     event.preventDefault();
@@ -635,16 +754,24 @@ window.JOLT_OFFICIAL_WALLET_ICONS = Object.freeze({
     try {
       var manifest = {
         protocol: "jolt-guard-v1",
+        network: "solana-mainnet-beta",
         authority: walletAddress || "wallet-not-connected",
         routeProgram: solanaAddress(byId("intent-route").value.trim(), "route program"),
+        inputMint: solanaAddress(byId("intent-input-mint").value.trim(), "input mint"),
+        outputMint: solanaAddress(byId("intent-output-mint").value.trim(), "output mint"),
         maxInput: unsignedInteger(byId("intent-input").value.trim(), "maximum input"),
         minOutput: unsignedInteger(byId("intent-output-min").value.trim(), "minimum output"),
+        slippageBps: unsignedInteger(byId("intent-slippage").value.trim(), "slippage"),
         expiresAtSlot: unsignedInteger(byId("intent-expiry").value.trim(), "expiry slot"),
         policy: byId("intent-policy").value
       };
+      if (!latestIntentQuote || latestIntentQuote.inputMint !== manifest.inputMint || latestIntentQuote.outputMint !== manifest.outputMint || latestIntentQuote.inAmount !== manifest.maxInput || latestIntentQuote.minimumOutput !== manifest.minOutput || String(latestIntentQuote.slippageBps) !== manifest.slippageBps) {
+        throw new Error("request a fresh quote after changing the trade fields");
+      }
       output.textContent = JSON.stringify({
         intentId: await sha256(JSON.stringify(manifest)),
         constraints: manifest,
+        quote: latestIntentQuote,
         execution: [
           "snapshot source and destination token accounts",
           "invoke PRE policy hook",

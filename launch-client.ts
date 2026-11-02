@@ -17,6 +17,9 @@ export type PumpLaunchRequest = {
 export async function createPumpCoin(request: PumpLaunchRequest) {
   if (!request.provider) throw new Error('Connect a supported wallet first.');
   const user = new PublicKey(request.authority);
+  if (request.name.length < 1 || request.name.length > 32) throw new Error('Coin name must contain 1–32 characters.');
+  if (request.symbol.length < 1 || request.symbol.length > 13) throw new Error('Coin symbol must contain 1–13 characters.');
+  if (request.uri.length < 1 || request.uri.length > 200) throw new Error('Metadata URI must contain 1–200 characters.');
   const mint = Keypair.generate();
   const instruction = await PUMP_SDK.createV2Instruction({
     mint: mint.publicKey,

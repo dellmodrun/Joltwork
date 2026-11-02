@@ -3,6 +3,9 @@
 
   var cachedWalletAddress = sessionStorage.getItem("joltwork-wallet") || null;
   var walletAddress = null;
+  var verifiedMetadataUri = null;
+  var verifiedMetadata = null;
+  var launchManifestReady = false;
 
   function byId(id) {
     return document.getElementById(id);
@@ -82,10 +85,7 @@
     var disconnect = byId("wallet-disconnect");
     if (disconnect) disconnect.hidden = !walletAddress;
     var launchSubmit = byId("launch-submit");
-    var launchOutput = byId("launch-output");
-    if (launchSubmit && launchOutput && launchOutput.textContent.trim().startsWith("{")) {
-      launchSubmit.disabled = !walletAddress;
-    }
+    if (launchSubmit) launchSubmit.disabled = !walletAddress || !launchManifestReady || verifiedMetadataUri !== (byId("coin-uri") && byId("coin-uri").value.trim());
   }
 
   function detectedWallets() {
@@ -236,6 +236,59 @@
   restoreTrustedWallet();
 
   var launchForm = byId("launch-form");
+  var metadataCheck = byId("metadata-check");
+  if (metadataCheck) metadataCheck.addEventListener("click", async function () {
+    var state = byId("metadata-state");
+    var preview = byId("coin-image-preview");
+    metadataCheck.disabled = true;
+    metadataCheck.textContent = "verifying…";
+    verifiedMetadataUri = null;
+    verifiedMetadata = null;
+    launchManifestReady = false;
+    try {
+      var uri = metadataUri(byId("coin-uri").value.trim());
+      if (uri.length > 200) throw new Error("Pump metadata URI must not exceed 200 characters");
+      var response = await fetch(uri, { cache: "no-store" });
+      if (!response.ok) throw new Error("metadata returned HTTP " + response.status);
+      var metadata = await response.json();
+      var name = byId("coin-name").value.trim();
+      var symbol = byId("coin-symbol").value.trim().toUpperCase();
+      if (metadata.name !== name || String(metadata.symbol || "").toUpperCase() !== symbol) throw new Error("metadata name and symbol must match the form");
+      if (!metadata.description || !metadata.image) throw new Error("metadata must include description and image");
+      var image = metadataUri(metadata.image);
+      byId("coin-description").value = metadata.description;
+      byId("coin-image").value = image;
+      if (metadata.website) byId("coin-website").value = metadata.website;
+      if (metadata.twitter) byId("coin-twitter").value = metadata.twitter;
+      if (metadata.telegram) byId("coin-telegram").value = metadata.telegram;
+      preview.src = image;
+      preview.hidden = false;
+      verifiedMetadataUri = uri;
+      verifiedMetadata = metadata;
+      state.textContent = "METADATA VERIFIED";
+      state.classList.add("ready");
+      showToast("Public metadata verified", "success");
+    } catch (error) {
+      state.textContent = "METADATA INVALID";
+      state.classList.remove("ready");
+      preview.hidden = true;
+      showToast(error.message + " · the host must allow browser access", "error");
+    } finally {
+      metadataCheck.disabled = false;
+      metadataCheck.textContent = "verify metadata";
+      setWalletAddress(walletAddress, activeProvider);
+    }
+  });
+  function invalidateMetadata() {
+    verifiedMetadataUri = null;
+    verifiedMetadata = null;
+    launchManifestReady = false;
+    if (byId("metadata-state")) { byId("metadata-state").textContent = "METADATA NOT VERIFIED"; byId("metadata-state").classList.remove("ready"); }
+    setWalletAddress(walletAddress, activeProvider);
+  }
+  ["coin-uri", "coin-name", "coin-symbol"].forEach(function (id) {
+    if (byId(id)) byId(id).addEventListener("input", invalidateMetadata);
+  });
   if (launchForm) launchForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     var output = byId("launch-output");
@@ -258,6 +311,11 @@
       showToast(error.message, "error");
       return;
     }
+    if (uri !== verifiedMetadataUri || !verifiedMetadata || verifiedMetadata.name !== name || String(verifiedMetadata.symbol || "").toUpperCase() !== symbol) {
+      output.textContent = "error · verify the public metadata JSON before compiling";
+      showToast("Verify metadata first", "error");
+      return;
+    }
     var manifest = {
       format: "JLM1",
       network: "solana-mainnet-beta",
@@ -266,6 +324,11 @@
         name: name,
         symbol: symbol,
         metadataUri: uri,
+        description: String(verifiedMetadata.description),
+        image: metadataUri(verifiedMetadata.image),
+        website: verifiedMetadata.website || "",
+        twitter: verifiedMetadata.twitter || "",
+        telegram: verifiedMetadata.telegram || "",
         tokenProgram: "Token-2022",
         decimals: 6
       },
@@ -291,6 +354,7 @@
       ],
       signingAuthority: walletAddress || "connect wallet before transaction assembly"
     }, null, 2);
+    launchManifestReady = true;
     var launchSubmit = byId("launch-submit");
     if (launchSubmit) launchSubmit.disabled = !walletAddress;
     showToast("JLM1 launch manifest compiled", "success");
@@ -304,6 +368,10 @@
     if (!provider || !authority) {
       openWalletModal();
       showToast("Connect a wallet before creating the coin", "error");
+      return;
+    }
+    if (!launchManifestReady || verifiedMetadataUri !== byId("coin-uri").value.trim()) {
+      showToast("Verify metadata and compile the launch plan first", "error");
       return;
     }
     if (!window.JoltworkLaunch || typeof window.JoltworkLaunch.createPumpCoin !== "function") {
@@ -330,7 +398,7 @@
         signature: result.signature,
         solscan: result.explorer,
         pump: result.pump,
-        note: "The Joltwork intent policy remains a manifest until the Jolt Guard Program ID is deployed."
+        note: "The token is live on mainnet. Its Joltwork policy remains a manifest until Jolt Guard is separately deployed on mainnet."
       }, null, 2);
       showToast("Coin creation confirmed on Solana", "success");
     } catch (error) {
@@ -342,6 +410,55 @@
     }
   });
 
+  var latestIntentQuote = null;
+  var intentQuoteButton = byId("intent-quote");
+  if (intentQuoteButton) intentQuoteButton.addEventListener("click", async function () {
+    var output = byId("intent-output");
+    intentQuoteButton.disabled = true;
+    intentQuoteButton.textContent = "requesting quote…";
+    try {
+      var inputMint = solanaAddress(byId("intent-input-mint").value.trim(), "input mint");
+      var outputMint = solanaAddress(byId("intent-output-mint").value.trim(), "output mint");
+      if (inputMint === outputMint) throw new Error("input and output mint must be different");
+      var amount = unsignedInteger(byId("intent-input").value.trim(), "input amount");
+      if (amount === "0") throw new Error("input amount must be greater than zero");
+      var slippage = Number(unsignedInteger(byId("intent-slippage").value.trim(), "slippage"));
+      if (slippage < 1 || slippage > 5000) throw new Error("slippage must be between 1 and 5000 bps");
+      var params = new URLSearchParams({
+        inputMint: inputMint, outputMint: outputMint, amount: amount,
+        slippageBps: String(slippage), swapMode: "ExactIn"
+      });
+      var quoteResponse = await fetch("https://api.jup.ag/swap/v2/order?" + params.toString(), { cache: "no-store" });
+      if (!quoteResponse.ok) throw new Error("Jupiter quote failed with HTTP " + quoteResponse.status);
+      var quote = await quoteResponse.json();
+      if (!quote.outAmount || quote.errorCode) throw new Error(quote.errorMessage || quote.errorCode || "Jupiter could not build a quote");
+      var minOutput = quote.otherAmountThreshold || (BigInt(quote.outAmount) * BigInt(10000 - slippage) / 10000n).toString();
+      byId("intent-output-min").value = minOutput;
+      var slotResponse = await fetch("https://solana-rpc.publicnode.com", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getSlot", params: [{ commitment: "confirmed" }] })
+      });
+      var slotJson = await slotResponse.json();
+      if (slotJson.result) byId("intent-expiry").value = String(Number(slotJson.result) + 150);
+      latestIntentQuote = {
+        requestId: quote.requestId || null, router: quote.router || "metis",
+        inputMint: inputMint, outputMint: outputMint, inAmount: quote.inAmount,
+        outAmount: quote.outAmount, minimumOutput: minOutput, slippageBps: slippage,
+        priceImpactPct: quote.priceImpactPct || quote.priceImpact || null,
+        route: (quote.routePlan || []).map(function (step) { return step.swapInfo && step.swapInfo.label || "unknown"; })
+      };
+      output.textContent = JSON.stringify({ status: "live quote received", quote: latestIntentQuote, next: "review constraints, then compile intent" }, null, 2);
+      showToast("Live Jupiter quote received", "success");
+    } catch (error) {
+      latestIntentQuote = null;
+      output.textContent = "quote error · " + error.message;
+      showToast(error.message, "error");
+    } finally {
+      intentQuoteButton.disabled = false;
+      intentQuoteButton.textContent = "get live quote";
+    }
+  });
+
   var intentForm = byId("intent-form");
   if (intentForm) intentForm.addEventListener("submit", async function (event) {
     event.preventDefault();
@@ -349,16 +466,24 @@
     try {
       var manifest = {
         protocol: "jolt-guard-v1",
+        network: "solana-mainnet-beta",
         authority: walletAddress || "wallet-not-connected",
         routeProgram: solanaAddress(byId("intent-route").value.trim(), "route program"),
+        inputMint: solanaAddress(byId("intent-input-mint").value.trim(), "input mint"),
+        outputMint: solanaAddress(byId("intent-output-mint").value.trim(), "output mint"),
         maxInput: unsignedInteger(byId("intent-input").value.trim(), "maximum input"),
         minOutput: unsignedInteger(byId("intent-output-min").value.trim(), "minimum output"),
+        slippageBps: unsignedInteger(byId("intent-slippage").value.trim(), "slippage"),
         expiresAtSlot: unsignedInteger(byId("intent-expiry").value.trim(), "expiry slot"),
         policy: byId("intent-policy").value
       };
+      if (!latestIntentQuote || latestIntentQuote.inputMint !== manifest.inputMint || latestIntentQuote.outputMint !== manifest.outputMint || latestIntentQuote.inAmount !== manifest.maxInput || latestIntentQuote.minimumOutput !== manifest.minOutput || String(latestIntentQuote.slippageBps) !== manifest.slippageBps) {
+        throw new Error("request a fresh quote after changing the trade fields");
+      }
       output.textContent = JSON.stringify({
         intentId: await sha256(JSON.stringify(manifest)),
         constraints: manifest,
+        quote: latestIntentQuote,
         execution: [
           "snapshot source and destination token accounts",
           "invoke PRE policy hook",
