@@ -1,6 +1,24 @@
 {
   "format": "JOLTWORK_MARKETS_V1",
   "network": "solana-mainnet-beta",
-  "updatedAt": null,
-  "launches": []
+  "updatedAt": "2026-11-02T12:08:40.000Z",
+  "launches": [
+    {
+      "format": "JOLTWORK_LAUNCH_RECEIPT_V1",
+      "network": "solana-mainnet-beta",
+      "name": "Joltwork Test",
+      "symbol": "JOLTTEST",
+      "description": "An explicitly labelled Solana mainnet test token created to verify Joltwork's launch-to-market flow. This token has no promised value, utility or return.",
+      "image": "./joltwork.png",
+      "metadataUri": "./markets/test-token/metadata.json",
+      "website": "",
+      "twitter": "https://x.com/Joltworkrunit",
+      "mint": "DD83N4fn9ZVP4Y1Sj5vzLNRTba3dQudYxx1s4pN6fvBj",
+      "creator": "6y6QaxRzGMQJbrtPxN6LYbQAswwPGSxNWYit4jXVUeYE",
+      "signature": "5Lk3NqqyFAmvXni3o9YX7FYcrhBVe4Shpn2ChJaq9D4pMgLkW8V2UYeaU4Q8EZiycG4fX6qE8Bt3BkU6sNEzVvQG",
+      "pump": "https://pump.fun/coin/DD83N4fn9ZVP4Y1Sj5vzLNRTba3dQudYxx1s4pN6fvBj",
+      "explorer": "https://explorer.solana.com/address/DD83N4fn9ZVP4Y1Sj5vzLNRTba3dQudYxx1s4pN6fvBj",
+      "createdAt": "2026-11-02T12:08:40.000Z"
+    }
+  ]
 }

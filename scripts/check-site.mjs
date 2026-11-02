@@ -48,4 +48,10 @@ for (const id of ["market-grid", "market-search", "market-refresh", "market-sort
 }
 assert.match(marketsClient, /api\.dexscreener\.com\/tokens\/v1\/solana/, "markets must resolve live Solana market data");
 assert.match(app, /joltwork\.launches\.v1/, "confirmed launches must be persisted for market discovery");
+const marketRegistry = JSON.parse(readFileSync(resolve(root, "markets/registry.json"), "utf8"));
+assert.equal(marketRegistry.format, "JOLTWORK_MARKETS_V1", "unexpected markets registry format");
+for (const launch of marketRegistry.launches) {
+  assert.match(launch.mint, /^[1-9A-HJ-NP-Za-km-z]{32,44}$/, "registry contains an invalid Solana Mint");
+  assert.match(launch.signature, /^[1-9A-HJ-NP-Za-km-z]{64,88}$/, "registry contains an invalid transaction signature");
+}
 console.log(`site contract: ${pages.length} routes, live markets, live quote controls, metadata gate, same-origin code browser, no GitHub links, no custom domain`);

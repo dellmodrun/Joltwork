@@ -13,13 +13,19 @@
   }
 
   function safeUrl(value) {
-    try { var url = new URL(value); return url.protocol === "https:" ? url.href : ""; }
+    try { var url = new URL(value, document.baseURI); return url.protocol === "https:" ? url.href : ""; }
     catch (_) { return ""; }
   }
 
   function validMint(value) { return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(String(value || "")); }
   function short(value) { return value ? value.slice(0, 5) + "…" + value.slice(-5) : "—"; }
   function number(value) { var result = Number(value); return Number.isFinite(result) ? result : 0; }
+  function timestamp(value) {
+    var numeric = Number(value);
+    if (Number.isFinite(numeric) && numeric > 0) return numeric;
+    var parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
   function money(value, compact) {
     var amount = number(value);
     if (!amount) return "—";
@@ -98,7 +104,7 @@
       if (state.sort === "volume") return number(pairB.volume && pairB.volume.h24) - number(pairA.volume && pairA.volume.h24);
       if (state.sort === "liquidity") return number(pairB.liquidity && pairB.liquidity.usd) - number(pairA.liquidity && pairA.liquidity.usd);
       if (state.sort === "market-cap") return number(pairB.marketCap || pairB.fdv) - number(pairA.marketCap || pairA.fdv);
-      return number(b.createdAt || b.pairCreatedAt) - number(a.createdAt || a.pairCreatedAt);
+      return timestamp(b.createdAt || b.pairCreatedAt) - timestamp(a.createdAt || a.pairCreatedAt);
     });
   }
 

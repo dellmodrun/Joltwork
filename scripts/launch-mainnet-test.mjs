@@ -52,7 +52,7 @@ const report = {
   accountCount: instruction.keys.length,
   simulationError: simulation.value.err,
   simulationUnits: simulation.value.unitsConsumed,
-  simulationLogs: simulation.value.logs,
+  simulationLogs: shouldSend ? undefined : simulation.value.logs,
 };
 
 if (simulation.value.err) {
@@ -69,11 +69,18 @@ const signature = await connection.sendRawTransaction(transaction.serialize(), {
   preflightCommitment: "confirmed",
   maxRetries: 4,
 });
-const confirmation = await connection.confirmTransaction({
-  signature,
-  blockhash: latest.blockhash,
-  lastValidBlockHeight: latest.lastValidBlockHeight,
-}, "confirmed");
+let confirmation;
+try {
+  confirmation = await connection.confirmTransaction({
+    signature,
+    blockhash: latest.blockhash,
+    lastValidBlockHeight: latest.lastValidBlockHeight,
+  }, "confirmed");
+} catch (error) {
+  const recovered = await connection.getSignatureStatus(signature, { searchTransactionHistory: true });
+  if (!recovered.value || recovered.value.err) throw error;
+  confirmation = { value: { err: null } };
+}
 if (confirmation.value.err) throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`);
 
 console.log(JSON.stringify({
