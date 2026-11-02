@@ -403,6 +403,30 @@
         pump: result.pump,
         note: "The token is live on mainnet and its policy references Jolt Guard program 6HfEuWvEmargNraXeqCiqCZRJ223kGjxsCB7H9S3ENTY."
       }, null, 2);
+      try {
+        var launchRecord = {
+          format: "JOLTWORK_LAUNCH_RECEIPT_V1",
+          network: "solana-mainnet-beta",
+          mint: result.mint,
+          signature: result.signature,
+          creator: authority,
+          name: byId("coin-name").value.trim(),
+          symbol: byId("coin-symbol").value.trim().toUpperCase(),
+          description: verifiedMetadata && verifiedMetadata.description || "",
+          image: verifiedMetadata && verifiedMetadata.image || "",
+          metadataUri: verifiedMetadataUri,
+          website: verifiedMetadata && verifiedMetadata.website || "",
+          twitter: verifiedMetadata && verifiedMetadata.twitter || "",
+          pump: result.pump,
+          explorer: result.explorer,
+          createdAt: Date.now()
+        };
+        var storedLaunches = JSON.parse(localStorage.getItem("joltwork.launches.v1") || "[]");
+        if (!Array.isArray(storedLaunches)) storedLaunches = [];
+        storedLaunches = storedLaunches.filter(function (item) { return item && item.mint !== launchRecord.mint; });
+        storedLaunches.unshift(launchRecord);
+        localStorage.setItem("joltwork.launches.v1", JSON.stringify(storedLaunches.slice(0, 100)));
+      } catch (_) { /* A confirmed launch remains valid if local storage is unavailable. */ }
       showToast("Coin creation confirmed on Solana", "success");
     } catch (error) {
       output.textContent = "creation error · " + (error && error.message ? error.message : String(error));
@@ -414,6 +438,12 @@
   });
 
   var latestIntentQuote = null;
+  if (byId("intent-output-mint")) {
+    try {
+      var requestedOutputMint = new URLSearchParams(window.location.search).get("outputMint");
+      if (requestedOutputMint && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(requestedOutputMint)) byId("intent-output-mint").value = requestedOutputMint;
+    } catch (_) { /* Ignore malformed query parameters. */ }
+  }
   var intentQuoteButton = byId("intent-quote");
   if (intentQuoteButton) intentQuoteButton.addEventListener("click", async function () {
     var output = byId("intent-output");
@@ -585,6 +615,8 @@
     intentClient: "intent-client.ts",
     appClient: "app.js",
     buildClient: "build-client.mjs",
+    marketsClient: "markets.js",
+    marketsRegistry: "markets/registry.json",
     webPackage: "package.json",
     sdkPackage: "sdk/package.json",
     deployment: "deployments/devnet.json",

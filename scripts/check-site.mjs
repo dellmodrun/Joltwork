@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const pages = ["index.html", "launch/index.html", "intent/index.html", "protocol/index.html", "code/index.html", "research/index.html"];
+const pages = ["index.html", "launch/index.html", "markets/index.html", "intent/index.html", "protocol/index.html", "code/index.html", "research/index.html"];
 for (const page of pages) assert.ok(existsSync(resolve(root, page)), `missing route: ${page}`);
 assert.ok(!existsSync(resolve(root, "CNAME")), "custom-domain CNAME must not be present");
 
@@ -26,8 +26,9 @@ for (const id of ["code-view", "code-filter", "code-copy", "code-download"]) {
   assert.match(code, new RegExp(`id=["']${id}["']`), `code browser missing ${id}`);
 }
 const app = readFileSync(resolve(root, "app.js"), "utf8");
+const marketsClient = readFileSync(resolve(root, "markets.js"), "utf8");
 assert.match(app, /3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG|codePaths/);
-const publicFrontend = [...pages.map((page) => readFileSync(resolve(root, page), "utf8")), app].join("\n");
+const publicFrontend = [...pages.map((page) => readFileSync(resolve(root, page), "utf8")), app, marketsClient].join("\n");
 for (const forbidden of ["github.com", "raw.githubusercontent.com", "dellmodrun", "github.io"]) {
   assert.ok(!publicFrontend.toLowerCase().includes(forbidden), `public frontend exposes forbidden host or account: ${forbidden}`);
 }
@@ -41,4 +42,10 @@ const launch = readFileSync(resolve(root, "launch/index.html"), "utf8");
 for (const id of ["coin-description", "coin-image", "coin-uri", "metadata-check", "launch-submit"]) {
   assert.match(launch, new RegExp(`id=["']${id}["']`), `launch workbench missing ${id}`);
 }
-console.log(`site contract: ${pages.length} routes, live quote controls, metadata gate, same-origin code browser, no GitHub links, no custom domain`);
+const markets = readFileSync(resolve(root, "markets/index.html"), "utf8");
+for (const id of ["market-grid", "market-search", "market-refresh", "market-sort", "market-total"]) {
+  assert.match(markets, new RegExp(`id=["']${id}["']`), `markets page missing ${id}`);
+}
+assert.match(marketsClient, /api\.dexscreener\.com\/tokens\/v1\/solana/, "markets must resolve live Solana market data");
+assert.match(app, /joltwork\.launches\.v1/, "confirmed launches must be persisted for market discovery");
+console.log(`site contract: ${pages.length} routes, live markets, live quote controls, metadata gate, same-origin code browser, no GitHub links, no custom domain`);

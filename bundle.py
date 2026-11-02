@@ -24,9 +24,10 @@ app = (ROOT / "app.js").read_text(encoding="utf-8")
 wallet_icons = (ROOT / "wallet-icons.js").read_text(encoding="utf-8")
 launch_client = (ROOT / "launch-client.js").read_text(encoding="utf-8")
 intent_client = (ROOT / "intent-client.js").read_text(encoding="utf-8")
+markets_client = (ROOT / "markets.js").read_text(encoding="utf-8")
 styles = (ROOT / "styles.css").read_text(encoding="utf-8")
 enhancements = (ROOT / "enhancements.css").read_text(encoding="utf-8")
-sources = [ROOT / "index.html"] + [ROOT / name / "index.html" for name in ("launch", "intent", "protocol", "code", "research")]
+sources = [ROOT / "index.html"] + [ROOT / name / "index.html" for name in ("launch", "markets", "intent", "protocol", "code", "research")]
 
 for src in sources:
     html = src.read_text(encoding="utf-8")
@@ -34,6 +35,7 @@ for src in sources:
     html = re.sub(r'<script src="\./wallet-icons\.js">\s*</script>', lambda _: "<script>" + wallet_icons + "</script>", html)
     html = re.sub(r'<script src="\./launch-client\.js">\s*</script>', lambda _: "<script>" + launch_client + "</script>", html)
     html = re.sub(r'<script src="\./intent-client\.js">\s*</script>', lambda _: "<script>" + intent_client + "</script>", html)
+    html = re.sub(r'<script src="\./markets\.js">\s*</script>', lambda _: "<script>" + markets_client + "</script>", html)
     html = html.replace('<link rel="stylesheet" href="./styles.css">', "<style>" + styles + "</style>")
     html = html.replace('<link rel="stylesheet" href="./enhancements.css">', "<style>" + enhancements + "</style>")
     replacements = 0
@@ -51,3 +53,8 @@ for src in sources:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
     print(f"{relative!s:24s} -> {out.relative_to(ROOT)} ({replacements} URLs, {out.stat().st_size / 1024:.1f} KB)")
+
+registry_source = ROOT / "markets" / "registry.json"
+registry_output = DIST / "markets" / "registry.json"
+registry_output.parent.mkdir(parents=True, exist_ok=True)
+registry_output.write_text(registry_source.read_text(encoding="utf-8"), encoding="utf-8")

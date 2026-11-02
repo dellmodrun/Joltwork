@@ -21,4 +21,5 @@ v1/
 *.tmp
 node_modules/
 target/
+__pycache__/
 .local-deploy/

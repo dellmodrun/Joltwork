@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base href="../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Discover Joltwork-launched Solana markets with live price, liquidity and volume data.">
+<title>Markets — Joltwork</title>
+<link rel="icon" href="./joltwork.png">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./enhancements.css">
+</head>
+<body>
+<button id="menu-toggle" class="menu-toggle" aria-label="Open navigation" aria-expanded="false">≡</button>
+<aside class="site-rail" aria-label="Primary navigation"><div class="rail-inner">
+<a class="rail-brand" href="./"><img src="./joltwork.png" alt=""><span>Joltwork<small>INTENT HOOKS / SOLANA</small></span></a>
+<nav class="rail-nav">
+<a href="./"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg></span><span class="rail-label">HOME</span></a>
+<a href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m14 4 6 6-9 9-7 1 1-7zM12 6l6 6M4 20l5-5"/></svg></span><span class="rail-label">LAUNCH COIN</span></a>
+<a class="active" href="./markets/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M4 19V9m5 10V5m5 14v-7m5 7V3M2 21h20"/></svg></span><span class="rail-label">MARKETS</span></a>
+<a href="./intent/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16M17 9l3 3-3 3"/></svg></span><span class="rail-label">TRADE WITH INTENT</span></a>
+<a href="./protocol/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7zM8 12l3 3 5-6"/></svg></span><span class="rail-label">PROTOCOL</span></a>
+<a href="./code/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m8 8-4 4 4 4m8-8 4 4-4 4m-2-11-4 14"/></svg></span><span class="rail-label">SOURCE CODE</span></a>
+<a href="./research/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/></svg></span><span class="rail-label">RESEARCH PAPER</span></a>
+</nav>
+<div class="rail-bottom">
+<a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer"><span class="rail-icon"><svg class="fill-icon" viewBox="0 0 24 24"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.1-8.1L3.1 2h6.3l4.4 5.8L18.9 2Zm-1.1 17.9h1.7L8.5 4H6.7l11.1 15.9Z"/></svg></span><span class="rail-label">FOLLOW ON X</span></a>
+<button id="connect-wallet" class="rail-action"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 6h16v14H3zM3 6l3-3h12v3M15 11h6v5h-6z"/></svg></span><span class="rail-label">CONNECT WALLET</span></button>
+<a class="rail-action primary" href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M14 4c3-2 6-2 6-2s0 3-2 6l-5 5-4-4 5-5ZM9 9l-4 1-3 3 6 1m5-1 1 6 3-3 1-4M7 17c-2 0-3 1-3 3 2 0 3-1 3-3Z"/></svg></span><span class="rail-label">LAUNCH COIN</span></a>
+</div></div></aside>
+<main class="app-page">
+<header class="page-title"><div class="page-title-row"><div><div class="eyebrow">DISCOVERY / ON-CHAIN MARKETS</div><h1>Markets</h1></div><span class="page-code">SOLANA / LIVE INDEX</span></div><p>Discover coins launched through Joltwork, inspect their Mint addresses and read live market conditions without fabricated listings or placeholder prices.</p></header>
+
+<section class="market-command">
+<div><div class="chapter-label">MARKET DIRECTORY</div><h2>Launch receipts, resolved against live liquidity.</h2><p>A confirmed Joltwork launch appears immediately on the creator’s device. Once its pool receives a transaction and is indexed, this page adds the observed price, liquidity, volume and 24-hour change.</p></div>
+<button id="market-refresh" class="button" type="button">REFRESH DATA</button>
+</section>
+
+<section class="market-stats" aria-label="Market summary">
+<div><span>JOLTWORK LAUNCHES</span><b id="market-total">0</b></div><div><span>LIVE MARKETS</span><b id="market-live">0</b></div><div><span>24H VOLUME</span><b id="market-volume">—</b></div><div><span>LIQUIDITY</span><b id="market-liquidity">—</b></div><div><span>DATA STATUS</span><b id="market-updated">LOADING</b></div>
+</section>
+
+<section class="market-discovery">
+<form id="market-search-form" class="market-search-form"><label for="market-search">SEARCH SOLANA MINT</label><div><input id="market-search" spellcheck="false" autocomplete="off" placeholder="Enter a token Mint address"><button class="button button-solid" type="submit">find market</button></div><small id="market-search-message">Search adds a temporary discovery card; it does not label an unrelated token as a Joltwork launch.</small></form>
+<div class="market-controls"><div class="market-filters"><button class="active" data-market-filter="all" type="button">ALL</button><button data-market-filter="live" type="button">LIVE</button><button data-market-filter="awaiting" type="button">AWAITING INDEX</button><button data-market-filter="device" type="button">THIS DEVICE</button></div><label>SORT<select id="market-sort"><option value="newest">NEWEST</option><option value="volume">24H VOLUME</option><option value="liquidity">LIQUIDITY</option><option value="market-cap">MARKET CAP</option></select></label></div>
+</section>
+
+<section id="market-grid" class="market-grid" aria-live="polite"><div class="market-empty"><span>LOADING VERIFIED RECORDS</span><h2>Resolving market data…</h2></div></section>
+
+<section class="section-block"><div class="section-head"><div><div class="eyebrow">WHAT THE LABELS MEAN</div><h2>Launch provenance is separate from market activity.</h2></div><p>A market can be live without being launched through Joltwork. Joltwork therefore never infers provenance from a token name, ticker or trading venue.</p></div><div class="prose-block"><p><strong>Joltwork launch</strong> means the interface has a confirmed launch receipt containing the Mint and Solana transaction signature. A device receipt proves what this browser observed; a published registry entry is suitable for cross-device discovery.</p><p><strong>Live market</strong> means a third-party indexer has observed a liquidity pool and trading data for the Mint. Price and volume are informational observations, not guarantees, endorsements or investment advice.</p></div></section>
+<section class="section-block"><div class="section-head"><div><div class="eyebrow">MARKET LIFECYCLE</div><h2>From confirmed launch to intent-protected trade.</h2></div></div><div class="step-grid"><article><span>01 / CONFIRM</span><h3>Launch settles</h3><p>The creator receives a Mint and mainnet transaction signature.</p></article><article><span>02 / DISCOVER</span><h3>Receipt is listed</h3><p>The market directory records launch provenance without inventing price data.</p></article><article><span>03 / INDEX</span><h3>Liquidity becomes visible</h3><p>Pool activity resolves into live price, volume and liquidity observations.</p></article><article><span>04 / PROTECT</span><h3>Trade with intent</h3><p>The Mint opens directly in the intent workbench for transaction-bound settlement conditions.</p></article></div></section>
+<section class="cta-panel"><div><h2>Ready to create the next market?</h2><p>Compile metadata, review the route and approve the mainnet transaction from your own wallet.</p></div><a class="button button-solid" href="./launch/">launch a coin</a></section>
+<footer><span>JOLTWORK / INTENT HOOKS ON SOLANA</span><span>MARKET DATA IS INFORMATIONAL / VERIFY THE MINT</span></footer>
+</main>
+<script src="./wallet-icons.js"></script><script src="./app.js"></script><script src="./markets.js"></script>
+</body></html>
