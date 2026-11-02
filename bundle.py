@@ -5,16 +5,8 @@ import os
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent
-SRC = ROOT / "index.html"
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
-OUT = DIST / "index.html"
-
-html = SRC.read_text(encoding="utf-8")
-app = (ROOT / "app.js").read_text(encoding="utf-8")
-html = html.replace('<script src="./app.js"></script>', "<script>" + app + "</script>")
-styles = (ROOT / "styles.css").read_text(encoding="utf-8")
-html = html.replace('<link rel="stylesheet" href="./styles.css">', "<style>" + styles + "</style>")
 
 def b64(path: pathlib.Path) -> str:
     return base64.b64encode(path.read_bytes()).decode("ascii")
@@ -27,20 +19,26 @@ assets = {
     "./favicon.svg":                       ("image/svg+xml",  ROOT / "favicon.svg"),
 }
 
-replacements = 0
-for url, (mime, path) in assets.items():
-    if not path.exists():
-        print(f"WARN missing asset: {path}")
-        continue
-    data_uri = f"data:{mime};base64,{b64(path)}"
-    before = html.count(url)
-    html = html.replace(url, data_uri)
-    after = html.count(url)
-    print(f"  {url:40s} -> inlined ({before - after} replacements, {path.stat().st_size:>7} bytes raw)")
-    replacements += before - after
+app = (ROOT / "app.js").read_text(encoding="utf-8")
+styles = (ROOT / "styles.css").read_text(encoding="utf-8")
+sources = [ROOT / "index.html"] + [ROOT / name / "index.html" for name in ("launch", "intent", "protocol", "code")]
 
-OUT.write_text(html, encoding="utf-8")
-print()
-print(f"total: {replacements} URLs inlined")
-print(f"bundled file: {OUT}")
-print(f"final size:   {OUT.stat().st_size:,} bytes ({OUT.stat().st_size / 1024:.1f} KB)")
+for src in sources:
+    html = src.read_text(encoding="utf-8")
+    html = html.replace('<script src="./app.js"></script>', "<script>" + app + "</script>")
+    html = html.replace('<link rel="stylesheet" href="./styles.css">', "<style>" + styles + "</style>")
+    replacements = 0
+    for url, (mime, path) in assets.items():
+        if not path.exists():
+            print(f"WARN missing asset: {path}")
+            continue
+        data_uri = f"data:{mime};base64,{b64(path)}"
+        before = html.count(url)
+        html = html.replace(url, data_uri)
+        replacements += before - html.count(url)
+
+    relative = src.relative_to(ROOT)
+    out = DIST / relative
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html, encoding="utf-8")
+    print(f"{relative!s:24s} -> {out.relative_to(ROOT)} ({replacements} URLs, {out.stat().st_size / 1024:.1f} KB)")

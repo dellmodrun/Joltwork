@@ -1,229 +1,36 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Joltwork — intent-level hooks and atomic settlement constraints for Solana.">
-  <title>Joltwork — Intent Hooks for Solana</title>
-  <link rel="icon" href="./joltwork.png">
-  <link rel="stylesheet" href="./styles.css">
-</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Joltwork — transaction-bound intent hooks and atomic settlement for Solana."><title>Joltwork — Intent Hooks for Solana</title><link rel="icon" href="./joltwork.png"><link rel="stylesheet" href="./styles.css"></head>
 <body>
-  <aside class="site-rail" aria-label="Section navigation">
-    <a class="rail-mark" href="#top" aria-label="Joltwork home"><img src="./joltwork.png" alt=""></a>
-    <nav>
-      <a href="#top"><span>00</span>INDEX</a>
-      <a href="#launch"><span>01</span>LAUNCH</a>
-      <a href="#intent"><span>02</span>INTENT</a>
-      <a href="#protocol"><span>03</span>GUARD</a>
-      <a href="#code"><span>04</span>CODE</a>
+  <button id="menu-toggle" class="menu-toggle" aria-label="Open navigation" aria-expanded="false">≡</button>
+  <aside class="site-rail" aria-label="Primary navigation"><div class="rail-inner">
+    <a class="rail-brand" href="./"><img src="./joltwork.png" alt=""><span>Joltwork<small>INTENT HOOKS / SOLANA</small></span></a>
+    <nav class="rail-nav">
+      <a class="active" href="./"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg></span><span class="rail-label">HOME</span></a>
+      <a href="./launch/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m14 4 6 6-9 9-7 1 1-7zM12 6l6 6M4 20l5-5"/></svg></span><span class="rail-label">LAUNCH COIN</span></a>
+      <a href="./intent/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16M17 9l3 3-3 3"/></svg></span><span class="rail-label">TRADE WITH INTENT</span></a>
+      <a href="./protocol/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7zM8 12l3 3 5-6"/></svg></span><span class="rail-label">PROTOCOL</span></a>
+      <a href="./code/"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="m8 8-4 4 4 4m8-8 4 4-4 4m-2-11-4 14"/></svg></span><span class="rail-label">SOURCE / DEV NOTE</span></a>
+      <a href="https://arxiv.org/pdf/2610.36682" target="_blank" rel="noreferrer"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/></svg></span><span class="rail-label">RESEARCH PAPER</span></a>
     </nav>
-    <a class="rail-x" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer" aria-label="Joltwork on X">X</a>
-  </aside>
-  <main class="paper">
-    <header id="top" class="site-head">
-      <nav class="top-links" aria-label="Primary navigation">
-        <a href="#launch">launch/coin</a><span>·</span>
-        <a href="#intent">trade/intent</a><span>·</span>
-        <a href="#protocol">protocol</a><span>·</span>
-        <a href="#code">source/code</a><span>·</span>
-        <a href="https://arxiv.org/pdf/2610.36682" target="_blank" rel="noreferrer">paper/pdf</a><span>·</span>
-        <a href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer">x</a>
-      </nav>
-      <img class="mark" src="./joltwork.png" alt="Joltwork logo">
-      <div class="wordmark">Joltwork</div>
-      <p class="classification">intent-level hooks and verifiable settlement for solana</p>
-      <div class="status-line">
-        <span>NETWORK <b>SOLANA</b></span>
-        <span>PROGRAM <b>JOLT GUARD</b></span>
-        <span>BUILD <b>PASSING</b></span>
-        <span>TOKEN <b>JOLTWORK</b></span>
-      </div>
-    </header>
-
-    <section class="abstract" aria-labelledby="abstract-title">
-      <div class="abstract-copy">
-        <div class="eyebrow">ABSTRACT / PRODUCT THESIS</div>
-        <h1 id="abstract-title">Launch coins with rules.<br>Trade with guarantees.</h1>
-        <p>Joltwork is a programmable settlement layer for Solana. A coin issuer can publish a default economic policy; a trader can bind stricter constraints to one transaction. Jolt Guard executes the selected route through CPI and permits settlement only when the realized token balances satisfy the signed intent.</p>
-        <div class="primary-actions">
-          <a class="button button-solid" href="#launch">launch a coin</a>
-          <a class="button" href="#intent">compose an intent</a>
-        </div>
-      </div>
-      <aside class="thesis-card" aria-label="Protocol summary">
-        <div class="form-heading"><span>JOLT GUARD</span><span>SPEC / 01</span></div>
-        <p class="equation">accept ⇔<br><i>Δin ≤ ceiling</i><br>∧ <i>Δout ≥ floor</i><br>∧ <i>policy = true</i></p>
-        <dl>
-          <div><dt>binding</dt><dd>transaction</dd></div>
-          <div><dt>execution</dt><dd>atomic CPI</dd></div>
-          <div><dt>failure</dt><dd>full revert</dd></div>
-          <div><dt>receipt</dt><dd>JRC1</dd></div>
-        </dl>
-        <span class="live-note"><i></i> protocol build passing</span>
-      </aside>
+    <div class="rail-bottom">
+      <a class="rail-action" href="https://x.com/Joltworkrunit" target="_blank" rel="noreferrer"><span class="rail-icon">X</span><span class="rail-label">FOLLOW ON X</span></a>
+      <button id="connect-wallet" class="rail-action"><span class="rail-icon"><svg viewBox="0 0 24 24"><path d="M3 6h16v14H3zM3 6l3-3h12v3M15 11h6v5h-6z"/></svg></span><span class="rail-label">CONNECT WALLET</span></button>
+      <a class="rail-action primary" href="./launch/"><span class="rail-icon">↗</span><span class="rail-label">LAUNCH TOKEN</span></a>
+    </div>
+  </div></aside>
+  <main class="app-page">
+    <section class="hero-banner" aria-labelledby="hero-title">
+      <svg class="hero-diagram" viewBox="0 0 1232 472" aria-hidden="true"><g fill="none" stroke="#77756e"><circle cx="958" cy="220" r="180"/><circle cx="958" cy="220" r="130"/><circle cx="958" cy="220" r="78"/><path d="M710 72h430M710 368h430M748 28v416M1168 28v416M746 220h424" stroke-dasharray="4 7"/><path d="m850 220 58-72 92 36 76-94 72 22" stroke="#d8d4ca"/><circle cx="850" cy="220" r="5" fill="#d8d4ca"/><circle cx="908" cy="148" r="5" fill="#d8d4ca"/><circle cx="1000" cy="184" r="5" fill="#d8d4ca"/><circle cx="1076" cy="90" r="5" fill="#d8d4ca"/></g><g fill="#989790" font-family="monospace" font-size="8"><text x="720" y="64">SIGNED CONSTRAINT SURFACE</text><text x="973" y="214">JOLT</text><text x="1020" y="400">ATOMIC COMMIT / REVERT</text></g></svg>
+      <div class="hero-shade"></div><div class="hero-copy"><div class="eyebrow">JOLTWORK / SETTLEMENT LAYER</div><h1 id="hero-title">Launch coins with rules.<br>Trade with guarantees.</h1><p>Transaction-bound hooks for Solana. Define the economic outcome first; let Jolt Guard execute the route and reject any settlement that violates it.</p><div class="primary-actions"><a class="button button-solid" href="./launch/">launch a coin</a><a class="button" href="./intent/">compose an intent</a></div></div>
     </section>
-
-    <figure class="mechanism-figure" aria-labelledby="figure-one">
-      <div class="figure-frame">
-        <svg viewBox="0 0 900 250" role="img" aria-label="Jolt Guard execution sequence">
-          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#989790"/></marker></defs>
-          <g fill="none" stroke="#5c5b56">
-            <rect x="20" y="46" width="142" height="92"/><rect x="198" y="46" width="142" height="92"/><rect x="376" y="46" width="142" height="92"/><rect x="554" y="46" width="142" height="92"/><rect x="732" y="46" width="148" height="92"/>
-            <path d="M162 92H188M340 92H366M518 92H544M696 92H722" marker-end="url(#arrow)"/>
-            <path d="M91 138V195H806V148" stroke-dasharray="4 5"/>
-          </g>
-          <g fill="#e9e6dd" font-family="JetBrains Mono,monospace" text-anchor="middle">
-            <text x="91" y="77" font-size="10">SIGNED INTENT</text><text x="91" y="104" fill="#989790" font-size="8">limits · expiry · route</text>
-            <text x="269" y="77" font-size="10">PRE HOOK</text><text x="269" y="104" fill="#989790" font-size="8">policy may reject</text>
-            <text x="447" y="77" font-size="10">ROUTE CPI</text><text x="447" y="104" fill="#989790" font-size="8">pump · dex · router</text>
-            <text x="625" y="77" font-size="10">POSTCONDITION</text><text x="625" y="104" fill="#989790" font-size="8">reload token balances</text>
-            <text x="806" y="77" font-size="10">COMMIT / REVERT</text><text x="806" y="104" fill="#989790" font-size="8">JRC1 proof</text>
-            <text x="450" y="224" fill="#989790" font-size="9">one atomic solana transaction</text>
-          </g>
-        </svg>
-      </div>
-      <figcaption id="figure-one">figure 1. the hook belongs to the transaction intent, not to a single liquidity pool.</figcaption>
-    </figure>
-
-    <section id="launch" class="chapter">
-      <div class="chapter-label">PRODUCT / 01</div>
-      <h2>Launch Coin</h2>
-      <div class="chapter-intro">
-        <p>Create a Token-2022 coin and compile the default policy that wallets and interfaces can present to traders. Pump create_v2 already creates Token-2022 mints; Joltwork adds an intent policy above the trading route without requiring the coin to belong to one pool.</p>
-      </div>
-      <div class="workbench">
-        <form id="launch-form" class="form-sheet">
-          <div class="form-heading"><span>LAUNCH MANIFEST</span><span>JLM1</span></div>
-          <div class="field-pair">
-            <label>COIN NAME<input id="coin-name" maxlength="32" value="Joltwork Coin" required></label>
-            <label>SYMBOL<input id="coin-symbol" maxlength="13" value="JOLT" required></label>
-          </div>
-          <label>METADATA URI<input id="coin-uri" type="url" value="https://example.com/jolt.json" required></label>
-          <div class="field-pair">
-            <label>QUOTE ASSET<select id="coin-quote"><option value="SOL">SOL</option><option value="USDC">USDC</option><option value="PUMP_COIN">PUMP COIN</option></select></label>
-            <label>LAUNCH ROUTE<select id="coin-route"><option value="pump-create-v2">PUMP CREATE_V2</option><option value="jolt-native">JOLT NATIVE</option></select></label>
-          </div>
-          <div class="field-pair">
-            <label>DEFAULT POLICY<select id="coin-policy"><option value="max-cost">MAXIMUM TOTAL COST</option><option value="allowed-route">ALLOWED ROUTE</option><option value="token-fee-cap">TOKEN FEE CEILING</option><option value="none">NONE</option></select></label>
-            <label>HOLDER REWARDS<select id="coin-rewards"><option value="false">DISABLED</option><option value="true">ENABLED</option></select></label>
-          </div>
-          <div class="form-actions">
-            <button type="button" id="connect-wallet" class="button">connect wallet</button>
-            <button type="submit" class="button button-solid">compile launch plan</button>
-          </div>
-        </form>
-        <div class="output-sheet">
-          <div class="form-heading"><span>COMPILED OUTPUT</span><button class="text-button" data-copy="launch-output">copy</button></div>
-          <pre id="launch-output">Complete the launch manifest to derive its deterministic policy identity.</pre>
-        </div>
-      </div>
+    <div class="status-line"><span>NETWORK<b>SOLANA</b></span><span>PROGRAM<b>JOLT GUARD</b></span><span>BUILD<b>PASSING</b></span><span>TOKEN<b>JOLTWORK</b></span></div>
+    <section class="home-panel"><div class="eyebrow">THE CONCEPT</div><h2>A settlement hook that follows the trade—not the pool.</h2><p>Pool hooks are powerful, but they only govern activity inside one pool. Joltwork binds policy to a user’s transaction intent, allowing the same max-cost, minimum-output, route and counterparty rules to travel across launchpads, routers and markets.</p><p class="statement">The transaction commits only when the realized outcome matches the signed economic intent.</p></section>
+    <section class="route-grid" aria-label="Joltwork products">
+      <a class="route-card" href="./launch/"><span class="card-icon">L</span><h3>Launch Coin</h3><p>Create a Token-2022 asset and publish its default intent policy.</p><small>OPEN LAUNCHER →</small></a>
+      <a class="route-card" href="./intent/"><span class="card-icon">I</span><h3>Trade with Intent</h3><p>Compile transaction limits into a deterministic, signable manifest.</p><small>OPEN COMPOSER →</small></a>
+      <a class="route-card" href="./protocol/"><span class="card-icon">G</span><h3>Jolt Guard</h3><p>Inspect the atomic CPI wrapper, policy phases and JRC1 receipts.</p><small>READ MECHANISM →</small></a>
     </section>
-
-    <section id="intent" class="chapter">
-      <div class="chapter-label">PRODUCT / 02</div>
-      <h2>Trade with Intent</h2>
-      <div class="chapter-intro">
-        <p>Bind economic limits to one route. Jolt Guard snapshots the source and destination accounts, invokes the route, then atomically rejects settlement if input, output, expiry or a policy hook fails.</p>
-      </div>
-      <div class="workbench">
-        <form id="intent-form" class="form-sheet">
-          <div class="form-heading"><span>INTENT CONSTRAINTS</span><span>JOLT V1</span></div>
-          <label>ROUTE PROGRAM<input id="intent-route" value="JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4" required></label>
-          <div class="field-pair">
-            <label>MAXIMUM INPUT<input id="intent-input" inputmode="numeric" value="100000000" required></label>
-            <label>MINIMUM OUTPUT<input id="intent-output-min" inputmode="numeric" value="95000000" required></label>
-          </div>
-          <div class="field-pair">
-            <label>EXPIRY SLOT<input id="intent-expiry" inputmode="numeric" value="500000000" required></label>
-            <label>POLICY HOOK<select id="intent-policy"><option value="max-cost">MAXIMUM TOTAL COST</option><option value="allowed-route">ALLOWED ROUTE</option><option value="token-2022">TOKEN-2022 FEE CAP</option><option value="counterparty">COUNTERPARTY</option></select></label>
-          </div>
-          <button type="submit" class="button button-solid full">compile signed intent</button>
-        </form>
-        <div class="output-sheet">
-          <div class="form-heading"><span>INTENT ID / SHA-256</span><button class="text-button" data-copy="intent-output">copy</button></div>
-          <pre id="intent-output">The canonical manifest and Jolt Guard constraints will appear here.</pre>
-        </div>
-      </div>
-    </section>
-
-    <section id="protocol" class="chapter">
-      <div class="chapter-label">PROTOCOL / MECHANISM</div>
-      <h2>One wrapper, two hook layers</h2>
-      <div class="comparison">
-        <article>
-          <span class="index">01</span>
-          <h3>Mint-level hook</h3>
-          <p>Token-2022 Transfer Hook belongs to the mint and runs on each transfer. The issuer chooses it when the mint is created.</p>
-          <dl><div><dt>scope</dt><dd>one mint</dd></div><div><dt>authority</dt><dd>issuer</dd></div><div><dt>trigger</dt><dd>every transfer</dd></div></dl>
-        </article>
-        <article>
-          <span class="index">02</span>
-          <h3>Intent-level hook</h3>
-          <p>Jolt Guard belongs to one user transaction and can protect a route across multiple programs, pools and token programs.</p>
-          <dl><div><dt>scope</dt><dd>one route intent</dd></div><div><dt>authority</dt><dd>trader</dd></div><div><dt>trigger</dt><dd>selected execution</dd></div></dl>
-        </article>
-      </div>
-      <table class="protocol-table">
-        <thead><tr><th>phase</th><th>on-chain action</th><th>failure effect</th></tr></thead>
-        <tbody>
-          <tr><td>PRE</td><td>validate signer, expiry, route and optional policy program</td><td>route never executes</td></tr>
-          <tr><td>EXECUTE</td><td>invoke ordered route accounts through CPI</td><td>route error propagates</td></tr>
-          <tr><td>RELOAD</td><td>read classic SPL or Token-2022 account balances</td><td>invalid owner rejected</td></tr>
-          <tr><td>POST</td><td>enforce max input, min output and custom hook result</td><td>transaction rolls back</td></tr>
-          <tr><td>RETURN</td><td>emit JRC1 intent id, realized input and output</td><td>portable proof</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="chapter">
-      <div class="chapter-label">POLICY / MODULES</div>
-      <h2>Policies are composable programs</h2>
-      <div class="module-grid">
-        <article><b>MAX COST</b><p>Reject when total realized input exceeds the signed ceiling.</p></article>
-        <article><b>MIN OUTPUT</b><p>Reject when destination balance growth falls below the floor.</p></article>
-        <article><b>ROUTE REGISTRY</b><p>Accept only approved router or market program identities.</p></article>
-        <article><b>TOKEN FEE CAP</b><p>Constrain Token-2022 economic effects at settlement.</p></article>
-        <article><b>COUNTERPARTY</b><p>Apply issuer, treasury or jurisdiction-specific acceptance rules.</p></article>
-        <article><b>CUSTOM HOOK</b><p>Pass an opaque payload to any program implementing the JHK1 interface.</p></article>
-      </div>
-    </section>
-
-    <section id="code" class="chapter">
-      <div class="chapter-label">DEVELOPERS / VERIFIED SOURCE</div>
-      <h2>Built as a protocol, not a mockup</h2>
-      <div class="build-strip">
-        <span>RUST PROGRAM <b>PASS</b></span><span>SOLANA KIT SDK <b>PASS</b></span><span>SDK TESTS <b>3 / 3</b></span><span>NPM AUDIT <b>0</b></span>
-      </div>
-      <div class="code-browser">
-        <aside>
-          <button class="active" data-code="program">programs/jolt-guard/src/lib.rs</button>
-          <button data-code="sdk">sdk/src/index.ts</button>
-          <button data-code="spec">JOLT_GUARD.md</button>
-          <button data-code="ci">.github/workflows/protocol-ci.yml</button>
-        </aside>
-        <div><div id="code-path" class="code-path">programs/jolt-guard/src/lib.rs</div><pre id="code-view"></pre></div>
-      </div>
-      <div class="developer-links">
-        <a href="https://github.com/dellmodrun/Joltwork" target="_blank" rel="noreferrer">open repository ↗</a>
-        <a href="https://github.com/dellmodrun/Joltwork/actions" target="_blank" rel="noreferrer">view protocol ci ↗</a>
-        <a href="https://solana.com/docs/core/cpi" target="_blank" rel="noreferrer">solana cpi reference ↗</a>
-      </div>
-    </section>
-
-    <section class="chapter research">
-      <div class="chapter-label">RESEARCH / ORIGIN</div>
-      <h2>From disclosure research to enforceable settlement</h2>
-      <p>The research question is simple: when an interface promises one economic result and execution produces another, can the difference be measured and explained? Joltwork moves that question from post-trade observation to pre-trade enforcement on Solana.</p>
-      <div class="paper-links"><a href="https://arxiv.org/pdf/2610.36682" target="_blank" rel="noreferrer">read paper / pdf</a><a href="https://arxiv.org/html/2610.36682v1" target="_blank" rel="noreferrer">read paper / html</a></div>
-    </section>
-
-    <footer>
-      <span>JOLTWORK / SOLANA</span>
-      <span>PROGRAM ID · PENDING DEPLOYMENT</span>
-      <span>© 2026 JOLTWORK</span>
-    </footer>
-  </main>
-  <script src="./app.js"></script>
-</body>
-</html>
+    <footer><span>JOLTWORK / SOLANA</span><span>INTENT HOOKS / ATOMIC SETTLEMENT</span><span>© 2026 JOLTWORK</span></footer>
+  </main><script src="./app.js"></script>
+</body></html>

@@ -27,7 +27,8 @@
     return (window.phantom && window.phantom.solana) || window.solana || null;
   }
 
-  byId("connect-wallet").addEventListener("click", async function () {
+  var walletButton = byId("connect-wallet");
+  if (walletButton) walletButton.addEventListener("click", async function () {
     var button = this;
     var wallet = provider();
     if (!wallet || typeof wallet.connect !== "function") {
@@ -43,7 +44,8 @@
     }
   });
 
-  byId("launch-form").addEventListener("submit", async function (event) {
+  var launchForm = byId("launch-form");
+  if (launchForm) launchForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     var output = byId("launch-output");
     var manifest = {
@@ -85,7 +87,8 @@
     }, null, 2);
   });
 
-  byId("intent-form").addEventListener("submit", async function (event) {
+  var intentForm = byId("intent-form");
+  if (intentForm) intentForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     var output = byId("intent-output");
     try {
@@ -203,6 +206,7 @@
   };
 
   function showCode(key, button) {
+    if (!byId("code-view") || !byId("code-path")) return;
     byId("code-view").textContent = codeFiles[key];
     byId("code-path").textContent = codePaths[key];
     document.querySelectorAll("[data-code]").forEach(function (item) {
@@ -215,5 +219,15 @@
       showCode(button.dataset.code, button);
     });
   });
-  showCode("program", document.querySelector('[data-code="program"]'));
+  if (byId("code-view")) showCode("program", document.querySelector('[data-code="program"]'));
+
+  var menuButton = byId("menu-toggle");
+  if (menuButton) menuButton.addEventListener("click", function () {
+    document.body.classList.toggle("menu-open");
+    menuButton.setAttribute("aria-expanded", document.body.classList.contains("menu-open") ? "true" : "false");
+  });
+
+  document.querySelectorAll(".site-rail a").forEach(function (link) {
+    link.addEventListener("click", function () { document.body.classList.remove("menu-open"); });
+  });
 }());
