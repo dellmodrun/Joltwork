@@ -29,8 +29,8 @@ const app = readFileSync(resolve(root, "app.js"), "utf8");
 const marketsClient = readFileSync(resolve(root, "markets.js"), "utf8");
 assert.match(app, /3gAqr1U9CzYhZBoqDJeEQFtphjVGvr24h4znUK2knfVG|codePaths/);
 const home = readFileSync(resolve(root, "index.html"), "utf8");
-assert.match(home, /id=["']official-ca["']>JBhUkzMZcYG82CXkjiBzh7Z1HRFsupTyxmPcHTfepump</, "official CA missing from home page");
-assert.match(home, /https:\/\/pump\.fun\/coin\/JBhUkzMZcYG82CXkjiBzh7Z1HRFsupTyxmPcHTfepump/, "official Pump market link missing from home page");
+assert.match(home, /id=["']official-ca["']>TBA</, "official CA placeholder missing from home page");
+assert.ok(!home.match(/id=["']official-ca["']>[1-9A-HJ-NP-Za-km-z]{32,44}</), "a live official CA remains on home page");
 const publicFrontend = [...pages.map((page) => readFileSync(resolve(root, page), "utf8")), app, marketsClient].join("\n");
 for (const forbidden of ["github.com", "raw.githubusercontent.com", "dellmodrun", "github.io"]) {
   assert.ok(!publicFrontend.toLowerCase().includes(forbidden), `public frontend exposes forbidden host or account: ${forbidden}`);
@@ -57,6 +57,6 @@ for (const launch of marketRegistry.launches) {
   assert.match(launch.mint, /^[1-9A-HJ-NP-Za-km-z]{32,44}$/, "registry contains an invalid Solana Mint");
   if (launch.signature) assert.match(launch.signature, /^[1-9A-HJ-NP-Za-km-z]{64,88}$/, "registry contains an invalid transaction signature");
 }
-assert.ok(marketRegistry.launches.some((launch) => launch.official && launch.mint === "JBhUkzMZcYG82CXkjiBzh7Z1HRFsupTyxmPcHTfepump"), "official token missing from markets registry");
+assert.ok(!marketRegistry.launches.some((launch) => launch.official), "an official token remains in markets registry while CA is TBA");
 assert.ok(!marketRegistry.launches.some((launch) => launch.independent), "a removed independent launch remains in markets registry");
 console.log(`site contract: ${pages.length} routes, live markets, live quote controls, metadata gate, same-origin code browser, no GitHub links, custom domain joltwork.fun`);
