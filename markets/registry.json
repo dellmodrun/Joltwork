@@ -1,8 +1,22 @@
 {
   "format": "JOLTWORK_MARKETS_V1",
   "network": "solana-mainnet-beta",
-  "updatedAt": "2026-11-02T12:43:00.000Z",
+  "updatedAt": "2026-11-03T00:00:00.000Z",
   "launches": [
+    {
+      "format": "JOLTWORK_OFFICIAL_TOKEN_V1",
+      "network": "solana-mainnet-beta",
+      "official": true,
+      "name": "Joltwork",
+      "symbol": "JOLTWORK",
+      "description": "The official Joltwork token on Solana.",
+      "image": "./joltwork.png",
+      "website": "https://joltwork.fun/",
+      "twitter": "https://x.com/Joltworkrunit",
+      "mint": "JBhUkzMZcYG82CXkjiBzh7Z1HRFsupTyxmPcHTfepump",
+      "pump": "https://pump.fun/coin/JBhUkzMZcYG82CXkjiBzh7Z1HRFsupTyxmPcHTfepump",
+      "explorer": "https://explorer.solana.com/address/JBhUkzMZcYG82CXkjiBzh7Z1HRFsupTyxmPcHTfepump"
+    },
     {
       "format": "JOLTWORK_LAUNCH_RECEIPT_V1",
       "network": "solana-mainnet-beta",
